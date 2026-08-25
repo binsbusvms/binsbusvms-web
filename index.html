@@ -3,16 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>柏昇開發工業 - 車輛動態管理系統|製作者：柏昇小歐</title>
+    <title>柏昇開發實業 - 車輛動態管理系統 | 製作者：柏昇小歐</title>
     <!-- 引入 Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- 網頁頁籤與書籤列小圖示 (Favicon) - 替換為新版幾何雙色 LOGO -->
+    <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'><path d='M 500,70 L 270,70 L 90,270 L 440,930 L 500,930 Z' fill='none' stroke='%231D2088' stroke-width='65' stroke-linejoin='miter' stroke-miterlimit='10'/><path d='M 500,70 L 730,70 L 910,270 L 560,930 L 500,930 Z' fill='none' stroke='%23E60012' stroke-width='65' stroke-linejoin='miter' stroke-miterlimit='10'/><path d='M 500,270 L 820,270' fill='none' stroke='%23E60012' stroke-width='65' stroke-linecap='square'/></svg>" type="image/svg+xml">
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f4f6f9; color: #333; padding: 8px; padding-bottom: 60px; }
+        body { background-color: #ffffff; color: #333; padding: 8px; padding-bottom: 60px; position: relative; min-height: 100vh; }
 
         /* 標題與工具列 */
         .header { background: #1f4e78; color: white; padding: 10px; border-radius: 8px; margin-bottom: 8px; }
         .header h1 { font-size: 1rem; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+        .header-title-box { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .header-logo-icon { height: 26px; width: 26px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
+        .author-tag { font-size: 0.8rem; font-weight: normal; opacity: 0.85; margin-left: 2px; }
+
         .controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
         
         /* 頂部即時時間展示區塊 */
@@ -33,7 +41,7 @@
         .btn-import { background: #e83e8c; }
 
         /* 排序控制條 */
-        .sort-bar { display: flex; align-items: center; gap: 6px; background: #fff; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.8rem; }
+        .sort-bar { display: flex; align-items: center; gap: 6px; background: #e4dfc3; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.8rem; }
         .sort-bar select { width: auto; height: 30px; padding: 2px 6px; }
 
         /* 頁籤 */
@@ -44,13 +52,13 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* 卡片與網格區域 */
-        .card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); margin-bottom: 10px; }
-        .card-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: #1f4e78; border-bottom: 2px solid #e9ecef; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+        /* 卡片與網格區域 - 背景改為 #e4dfc3 */
+        .card { background: #e4dfc3; border-radius: 8px; padding: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-bottom: 10px; border: 1px solid #d4ceb0; }
+        .card-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: #1f4e78; border-bottom: 2px solid #c8c2a3; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
 
         /* 地圖配置與滾動區域 */
         .map-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; }
-        .zone { border: 2px solid #abd2bf; border-radius: 6px; padding: 6px; background: #fdfdfd; display: flex; flex-direction: column; max-height: 450px; transition: transform 0.15s, opacity 0.15s; }
+        .zone { border: 2px solid #b8b193; border-radius: 6px; padding: 6px; background: #e4dfc3; display: flex; flex-direction: column; max-height: 450px; transition: transform 0.15s, opacity 0.15s; }
         .zone.zone-dragging { opacity: 0.4; transform: scale(0.98); }
         
         /* 區域標題列支援抓取拖移 */
@@ -64,18 +72,19 @@
         /* 車輛卡片 */
         .bus-card { background: white; border: 1px solid #ccc; border-radius: 5px; padding: 6px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: grab; }
         .bus-card:active { cursor: grabbing; }
+        .bus-card.dragging { opacity: 0.5; }
         .bus-header { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
         .bus-plate-input { font-weight: bold; font-size: 0.8rem; padding: 4px 6px; border-radius: 4px; text-align: center; flex-grow: 1; min-height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.2s; word-break: break-all; }
         .bus-plate-input:hover { opacity: 0.85; }
 
-        /* 車輛日期適應型容器：優化版 */
+        /* 車輛日期適應型容器 */
         .bus-dates { display: flex; gap: 3px; font-size: 0.68rem; color: #555; align-items: center; width: 100%; }
         .bus-dates div { flex: 1; display: flex; align-items: center; gap: 1px; min-width: 0; }
-        .bus-dates span { shrink: 0; white-space: nowrap; font-weight: 500; }
+        .bus-dates span { flex-shrink: 0; white-space: nowrap; font-weight: 500; }
         .bus-dates input[type="date"] { font-size: 0.62rem; height: 24px; padding: 0 2px; border: 1px solid #ccc; border-radius: 3px; background: #fafafa; width: 100%; min-width: 0; }
 
-        /* 表格優化（支援手機順暢橫向滾動） */
-        .table-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #ddd; border-radius: 6px; }
+        /* 表格優化 */
+        .table-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #ddd; border-radius: 6px; background: #ffffff; }
         .table-scroll-tip { font-size: 0.75rem; color: #17a2b8; background: #e8f7f9; padding: 4px 8px; border-radius: 4px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
 
         select, input { width: 100%; padding: 4px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.8rem; background-color: #fff; height: 30px; }
@@ -109,9 +118,18 @@
 
 <div class="header">
     <h1>
-        <span>🚌 柏昇開發工業 - 車輛動態管理系統|製作者：柏昇小歐</span>
+        <!-- 完整修正 LOGO 與標題 -->
+        <div class="header-title-box">
+            <svg class="header-logo-icon" width="26" height="26" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 500,70 L 270,70 L 90,270 L 440,930 L 500,930 Z" fill="none" stroke="#1D2088" stroke-width="65" stroke-linejoin="miter" stroke-miterlimit="10"/>
+                <path d="M 500,70 L 730,70 L 910,270 L 560,930 L 500,930 Z" fill="none" stroke="#E60012" stroke-width="65" stroke-linejoin="miter" stroke-miterlimit="10"/>
+                <path d="M 500,270 L 820,270" fill="none" stroke="#E60012" stroke-width="65" stroke-linecap="square"/>
+            </svg>
+            <span>柏昇開發實業 - 車輛動態管理系統</span>
+            <span class="author-tag">| 製作者：柏昇小歐</span>
+        </div>
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <!-- 即時時間展示區塊 (已移除日期選擇) -->
+            <!-- 即時時間展示區塊 -->
             <div class="header-top-right">
                 <span id="liveClock" class="live-clock"></span>
             </div>
@@ -244,7 +262,7 @@
     const SUPABASE_KEY = 'sb_publishable_twR6l-aVWBSFei-FZUd1JQ_XEBEpwga';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const ADMIN_PASSWORD = "0857"; // 🔒 設定管理員密碼
+    const ADMIN_PASSWORD = "0857";
 
     let appData = {
         zones: [
