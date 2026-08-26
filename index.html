@@ -52,7 +52,6 @@
         .announcement-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .announcement-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .announcement-title { font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
-        .announcement-actions { display: flex; align-items: center; gap: 6px; }
         .btn-announcement { background: #007bff; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
         .btn-announcement:hover { background: #0056b3; }
         .btn-announcement-del { background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; cursor: pointer; }
@@ -122,8 +121,13 @@
         .modal.active { display: flex; }
         .modal-content { background: white; border-radius: 8px; width: 92%; max-width: 520px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-height: 88vh; overflow-y: auto; }
         .modal-header { font-weight: bold; margin-bottom: 12px; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; }
-        .color-palette { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 12px 0; align-items: center; }
-        .color-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 4px rgba(0,0,0,0.3); }
+        
+        /* 獨立色盤區塊 */
+        .color-section { margin-bottom: 10px; background: #f8f9fa; padding: 8px; border-radius: 6px; border: 1px solid #e9ecef; }
+        .color-palette { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; align-items: center; }
+        .color-swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 3px rgba(0,0,0,0.3); }
+        .color-swatch.selected { border: 2px solid #000; transform: scale(1.1); }
+        
         .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
 
         /* 相片牆樣式 */
@@ -211,7 +215,7 @@
     </div>
 </div>
 
-<!-- 驗交車公告卡片 (位於搜尋條上方，文字旁帶有查看圖片按鈕) -->
+<!-- 驗交車公告卡片 -->
 <div class="announcement-box" id="announcementBox">
     <div class="announcement-left">
         <span class="announcement-title">📢 <b>查核 / 驗車 / 交車日公告</b></span>
@@ -317,8 +321,16 @@
         <label style="font-size:0.8rem; font-weight:bold;">施工細節備註：</label>
         <textarea id="modalBusNote" rows="2" style="margin-top:2px; margin-bottom:8px; font-size:0.78rem;" placeholder="記錄現場注意事項、施工重點..."></textarea>
 
-        <label style="font-size:0.8rem; font-weight:bold;">底色與字體色彩：</label>
-        <div class="color-palette" id="busBgPalette"></div>
+        <!-- 分開設定底色與字體色彩 -->
+        <div class="color-section">
+            <label style="font-size:0.8rem; font-weight:bold; color:#1f4e78;">🎨 1. 底色選擇 (Background Color)：</label>
+            <div class="color-palette" id="busBgPalette"></div>
+        </div>
+
+        <div class="color-section">
+            <label style="font-size:0.8rem; font-weight:bold; color:#1f4e78;">✏️ 2. 字體顏色選擇 (Text Color)：</label>
+            <div class="color-palette" id="busTextColorPalette"></div>
+        </div>
 
         <!-- 照片上傳區 -->
         <div style="border-top:1px solid #eee; padding-top:8px; margin-top:4px;">
@@ -451,6 +463,8 @@
     };
 
     const presetBgColors = ['#8c5d5d', '#007bff', '#28a745', '#dc3545', '#fd7e14', '#8800a3', '#17a2b8', '#2c3e50', '#ffffff', '#000000', '#f5d505'];
+    const presetTextColors = ['#ffffff', '#000000', '#212529', '#f8f9fa', '#ffc107', '#dc3545', '#17a2b8'];
+
     let currentEditBusId = null;
     let targetUploadBusId = null;
 
@@ -607,7 +621,6 @@
         renderAuditTrail();
     }
 
-    /* 渲染驗交車公告資訊與按鈕 */
     function renderAnnouncementBox() {
         const btnView = document.getElementById('btnViewAnnouncement');
         const statusText = document.getElementById('announcementStatusText');
@@ -624,7 +637,6 @@
         }
     }
 
-    /* 查看公告圖片 */
     function viewAnnouncementImg() {
         if (appData.announcementImg) {
             showLightbox(appData.announcementImg);
@@ -633,14 +645,12 @@
         }
     }
 
-    /* 觸發上傳公告圖片 */
     function triggerAnnouncementUpload() {
         requireAuth(() => {
             document.getElementById('announcementFileInput').click();
         });
     }
 
-    /* 處理公告圖片上傳並壓縮 */
     function handleAnnouncementPhotoUpload(e) {
         const file = e.target.files[0];
         if (!file) return;
@@ -676,7 +686,6 @@
         reader.readAsDataURL(file);
     }
 
-    /* 刪除公告圖片 */
     function deleteAnnouncementImg() {
         requireAuth(() => {
             if (confirm("確定要刪除現有的驗交車公告圖片嗎？")) {
@@ -861,6 +870,7 @@
         });
     }
 
+    /* 開啟編輯 Modal - 底色與字體色彩分區渲染 */
     function openBusModal(busId) {
         requireAuth(() => {
             currentEditBusId = busId;
@@ -870,28 +880,39 @@
             document.getElementById('modalBusEndDate').value = bus.endDate || '';
             document.getElementById('modalBusNote').value = bus.note || '';
 
+            // --- 1. 渲染「底色」選擇器 ---
             const bgPalette = document.getElementById('busBgPalette');
             bgPalette.innerHTML = '';
-            
-            // 預設顏色按鈕
             presetBgColors.forEach(c => {
                 const swatch = document.createElement('div');
-                swatch.className = 'color-swatch';
+                swatch.className = `color-swatch ${(bus.bg === c) ? 'selected' : ''}`;
                 swatch.style.background = c;
-                swatch.onclick = () => { bus.bg = c; renderApp(); };
+                swatch.onclick = () => { bus.bg = c; openBusModal(busId); renderApp(); };
                 bgPalette.appendChild(swatch);
             });
+            const bgPicker = document.createElement('input');
+            bgPicker.type = 'color';
+            bgPicker.value = bus.bg || '#8c5d5d';
+            bgPicker.style.cssText = 'width:28px; height:28px; border-radius:50%; border:none; cursor:pointer; padding:0; background:none;';
+            bgPicker.onchange = (e) => { bus.bg = e.target.value; renderApp(); };
+            bgPalette.appendChild(bgPicker);
 
-            // 自訂顏色選擇器 (Color Picker)
-            const picker = document.createElement('input');
-            picker.type = 'color';
-            picker.value = bus.bg || '#8c5d5d';
-            picker.style.cssText = 'width:28px; height:28px; border-radius:50%; border:none; cursor:pointer; padding:0; background:none;';
-            picker.onchange = (e) => { 
-                bus.bg = e.target.value; 
-                renderApp(); 
-            };
-            bgPalette.appendChild(picker);
+            // --- 2. 渲染「字體顏色」選擇器 ---
+            const textColorPalette = document.getElementById('busTextColorPalette');
+            textColorPalette.innerHTML = '';
+            presetTextColors.forEach(c => {
+                const swatch = document.createElement('div');
+                swatch.className = `color-swatch ${(bus.color === c) ? 'selected' : ''}`;
+                swatch.style.background = c;
+                swatch.onclick = () => { bus.color = c; openBusModal(busId); renderApp(); };
+                textColorPalette.appendChild(swatch);
+            });
+            const textPicker = document.createElement('input');
+            textPicker.type = 'color';
+            textPicker.value = bus.color || '#ffffff';
+            textPicker.style.cssText = 'width:28px; height:28px; border-radius:50%; border:none; cursor:pointer; padding:0; background:none;';
+            textPicker.onchange = (e) => { bus.color = e.target.value; renderApp(); };
+            textColorPalette.appendChild(textPicker);
 
             renderPhotoGrid(bus);
             renderModalTimeline(bus);
@@ -900,7 +921,6 @@
         });
     }
 
-    /* 開啟照片 Gallery 彈窗 */
     function openPhotoGallery(busId) {
         const bus = appData.buses.find(b => b.id === busId);
         if (!bus) return;
