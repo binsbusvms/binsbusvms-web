@@ -40,9 +40,10 @@
         .btn-export { background: #20c997; }
         .btn-import { background: #e83e8c; }
 
-        /* 排序控制條 */
-        .sort-bar { display: flex; align-items: center; gap: 6px; background: #e4dfc3; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.8rem; }
+        /* 搜尋與排序控制條 */
+        .sort-bar { display: flex; align-items: center; gap: 6px; background: #e4dfc3; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.8rem; flex-wrap: wrap; }
         .sort-bar select { width: auto; height: 30px; padding: 2px 6px; }
+        .search-input { height: 30px; padding: 2px 8px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.8rem; width: 180px; background-color: #fff; }
 
         /* 頁籤 */
         .nav-tabs { display: flex; gap: 4px; margin-bottom: 8px; border-bottom: 2px solid #1f4e78; }
@@ -151,9 +152,12 @@
     </div>
 </div>
 
-<!-- 排序控制欄 -->
+<!-- 搜尋與排序控制欄 -->
 <div class="sort-bar">
-    <span><b>排序車輛：</b></span>
+    <span><b>🔍 搜尋：</b></span>
+    <input type="text" id="searchInput" class="search-input" placeholder="輸入車號或備註..." oninput="renderApp()">
+    
+    <span style="margin-left: 10px;"><b>排序車輛：</b></span>
     <select id="sortField" onchange="renderApp()">
         <option value="plate">車號 / 名稱</option>
         <option value="zone">區域</option>
@@ -582,8 +586,16 @@
 
         const field = document.getElementById('sortField').value;
         const order = document.getElementById('sortOrder').value;
+        const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
         
-        let sortedBuses = [...appData.buses].sort((a, b) => {
+        let filteredBuses = appData.buses.filter(b => {
+            if (!searchKeyword) return true;
+            const plateMatch = (b.plate || '').toLowerCase().includes(searchKeyword);
+            const noteMatch = (b.note || '').toLowerCase().includes(searchKeyword);
+            return plateMatch || noteMatch;
+        });
+
+        let sortedBuses = [...filteredBuses].sort((a, b) => {
             let valA = a[field] || '';
             let valB = b[field] || '';
             if (field === 'zone') {
@@ -646,34 +658,42 @@
             });
 
             const bodyEl = zoneEl.querySelector('.zone-body');
+            const zoneBuses = sortedBuses.filter(b => b.zoneId === zone.id);
             
-            sortedBuses.filter(b => b.zoneId === zone.id).forEach(bus => {
-                const busCard = document.createElement('div');
-                busCard.className = 'bus-card';
-                busCard.draggable = true;
-                busCard.dataset.busId = bus.id;
+            if (searchKeyword && zoneBuses.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.style.cssText = 'font-size:0.7rem; color:#888; text-align:center; padding:10px 0;';
+                emptyMsg.innerText = '無符合條件車輛';
+                bodyEl.appendChild(emptyMsg);
+            } else {
+                zoneBuses.forEach(bus => {
+                    const busCard = document.createElement('div');
+                    busCard.className = 'bus-card';
+                    busCard.draggable = true;
+                    busCard.dataset.busId = bus.id;
 
-                busCard.innerHTML = `
-                    <div class="bus-header">
-                        <div class="bus-plate-input" style="background:${bus.bg}; color:${bus.color};" onclick="openBusModal('${bus.id}')">
-                            ${bus.plate}
+                    busCard.innerHTML = `
+                        <div class="bus-header">
+                            <div class="bus-plate-input" style="background:${bus.bg}; color:${bus.color};" onclick="openBusModal('${bus.id}')">
+                                ${bus.plate}
+                            </div>
+                            <button style="background:#ff4d4f;color:#fff;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:0.7rem;" onclick="deleteBus('${bus.id}')">✕</button>
                         </div>
-                        <button style="background:#ff4d4f;color:#fff;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:0.7rem;" onclick="deleteBus('${bus.id}')">✕</button>
-                    </div>
-                    <select onchange="updateBusZoneStatus('${bus.id}', 'statusId', this.value)">
-                        ${appData.statuses.map(s => `<option value="${s.id}" ${s.id === bus.statusId ? 'selected' : ''}>${s.name}</option>`).join('')}
-                    </select>
-                    <div class="bus-dates">
-                        <div><span>進</span><input type="date" value="${bus.startDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)"></div>
-                        <div><span>出</span><input type="date" value="${bus.endDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)"></div>
-                    </div>
-                `;
+                        <select onchange="updateBusZoneStatus('${bus.id}', 'statusId', this.value)">
+                            ${appData.statuses.map(s => `<option value="${s.id}" ${s.id === bus.statusId ? 'selected' : ''}>${s.name}</option>`).join('')}
+                        </select>
+                        <div class="bus-dates">
+                            <div><span>進</span><input type="date" value="${bus.startDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)"></div>
+                            <div><span>出</span><input type="date" value="${bus.endDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)"></div>
+                        </div>
+                    `;
 
-                busCard.addEventListener('dragstart', handleBusDragStart);
-                busCard.addEventListener('dragend', handleBusDragEnd);
+                    busCard.addEventListener('dragstart', handleBusDragStart);
+                    busCard.addEventListener('dragend', handleBusDragEnd);
 
-                bodyEl.appendChild(busCard);
-            });
+                    bodyEl.appendChild(busCard);
+                });
+            }
 
             bodyEl.addEventListener('dragover', handleBusDragOver);
             bodyEl.addEventListener('drop', handleBusDrop);
@@ -687,7 +707,16 @@
         const tbody = document.getElementById('busTableBody');
         tbody.innerHTML = '';
 
-        appData.buses.forEach(bus => {
+        const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
+
+        let filteredBuses = appData.buses.filter(b => {
+            if (!searchKeyword) return true;
+            const plateMatch = (b.plate || '').toLowerCase().includes(searchKeyword);
+            const noteMatch = (b.note || '').toLowerCase().includes(searchKeyword);
+            return plateMatch || noteMatch;
+        });
+
+        filteredBuses.forEach(bus => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding:4px; border:1px solid #ccc; text-align:center;">
