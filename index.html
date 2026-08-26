@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>柏昇開發實業 - 車輛動態管理系統 Pro | 製作者：柏昇小歐</title>
+    <title>柏昇開發工業 - 車輛動態管理系統 | 製作者：柏昇小歐</title>
     <!-- 引入 Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -95,13 +95,18 @@
         .bus-date-row { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: #495057; }
         .bus-date-group { display: flex; align-items: center; gap: 2px; flex: 1; }
         .bus-date-input { font-size: 0.68rem; padding: 1px 2px; border: 1px solid #ced4da; border-radius: 3px; width: 100%; height: 26px; }
-        .bus-date-text { font-size: 0.68rem; color: #555; background: #f8f9fa; padding: 2px 4px; border-radius: 3px; border: 1px solid #e9ecef; width: 100%; text-align: center; }
+        
+        /* 唯讀模式下的日期與選單顏色修正，防止字體變灰過淡 */
+        .bus-date-text { font-size: 0.7rem; color: #212529; font-weight: 500; background: #ffffff; padding: 3px 4px; border-radius: 3px; border: 1px solid #ced4da; width: 100%; text-align: center; }
 
         /* 表格與滾動 */
         .table-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #ddd; border-radius: 6px; background: #ffffff; }
         .table-scroll-tip { font-size: 0.75rem; color: #17a2b8; background: #e8f7f9; padding: 4px 8px; border-radius: 4px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
 
-        select, input, textarea { width: 100%; padding: 4px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.8rem; background-color: #fff; }
+        select, input, textarea { width: 100%; padding: 4px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.8rem; background-color: #fff; color: #333; }
+        
+        /* 強制 disabled 的選單與輸入框維持正常清晰顏色 */
+        select:disabled, input:disabled { color: #212529 !important; -webkit-text-fill-color: #212529 !important; opacity: 1 !important; background-color: #ffffff !important; border-color: #ced4da !important; }
 
         .autosave-badge { font-size: 0.7rem; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 10px; display: inline-flex; align-items: center; gap: 4px; }
         .dot { width: 8px; height: 8px; background-color: #28a745; border-radius: 50%; transition: background-color 0.3s; }
@@ -148,7 +153,7 @@
                 <path d="M 500,70 L 730,70 L 910,270 L 560,930 L 500,930 Z" fill="none" stroke="#E60012" stroke-width="65" stroke-linejoin="miter" stroke-miterlimit="10"/>
                 <path d="M 500,270 L 820,270" fill="none" stroke="#E60012" stroke-width="65" stroke-linecap="square"/>
             </svg>
-            <span>柏昇開發實業 - 車輛動態管理系統 Pro</span>
+            <span>柏昇開發工業 - 車輛動態管理系統</span>
             <span class="author-tag">| 製作者：柏昇小歐</span>
         </div>
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
@@ -454,7 +459,6 @@
             if (confirm("確定要登出嗎？將會隱藏管理按鈕並切換為唯讀模式。")) {
                 sessionStorage.removeItem("isAdminLoggedIn");
                 updateAuthUI();
-                // 若當前停留在全廠日誌頁籤，登出時自動切換回動態圖頁籤
                 const logTabBtn = document.getElementById('tabLogsBtn');
                 if (logTabBtn && logTabBtn.classList.contains('active')) {
                     document.querySelector('.tab-btn[data-tab="tab-map"]').click();
@@ -473,7 +477,6 @@
         btn.innerHTML = authed ? "🚪 登出" : "🔑 登入編輯";
         btn.className = authed ? "btn-logout" : "btn-auth";
 
-        // 控制管理按鈕區域是否顯示
         const controls = document.getElementById("adminControls");
         if (controls) {
             if (authed) {
@@ -483,7 +486,6 @@
             }
         }
 
-        // 控制全廠歷史日誌頁籤是否顯示
         const logsBtn = document.getElementById("tabLogsBtn");
         if (logsBtn) {
             if (authed) {
@@ -631,7 +633,6 @@
                 const photoCount = (bus.photos || []).length;
                 const logCount = (bus.logs || []).length;
 
-                // 根據登入狀態呈現日期選擇框或純文字
                 let dateHtml = '';
                 if (authed) {
                     dateHtml = `
@@ -743,7 +744,6 @@
         });
     }
 
-    // Modal 與車輛詳細
     function openBusModal(busId) {
         requireAuth(() => {
             currentEditBusId = busId;
@@ -846,7 +846,6 @@
         closeModal('busModal');
     }
 
-    // 區域管理邏輯
     function openZoneManager() {
         requireAuth(() => {
             renderZoneManageList();
@@ -889,7 +888,6 @@
         }
     }
 
-    // 進度管理邏輯
     function openStatusManager() {
         requireAuth(() => {
             renderStatusManageList();
@@ -932,7 +930,6 @@
         }
     }
 
-    // 匯出派工單與歸檔
     function exportDispatchSheet() {
         const selectedZone = prompt("請輸入要匯出派工單的區域 (留空為全廠)：");
         let list = appData.buses;
