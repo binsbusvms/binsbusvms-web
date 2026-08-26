@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>柏昇開發實業 - 車輛動態管理系統 | 製作者：柏昇小歐</title>
+    <!-- 引入 Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'><path fill='%231d2088' d='M498.4 0L241 237.5L0 237.5L420.7 999.6L498.4 999.6L498.4 75.3L269 75.3L498.4 299.8Z'/><path fill='%23e60012' d='M501.6 0L501.6 999.6L587.7 999.6L1000 274.6L737.5 0ZM587.7 75.3L737.5 75.3L890.3 227.8L587.7 227.8ZM587.7 289.8L895 289.8L587.7 876Z'/></svg>" type="image/svg+xml">
+    <!-- 網頁頁籤與書籤列小圖示 (Favicon) - 替換為新版幾何雙色 LOGO -->
+    <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'><path d='M 500,70 L 270,70 L 90,270 L 440,930 L 500,930 Z' fill='none' stroke='%231D2088' stroke-width='65' stroke-linejoin='miter' stroke-miterlimit='10'/><path d='M 500,70 L 730,70 L 910,270 L 560,930 L 500,930 Z' fill='none' stroke='%23E60012' stroke-width='65' stroke-linejoin='miter' stroke-miterlimit='10'/><path d='M 500,270 L 820,270' fill='none' stroke='%23E60012' stroke-width='65' stroke-linecap='square'/></svg>" type="image/svg+xml">
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -38,11 +40,9 @@
         .btn-export { background: #20c997; }
         .btn-import { background: #e83e8c; }
 
-        /* 排序與搜尋控制條 */
-        .sort-bar { display: flex; align-items: center; gap: 8px; background: #e4dfc3; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.8rem; flex-wrap: wrap; }
+        /* 排序控制條 */
+        .sort-bar { display: flex; align-items: center; gap: 6px; background: #e4dfc3; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.8rem; }
         .sort-bar select { width: auto; height: 30px; padding: 2px 6px; }
-        .search-box { display: flex; align-items: center; gap: 4px; flex-grow: 1; max-width: 280px; }
-        .search-input { height: 30px; padding: 2px 8px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.8rem; width: 100%; }
 
         /* 頁籤 */
         .nav-tabs { display: flex; gap: 4px; margin-bottom: 8px; border-bottom: 2px solid #1f4e78; }
@@ -52,7 +52,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* 卡片與網格區域 */
+        /* 卡片與網格區域 - 背景改為 #e4dfc3 */
         .card { background: #e4dfc3; border-radius: 8px; padding: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-bottom: 10px; border: 1px solid #d4ceb0; }
         .card-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: #1f4e78; border-bottom: 2px solid #c8c2a3; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
 
@@ -61,6 +61,7 @@
         .zone { border: 2px solid #b8b193; border-radius: 6px; padding: 6px; background: #e4dfc3; display: flex; flex-direction: column; max-height: 450px; transition: transform 0.15s, opacity 0.15s; }
         .zone.zone-dragging { opacity: 0.4; transform: scale(0.98); }
         
+        /* 區域標題列支援抓取拖移 */
         .zone-header { display: flex; justify-content: space-between; align-items: center; background: #2c3e50; color: white; padding: 6px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; cursor: grab; user-select: none; }
         .zone-header:active { cursor: grabbing; }
         
@@ -76,7 +77,7 @@
         .bus-plate-input { font-weight: bold; font-size: 0.8rem; padding: 4px 6px; border-radius: 4px; text-align: center; flex-grow: 1; min-height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.2s; word-break: break-all; }
         .bus-plate-input:hover { opacity: 0.85; }
 
-        /* 車輛日期容器 */
+        /* 車輛日期適應型容器 */
         .bus-dates { display: flex; gap: 3px; font-size: 0.68rem; color: #555; align-items: center; width: 100%; }
         .bus-dates div { flex: 1; display: flex; align-items: center; gap: 1px; min-width: 0; }
         .bus-dates span { flex-shrink: 0; white-space: nowrap; font-weight: 500; }
@@ -94,4 +95,987 @@
         .dot.error { background-color: #dc3545; }
         .hidden-file-input { display: none; }
 
-        .back-to-top { position: fixed; bottom: 20px; right: 20px; background: #1f4e78; color: white; width: 42px; height: 42px; border-radius: 5
+        .back-to-top { position: fixed; bottom: 20px; right: 20px; background: #1f4e78; color: white; width: 42px; height: 42px; border-radius: 50%; border: none; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; z-index: 99; }
+        .back-to-top.show { display: flex; }
+
+        /* Modal 彈窗 */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 8px; width: 90%; max-width: 450px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-height: 85vh; overflow-y: auto; }
+        .modal-header { font-weight: bold; margin-bottom: 12px; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; }
+        .color-palette { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+        .color-swatch { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 4px rgba(0,0,0,0.3); }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+
+        /* 管理清單列表樣式 */
+        .manage-list { list-style: none; margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px; }
+        .manage-item { display: flex; align-items: center; gap: 8px; background: #f8f9fa; padding: 6px 10px; border-radius: 4px; border: 1px solid #ddd; cursor: move; }
+        .manage-item.item-dragging { opacity: 0.5; background: #e9ecef; }
+        .drag-handle { cursor: grab; font-size: 1rem; color: #888; user-select: none; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>
+        <!-- 完整修正 LOGO 與標題 -->
+        <div class="header-title-box">
+            <svg class="header-logo-icon" width="26" height="26" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 500,70 L 270,70 L 90,270 L 440,930 L 500,930 Z" fill="none" stroke="#1D2088" stroke-width="65" stroke-linejoin="miter" stroke-miterlimit="10"/>
+                <path d="M 500,70 L 730,70 L 910,270 L 560,930 L 500,930 Z" fill="none" stroke="#E60012" stroke-width="65" stroke-linejoin="miter" stroke-miterlimit="10"/>
+                <path d="M 500,270 L 820,270" fill="none" stroke="#E60012" stroke-width="65" stroke-linecap="square"/>
+            </svg>
+            <span>柏昇開發實業 - 車輛動態管理系統</span>
+            <span class="author-tag">| 製作者：柏昇小歐</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <!-- 即時時間展示區塊 -->
+            <div class="header-top-right">
+                <span id="liveClock" class="live-clock"></span>
+            </div>
+            <div id="authBar" class="auth-bar">
+                <span id="authStatusText">👁️ 唯讀模式</span>
+                <button id="authBtn" class="btn-auth" onclick="toggleAuth()">🔑 登入編輯</button>
+            </div>
+            <span class="autosave-badge"><span class="dot" id="syncDot"></span><span id="syncText">資料同步中...</span></span>
+        </div>
+    </h1>
+    <div class="controls">
+        <button class="btn btn-zone" onclick="openZoneManager()">⚙️ 區域管理</button>
+        <button class="btn btn-status" onclick="openStatusManager()">🎨 進度管理</button>
+        <button class="btn" id="btnAddBus" onclick="handleAddBus()">➕ 車輛</button>
+        <button class="btn btn-save" id="btnSave" onclick="saveData()">💾 儲存與同步</button>
+        <button class="btn btn-export" id="btnExport" onclick="exportData()">📥 匯出</button>
+        <button class="btn btn-import" id="btnImport" onclick="triggerImport()">📤 匯入</button>
+        <input type="file" id="importFileInput" class="hidden-file-input" accept=".json" onchange="importData(event)">
+    </div>
+</div>
+
+<!-- 排序控制欄 -->
+<div class="sort-bar">
+    <span><b>排序車輛：</b></span>
+    <select id="sortField" onchange="renderApp()">
+        <option value="plate">車號 / 名稱</option>
+        <option value="zone">區域</option>
+        <option value="id">建立順序</option>
+    </select>
+    <select id="sortOrder" onchange="renderApp()">
+        <option value="asc">升冪 ⬆️</option>
+        <option value="desc">降冪 ⬇️</option>
+    </select>
+</div>
+
+<!-- 頁籤條 -->
+<div class="nav-tabs">
+    <button class="tab-btn active" data-tab="tab-map">📍 廠區動態圖</button>
+    <button class="tab-btn" data-tab="tab-table">📋 全廠車輛總表</button>
+</div>
+
+<!-- 分頁 1：動態圖 -->
+<div id="tab-map" class="tab-content active">
+    <div class="card">
+        <div class="card-title">📍 廠區分區配置圖 <span style="font-size:0.75rem; font-weight:normal; color:#666;">（按住標題列可拖移區域順序）</span></div>
+        <div class="map-container" id="mapContainer"></div>
+    </div>
+</div>
+
+<!-- 分頁 2：表格 -->
+<div id="tab-table" class="tab-content">
+    <div class="card">
+        <div class="card-title">📋 車輛詳細總表</div>
+        <div class="table-scroll-tip">👈👉 手機可直接左右滑動檢視所有欄位</div>
+        <div class="table-scroll-container">
+            <table id="busTable" style="width:100%; min-width:580px; border-collapse:collapse; font-size:0.78rem;">
+                <thead>
+                    <tr style="background:#e9ecef;">
+                        <th style="padding:6px 4px; border:1px solid #ccc; width:130px;">車號 / 備註</th>
+                        <th style="padding:6px 4px; border:1px solid #ccc; width:140px;">所屬區域</th>
+                        <th style="padding:6px 4px; border:1px solid #ccc; width:110px;">當前進度</th>
+                        <th style="padding:6px 4px; border:1px solid #ccc; width:140px;">進場 / 出廠日期</th>
+                        <th style="padding:6px 4px; border:1px solid #ccc; width:50px;">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="busTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 置頂按鈕 -->
+<button class="back-to-top" id="btnTop" onclick="scrollToTop()">⬆</button>
+
+<!-- 編輯車輛 Modal -->
+<div class="modal" id="busModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>編輯車輛資訊與顏色</span>
+            <button onclick="closeModal('busModal')" style="border:none;background:none;cursor:pointer;">✕</button>
+        </div>
+        <label style="font-size:0.8rem;">車輛編號 / 備註：</label>
+        <input type="text" id="modalBusTitle" style="margin-top:4px; margin-bottom:12px;">
+        
+        <label style="font-size:0.8rem;">文字背景底色：</label>
+        <div class="color-palette" id="busBgPalette"></div>
+
+        <label style="font-size:0.8rem; margin-top:8px; display:block;">文字色彩：</label>
+        <div class="color-palette" id="busTextPalette"></div>
+
+        <div class="modal-footer">
+            <button class="btn" onclick="saveBusModal()">確定</button>
+        </div>
+    </div>
+</div>
+
+<!-- 區域管理 Modal -->
+<div class="modal" id="zoneManagerModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>⚙️ 全廠區域管理（可抓取 ☰ 拖移排序）</span>
+            <button onclick="closeModal('zoneManagerModal')" style="border:none;background:none;cursor:pointer;">✕</button>
+        </div>
+        <div class="manage-list" id="zoneManageList"></div>
+        <button class="btn btn-zone" style="width:100%;" onclick="addNewZone()">➕ 新增區域</button>
+        <div class="modal-footer">
+            <button class="btn" onclick="closeModal('zoneManagerModal')">關閉</button>
+        </div>
+    </div>
+</div>
+
+<!-- 進度管理 Modal -->
+<div class="modal" id="statusManagerModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>🎨 全廠進度選項管理（可抓取 ☰ 拖移排序）</span>
+            <button onclick="closeModal('statusManagerModal')" style="border:none;background:none;cursor:pointer;">✕</button>
+        </div>
+        <div class="manage-list" id="statusManageList"></div>
+        <button class="btn btn-status" style="width:100%;" onclick="addNewStatus()">➕ 新增進度選項</button>
+        <div class="modal-footer">
+            <button class="btn" onclick="closeModal('statusManagerModal')">關閉</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Supabase 連線資訊設定 ---
+    const SUPABASE_URL = 'https://dkyuxneazojqohcuvjsp.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_twR6l-aVWBSFei-FZUd1JQ_XEBEpwga';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const ADMIN_PASSWORD = "0857";
+
+    let appData = {
+        zones: [
+            {"id":"B1_1","name":"【B1】麥克內裝區","color":"#2c3e50"},
+            {"id":"B2","name":"【B2】麥克板金區","color":"#2c3e50"},
+            {"id":"B3","name":"【B3】阿安內裝區","color":"#2c3e50"},
+            {"id":"B4","name":"【B4】阿益骨架區","color":"#2c3e50"},
+            {"id":"A","name":"【A】A棟臨停區","color":"#2c3e50"},
+            {"id":"B1_2","name":"【B1】後方臨停+座椅區","color":"#2c3e50"},
+            {"id":"C","name":"【C】噴漆補土區","color":"#2c3e50"},
+            {"id":"D","name":"【D】紅丹區","color":"#2c3e50"},
+            {"id":"E","name":"【E】烤漆爐","color":"#2c3e50"},
+            {"id":"F","name":"【F】後方空地底盤區","color":"#2c3e50"},
+            {"id":"Z_1787629161926","name":"紅丹區","color":"#2c3e50"}
+        ],
+        statuses: [
+            {"id":"pending","name":"待施工","color":"#78909C"},
+            {"id":"working","name":"施工中","color":"#1E88E5"},
+            {"id":"inspection","name":"待驗收","color":"#FFB300"},
+            {"id":"done","name":"已完成","color":"#4CAF50"},
+            {"id":"repair","name":"暫停","color":"#E53935"},
+            {"id":"S_1787581229246","name":"待廣告","color":"#f88810"},
+            {"id":"S_1787581237270","name":"待金油","color":"#773e9a"},
+            {"id":"S_1787581245435","name":"待驗車","color":"#69f37d"},
+            {"id":"S_1787581255548","name":"座椅安裝","color":"#278e13"},
+            {"id":"S_1787581261946","name":"待美容","color":"#86bd07"},
+            {"id":"S_1787581268044","name":"待交車","color":"#7c6a9c"},
+            {"id":"S_1787581276756","name":"完成車","color":"#e3e4fb"},
+            {"id":"S_1787618100398","name":"待面漆","color":"#3ab53b"},
+            {"id":"S_1787625874439","name":"封玻璃","color":"#007bff"},
+            {"id":"S_1787625896035","name":"內裝中","color":"#007bff"},
+            {"id":"S_1787626070615","name":"待板金","color":"#007bff"},
+            {"id":"S_1787626075987","name":"鈑金中","color":"#007bff"},
+            {"id":"S_1787626157462","name":"待內裝","color":"#007bff"},
+            {"id":"S_1787628771146","name":"廣告中","color":"#007bff"}
+        ],
+        buses: [
+            {"id":"1787618807848","plate":"0782993 鍾權國","zoneId":"E","statusId":"S_1787581229246","startDate":"","endDate":"","bg":"#f5d505","color":"#ffffff","note":""},
+            {"id":"1787618053776","plate":"023200 李愍隆","zoneId":"C","statusId":"S_1787618100398","startDate":"2026-08-19","endDate":"","bg":"#000000","color":"#ffffff","note":""},
+            {"id":"1787618590698","plate":"023209 楊永明","zoneId":"B3","statusId":"S_1787625896035","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787618229072","plate":"023210 王志豪","zoneId":"B3","statusId":"S_1787581268044","startDate":"","endDate":"","bg":"#f58300","color":"#000000","note":""},
+            {"id":"1787618277839","plate":"023898 豪祥","zoneId":"C","statusId":"S_1787618100398","startDate":"","endDate":"","bg":"#e49bee","color":"#ffffff","note":""},
+            {"id":"1787618326974","plate":"7457713 林枻岷","zoneId":"F","statusId":"S_1787581268044","startDate":"","endDate":"","bg":"#000000","color":"#c8ab41","note":""},
+            {"id":"1787618365198","plate":"7458074 林枻岷","zoneId":"F","statusId":"pending","startDate":"","endDate":"","bg":"#0d0d0d","color":"#c8ab41","note":""},
+            {"id":"5","plate":"7458070 中聯","zoneId":"F","statusId":"S_1787581229246","bg":"#ff0000","color":"#ffffff","note":""},
+            {"id":"1787618654720","plate":"7459421 尤明造","zoneId":"F","statusId":"S_1787581268044","startDate":"","endDate":"","bg":"#1aacd1","color":"#be0e0e","note":""},
+            {"id":"1787618769740","plate":"7460522 王正強","zoneId":"F","statusId":"S_1787581229246","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787558809082","plate":"7461998 陳浩獻","zoneId":"F","statusId":"S_1787581268044","bg":"#4796e6","color":"#ffffff","note":""},
+            {"id":"1787618902442","plate":"7462000 楊俊雄","zoneId":"A","statusId":"S_1787581268044","startDate":"","endDate":"","bg":"#004b70","color":"#ffffff","note":""},
+            {"id":"1787618945542","plate":"7462004 林龍燕","zoneId":"A","statusId":"S_1787581229246","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787618999926","plate":"7463605 林枻岷","zoneId":"B3","statusId":"S_1787625896035","startDate":"","endDate":"","bg":"#0c0d0d","color":"#c8ab41","note":""},
+            {"id":"1787619055435","plate":"7463789 游俊偉","zoneId":"C","statusId":"S_1787618100398","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787619098698","plate":"7463795 柯松易","zoneId":"C","statusId":"S_1787618100398","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787619141505","plate":"7463972 羅乙竣","zoneId":"A","statusId":"pending","startDate":"","endDate":"","bg":"#ffffff","color":"#cd70ff","note":""},
+            {"id":"1787619423483","plate":"7463974 簡伯瑞","zoneId":"F","statusId":"S_1787581229246","startDate":"","endDate":"","bg":"#8800a3","color":"#ffffff","note":""},
+            {"id":"1787619455739","plate":"7463976 黃家鈞","zoneId":"C","statusId":"S_1787618100398","startDate":"","endDate":"","bg":"#949494","color":"#ffffff","note":""},
+            {"id":"1787619486156","plate":"7463980 陳健霖","zoneId":"E","statusId":"S_1787628771146","startDate":"","endDate":"","bg":"#949494","color":"#ffffff","note":""},
+            {"id":"1787619535415","plate":"7464336 林枻岷","zoneId":"B3","statusId":"S_1787625896035","startDate":"","endDate":"","bg":"#0d0d0d","color":"#c8ab41","note":""},
+            {"id":"1787617535503","plate":"7464339 何弘政","zoneId":"E","statusId":"S_1787581237270","startDate":"2026-08-24","endDate":"","bg":"#616161","color":"#0a0a0a","note":""},
+            {"id":"1787619565737","plate":"7464209 廖麗淑","zoneId":"E","statusId":"S_1787618100398","startDate":"","endDate":"","bg":"#949494","color":"#ffffff","note":""},
+            {"id":"1787619599260","plate":"7464213 王勝傑","zoneId":"B1_2","statusId":"S_1787626157462","startDate":"","endDate":"","bg":"#949494","color":"#ffffff","note":""},
+            {"id":"1787617714020","plate":"7464217 尤誠","zoneId":"E","statusId":"S_1787628771146","startDate":"2026-08-24","endDate":"2026-08-25","bg":"#ee2bb0","color":"#f5d400","note":""},
+            {"id":"1787619618468","plate":"7464222 簡伯瑞","zoneId":"B1_1","statusId":"S_1787625874439","startDate":"","endDate":"","bg":"#8800a3","color":"#ffffff","note":""},
+            {"id":"1787619756275","plate":"7464223","zoneId":"B2","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1","plate":"7464228 陳世斌","zoneId":"B1_1","statusId":"S_1787626157462","bg":"#ffffff","color":"#000000","note":""},
+            {"id":"1787619789053","plate":"7465795  陳永輝","zoneId":"C","statusId":"S_1787618100398","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787619853213","plate":"7465141 蔡志興","zoneId":"B1_1","statusId":"S_1787625896035","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787619895041","plate":"7465142 鄭健甫","zoneId":"C","statusId":"pending","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787582023252","plate":"7465145 曹圓圓","zoneId":"B2","statusId":"S_1787581261946","bg":"#fafafa","color":"#198ae1","note":"","startDate":"2026-08-24","endDate":"2026-08-24"},
+            {"id":"1787619922226","plate":"7465279 林琨貴","zoneId":"B1_1","statusId":"S_1787625896035","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787619936168","plate":"7465281 賴永和","zoneId":"B2","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787619952072","plate":"7467855 友連","zoneId":"B1_1","statusId":"S_1787626157462","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787619968593","plate":"7468337 鎰成","zoneId":"B1_1","statusId":"S_1787626157462","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787619983428","plate":"7465282 春天","zoneId":"B3","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620007573","plate":"7465283 春天","zoneId":"B3","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620016853","plate":"7468341 東南","zoneId":"B1_1","statusId":"S_1787625896035","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620043413","plate":"7468343 東南","zoneId":"C","statusId":"S_1787618100398","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620053392","plate":"7465287 皇后汽車","zoneId":"C","statusId":"S_1787618100398","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620074202","plate":"7465288 林士綸","zoneId":"B2","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620083895","plate":"7465435 春天","zoneId":"B3","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620090852","plate":"7465437 春天","zoneId":"B3","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620111692","plate":"7467974 陳沛騰","zoneId":"C","statusId":"S_1787618100398","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620127109","plate":"7467975 陳沛騰","zoneId":"C","statusId":"S_1787618100398","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620135243","plate":"7467977 春天","zoneId":"B3","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620148639","plate":"7468085 春天","zoneId":"B3","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620169241","plate":"7468752 紀明德","zoneId":"B2","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620203890","plate":"7468760 紀明德","zoneId":"B2","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620223677","plate":"7468764 簡文宣","zoneId":"B2","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620252798","plate":"7468768 王寶志","zoneId":"A","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620270297","plate":"7468086 梁茂桐","zoneId":"B2","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620290858","plate":"7468089 盧智源","zoneId":"B2","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620300963","plate":"7468441 林俊佑","zoneId":"B2","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787620323618","plate":"7468443 李喆隆","zoneId":"Z_1787629161926","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623030816","plate":"7468444 蔡佳偉","zoneId":"A","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623049175","plate":"7468445 鄭健甫","zoneId":"A","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623073693","plate":"7469267 林世民","zoneId":"A","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623093511","plate":"7469268 林龍燕","zoneId":"B3","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623109064","plate":"7469269 張志笙","zoneId":"B3","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623126003","plate":"7469026 友連","zoneId":"Z_1787629161926","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623144494","plate":"7469834 周春祿","zoneId":"A","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623157082","plate":"7469836 周春祿","zoneId":"A","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623166948","plate":"7469837","zoneId":"A","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623173099","plate":"7469838","zoneId":"A","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623186872","plate":"7469271 吳浩彬","zoneId":"A","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623201805","plate":"7469272 鈺銓","zoneId":"B1_2","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623213566","plate":"7469277 鈺銓","zoneId":"A","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623224265","plate":"7469422 豪祥","zoneId":"B1_2","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623233302","plate":"7469428 豪祥","zoneId":"B1_2","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623256662","plate":"7469831 蕭永晨","zoneId":"B3","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623266017","plate":"7469833 李信衛","zoneId":"B3","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623277310","plate":"7469169 豪祥","zoneId":"Z_1787629161926","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623285556","plate":"7469488 豪祥","zoneId":"Z_1787629161926","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623293315","plate":"7469489 豪祥","zoneId":"Z_1787629161926","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623312544","plate":"7469491 豪祥","zoneId":"Z_1787629161926","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623323948","plate":"7469492 豪祥","zoneId":"Z_1787629161926","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623334261","plate":"7469494 豪祥","zoneId":"Z_1787629161926","statusId":"S_1787626070615","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623353204","plate":"7469502 鄭明山","zoneId":"B4","statusId":"done","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623368695","plate":"7471736 鄭明山","zoneId":"B4","statusId":"done","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623381598","plate":"7470314","zoneId":"B4","statusId":"working","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623389324","plate":"7470316","zoneId":"B4","statusId":"working","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623396113","plate":"7470320","zoneId":"B4","statusId":"working","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623400973","plate":"7471661","zoneId":"B4","statusId":"working","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623406278","plate":"7471663","zoneId":"B4","statusId":"working","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623415157","plate":"7471664","zoneId":"B4","statusId":"working","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623439028","plate":"7470673 李懿恆","zoneId":"B4","statusId":"working","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623453461","plate":"7470675 林建融","zoneId":"B4","statusId":"working","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623465841","plate":"7470677 林昌宏","zoneId":"B4","statusId":"working","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623480879","plate":"7470802 富灥","zoneId":"B4","statusId":"working","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787623499529","plate":"7470804","zoneId":"B4","statusId":"working","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787626863063","plate":"7468756","zoneId":"B2","statusId":"S_1787626075987","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787628206526","plate":"7470903","zoneId":"B4","statusId":"working","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787628216081","plate":"7470902","zoneId":"B4","statusId":"working","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"178762878755","plate":"7460900","zoneId":"B4","statusId":"working","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787628539522","plate":"7472743","zoneId":"F","statusId":"pending","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""},
+            {"id":"1787628547260","plate":"7472741","zoneId":"F","statusId":"pending","startDate":"","endDate":"","bg":"#007bff","color":"#ffffff","note":""}
+        ]
+    };
+
+    const presetBgColors = ['#007bff', '#28a745', '#dc3545', '#fd7e14', '#8800a3', '#17a2b8', '#2c3e50', '#ffffff', '#000000', '#f5d505', '#e49bee', '#1aacd1', '#4796e6', '#949494'];
+    const presetTextColors = ['#ffffff', '#000000', '#c8ab41', '#be0e0e', '#cd70ff', '#198ae1', '#f5d400'];
+
+    let currentEditBusId = null;
+
+    window.onload = async () => {
+        setupTabSwitch();
+        updateAuthUI();
+        initLiveClock();
+        await loadCloudData();
+    };
+
+    // --- 即時時間初始化 ---
+    function initLiveClock() {
+        function updateClock() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            
+            const weekDays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
+            const week = weekDays[now.getDay()];
+            
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            const clockEl = document.getElementById('liveClock');
+            if (clockEl) {
+                clockEl.textContent = `${year}/${month}/${day} ${week} ${hours}:${minutes}:${seconds}`;
+            }
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    }
+
+    // --- 權限驗證與登入邏輯 ---
+    function isAuthed() {
+        return sessionStorage.getItem("isAdminLoggedIn") === "true";
+    }
+
+    function requireAuth(callback) {
+        if (isAuthed()) {
+            callback();
+        } else {
+            const input = prompt("🔐 請輸入管理員密碼解鎖編輯權限：");
+            if (input === ADMIN_PASSWORD) {
+                sessionStorage.setItem("isAdminLoggedIn", "true");
+                updateAuthUI();
+                alert("🔓 登入成功！現已解鎖編輯權限。");
+                callback();
+            } else if (input !== null) {
+                alert("❌ 密碼錯誤，無法進行此操作！");
+            }
+        }
+    }
+
+    function toggleAuth() {
+        if (isAuthed()) {
+            if (confirm("確定要登出管理員權限嗎？")) {
+                sessionStorage.removeItem("isAdminLoggedIn");
+                updateAuthUI();
+                alert("🔒 已恢復為唯讀模式。");
+            }
+        } else {
+            requireAuth(() => {});
+        }
+    }
+
+    function updateAuthUI() {
+        const text = document.getElementById("authStatusText");
+        const btn = document.getElementById("authBtn");
+        if (isAuthed()) {
+            text.innerHTML = "🟢 管理員模式";
+            btn.innerHTML = "🚪 登出";
+            btn.className = "btn-logout";
+        } else {
+            text.innerHTML = "👁️ 唯讀模式";
+            btn.innerHTML = "🔑 登入編輯";
+            btn.className = "btn-auth";
+        }
+    }
+
+    // --- 讀取雲端資料 ---
+    async function loadCloudData() {
+        setSyncStatus('syncing', '同步雲端中...');
+        try {
+            const { data, error } = await supabaseClient
+                .from('app_data')
+                .select('content')
+                .eq('id', 'main_data')
+                .single();
+
+            if (error && error.code !== 'PGRST116') {
+                console.warn('雲端讀取警告:', error);
+            }
+
+            if (data && data.content) {
+                appData = data.content;
+                localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData));
+                setSyncStatus('success', '雲端連線正常');
+            } else {
+                const local = localStorage.getItem('bus_manage_data_v2');
+                if (local) {
+                    try { appData = JSON.parse(local); } catch(e){}
+                }
+                await autoSaveCloud();
+            }
+        } catch(err) {
+            console.error('連線異常:', err);
+            setSyncStatus('error', '離線模式 (本地)');
+        }
+
+        sanitizeData();
+        renderApp();
+    }
+
+    function sanitizeData() {
+        appData.buses.forEach(b => {
+            if (b.zone && !b.zoneId) b.zoneId = b.zone;
+            if (b.status && !b.statusId) b.statusId = b.status;
+            if (!b.bg) b.bg = '#007bff';
+            if (!b.color) b.color = '#ffffff';
+        });
+    }
+
+    // --- 手動儲存與同步資料 (按鈕發動) ---
+    function saveData() {
+        requireAuth(() => {
+            autoSaveCloud();
+        });
+    }
+
+    // --- 自動同步至 Supabase 與 LocalStorage ---
+    async function autoSaveCloud() {
+        localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData));
+        setSyncStatus('syncing', '儲存同步中...');
+
+        try {
+            const { error } = await supabaseClient
+                .from('app_data')
+                .upsert({
+                    id: 'main_data',
+                    content: appData,
+                    updated_at: new Date().toISOString()
+                });
+
+            if (error) throw error;
+            setSyncStatus('success', '已同步至雲端');
+            setTimeout(() => setSyncStatus('success', '雲端連線正常'), 2500);
+        } catch (err) {
+            console.error('雲端同步失敗:', err);
+            setSyncStatus('error', '僅儲存於本地');
+            setTimeout(() => setSyncStatus('error', '離線模式'), 2500);
+        }
+    }
+
+    function setSyncStatus(type, text) {
+        const dot = document.getElementById('syncDot');
+        const txt = document.getElementById('syncText');
+        txt.innerText = text;
+        dot.className = 'dot';
+        if (type === 'syncing') dot.classList.add('syncing');
+        if (type === 'error') dot.classList.add('error');
+    }
+
+    function renderApp() {
+        renderMap();
+        renderTable();
+    }
+
+    // --- 地圖與區域卡片渲染 ---
+    let draggedZoneId = null;
+
+    function renderMap() {
+        const container = document.getElementById('mapContainer');
+        container.innerHTML = '';
+
+        const field = document.getElementById('sortField').value;
+        const order = document.getElementById('sortOrder').value;
+        
+        let sortedBuses = [...appData.buses].sort((a, b) => {
+            let valA = a[field] || '';
+            let valB = b[field] || '';
+            if (field === 'zone') {
+                valA = appData.zones.find(z => z.id === a.zoneId)?.name || '';
+                valB = appData.zones.find(z => z.id === b.zoneId)?.name || '';
+            }
+            if (valA < valB) return order === 'asc' ? -1 : 1;
+            if (valA > valB) return order === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        appData.zones.forEach((zone, index) => {
+            const zoneEl = document.createElement('div');
+            zoneEl.className = 'zone';
+            zoneEl.dataset.zoneId = zone.id;
+            zoneEl.dataset.index = index;
+
+            zoneEl.innerHTML = `
+                <div class="zone-header" style="background:${zone.color || '#2c3e50'}" draggable="true">
+                    <span>${zone.name}</span>
+                    <span style="font-size:0.7rem; opacity:0.7;">☰ 拖移</span>
+                </div>
+                <div class="zone-body" data-zone-id="${zone.id}"></div>
+            `;
+
+            const header = zoneEl.querySelector('.zone-header');
+            header.addEventListener('dragstart', (e) => {
+                if (!isAuthed()) {
+                    e.preventDefault();
+                    requireAuth(() => {});
+                    return;
+                }
+                draggedZoneId = zone.id;
+                zoneEl.classList.add('zone-dragging');
+                e.dataTransfer.setData('type', 'zone');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            header.addEventListener('dragend', () => {
+                zoneEl.classList.remove('zone-dragging');
+                draggedZoneId = null;
+            });
+
+            zoneEl.addEventListener('dragover', (e) => e.preventDefault());
+
+            zoneEl.addEventListener('drop', (e) => {
+                const dragType = e.dataTransfer.getData('type');
+                if (dragType === 'zone' && draggedZoneId && draggedZoneId !== zone.id) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const fromIndex = appData.zones.findIndex(z => z.id === draggedZoneId);
+                    const toIndex = appData.zones.findIndex(z => z.id === zone.id);
+                    if (fromIndex !== -1 && toIndex !== -1) {
+                        const movedZone = appData.zones.splice(fromIndex, 1)[0];
+                        appData.zones.splice(toIndex, 0, movedZone);
+                        autoSaveCloud();
+                        renderApp();
+                    }
+                }
+            });
+
+            const bodyEl = zoneEl.querySelector('.zone-body');
+            
+            sortedBuses.filter(b => b.zoneId === zone.id).forEach(bus => {
+                const busCard = document.createElement('div');
+                busCard.className = 'bus-card';
+                busCard.draggable = true;
+                busCard.dataset.busId = bus.id;
+
+                busCard.innerHTML = `
+                    <div class="bus-header">
+                        <div class="bus-plate-input" style="background:${bus.bg}; color:${bus.color};" onclick="openBusModal('${bus.id}')">
+                            ${bus.plate}
+                        </div>
+                        <button style="background:#ff4d4f;color:#fff;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:0.7rem;" onclick="deleteBus('${bus.id}')">✕</button>
+                    </div>
+                    <select onchange="updateBusZoneStatus('${bus.id}', 'statusId', this.value)">
+                        ${appData.statuses.map(s => `<option value="${s.id}" ${s.id === bus.statusId ? 'selected' : ''}>${s.name}</option>`).join('')}
+                    </select>
+                    <div class="bus-dates">
+                        <div><span>進</span><input type="date" value="${bus.startDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)"></div>
+                        <div><span>出</span><input type="date" value="${bus.endDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)"></div>
+                    </div>
+                `;
+
+                busCard.addEventListener('dragstart', handleBusDragStart);
+                busCard.addEventListener('dragend', handleBusDragEnd);
+
+                bodyEl.appendChild(busCard);
+            });
+
+            bodyEl.addEventListener('dragover', handleBusDragOver);
+            bodyEl.addEventListener('drop', handleBusDrop);
+
+            container.appendChild(zoneEl);
+        });
+    }
+
+    // --- 表格渲染 ---
+    function renderTable() {
+        const tbody = document.getElementById('busTableBody');
+        tbody.innerHTML = '';
+
+        appData.buses.forEach(bus => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="padding:4px; border:1px solid #ccc; text-align:center;">
+                    <span style="background:${bus.bg}; color:${bus.color}; padding:2px 4px; border-radius:4px; font-weight:bold; display:block; word-break:break-all; font-size:0.75rem; cursor:pointer;" onclick="openBusModal('${bus.id}')">${bus.plate}</span>
+                </td>
+                <td style="padding:4px; border:1px solid #ccc;">
+                    <select onchange="updateBusZoneStatus('${bus.id}', 'zoneId', this.value)" style="height:26px; font-size:0.75rem; padding:1px;">
+                        ${appData.zones.map(z => `<option value="${z.id}" ${z.id === bus.zoneId ? 'selected' : ''}>${z.name}</option>`).join('')}
+                    </select>
+                </td>
+                <td style="padding:4px; border:1px solid #ccc;">
+                    <select onchange="updateBusZoneStatus('${bus.id}', 'statusId', this.value)" style="height:26px; font-size:0.75rem; padding:1px;">
+                        ${appData.statuses.map(s => `<option value="${s.id}" ${s.id === bus.statusId ? 'selected' : ''}>${s.name}</option>`).join('')}
+                    </select>
+                </td>
+                <td style="padding:4px; border:1px solid #ccc; font-size:0.7rem;">
+                    <div style="display:flex; align-items:center; gap:2px;">進<input type="date" value="${bus.startDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)" style="height:22px; font-size:0.65rem; padding:0 2px;"></div>
+                    <div style="display:flex; align-items:center; gap:2px; margin-top:2px;">出<input type="date" value="${bus.endDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)" style="height:22px; font-size:0.65rem; padding:0 2px;"></div>
+                </td>
+                <td style="padding:4px; border:1px solid #ccc; text-align:center;">
+                    <button class="btn" style="background:#dc3545; min-height:24px; padding:2px 4px; font-size:0.7rem;" onclick="deleteBus('${bus.id}')">✕</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // --- 通用拖移功能 ---
+    function setupDragList(containerId, dataArray) {
+        const container = document.getElementById(containerId);
+        let draggedItem = null;
+
+        container.querySelectorAll('.manage-item').forEach((item, index) => {
+            item.draggable = true;
+
+            item.addEventListener('dragstart', (e) => {
+                draggedItem = item;
+                item.classList.add('item-dragging');
+                e.dataTransfer.setData('text/plain', index);
+            });
+
+            item.addEventListener('dragend', () => {
+                item.classList.remove('item-dragging');
+                draggedItem = null;
+            });
+
+            item.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(container, e.clientY);
+                if (afterElement == null) {
+                    container.appendChild(draggedItem);
+                } else {
+                    container.insertBefore(draggedItem, afterElement);
+                }
+            });
+
+            item.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const newOrderIds = Array.from(container.querySelectorAll('.manage-item')).map(el => el.dataset.id);
+                dataArray.sort((a, b) => newOrderIds.indexOf(a.id) - newOrderIds.indexOf(b.id));
+                autoSaveCloud();
+                renderApp();
+            });
+        });
+    }
+
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.manage-item:not(.item-dragging)')];
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    // --- 區域管理 ---
+    function openZoneManager() {
+        requireAuth(() => {
+            renderZoneManagerList();
+            document.getElementById('zoneManagerModal').classList.add('active');
+        });
+    }
+
+    function renderZoneManagerList() {
+        const list = document.getElementById('zoneManageList');
+        list.innerHTML = '';
+        appData.zones.forEach(zone => {
+            const item = document.createElement('div');
+            item.className = 'manage-item';
+            item.dataset.id = zone.id;
+            item.innerHTML = `
+                <span class="drag-handle">☰</span>
+                <input type="text" value="${zone.name}" onchange="updateZoneName('${zone.id}', this.value)">
+                <button class="btn" style="background:#dc3545; padding:2px 8px; min-height:30px;" onclick="deleteZone('${zone.id}')">✕</button>
+            `;
+            list.appendChild(item);
+        });
+        setupDragList('zoneManageList', appData.zones);
+    }
+
+    function updateZoneName(id, newName) {
+        const zone = appData.zones.find(z => z.id === id);
+        if (zone) {
+            zone.name = newName;
+            autoSaveCloud();
+            renderApp();
+        }
+    }
+
+    function addNewZone() {
+        const name = prompt("請輸入新區域名稱：");
+        if (name) {
+            appData.zones.push({ id: 'Z_' + Date.now(), name: name, color: '#2c3e50' });
+            autoSaveCloud();
+            renderZoneManagerList();
+            renderApp();
+        }
+    }
+
+    function deleteZone(id) {
+        if (confirm("刪除區域後，該區車輛將移至第一區域。確定刪除？")) {
+            appData.zones = appData.zones.filter(z => z.id !== id);
+            const fallbackZone = appData.zones[0]?.id || '';
+            appData.buses.forEach(b => { if (b.zoneId === id) b.zoneId = fallbackZone; });
+            autoSaveCloud();
+            renderZoneManagerList();
+            renderApp();
+        }
+    }
+
+    // --- 進度管理 ---
+    function openStatusManager() {
+        requireAuth(() => {
+            renderStatusManagerList();
+            document.getElementById('statusManagerModal').classList.add('active');
+        });
+    }
+
+    function renderStatusManagerList() {
+        const list = document.getElementById('statusManageList');
+        list.innerHTML = '';
+        appData.statuses.forEach(st => {
+            const item = document.createElement('div');
+            item.className = 'manage-item';
+            item.dataset.id = st.id;
+            item.innerHTML = `
+                <span class="drag-handle">☰</span>
+                <input type="text" value="${st.name}" onchange="updateStatusName('${st.id}', this.value)">
+                <button class="btn" style="background:#dc3545; padding:2px 8px; min-height:30px;" onclick="deleteStatus('${st.id}')">✕</button>
+            `;
+            list.appendChild(item);
+        });
+        setupDragList('statusManageList', appData.statuses);
+    }
+
+    function updateStatusName(id, newName) {
+        const st = appData.statuses.find(s => s.id === id);
+        if (st) {
+            st.name = newName;
+            autoSaveCloud();
+            renderApp();
+        }
+    }
+
+    function addNewStatus() {
+        const name = prompt("請輸入新進度名稱：");
+        if (name) {
+            appData.statuses.push({ id: 'S_' + Date.now(), name: name, color: '#007bff' });
+            autoSaveCloud();
+            renderStatusManagerList();
+            renderApp();
+        }
+    }
+
+    function deleteStatus(id) {
+        if (confirm("確定刪除此進度選項？")) {
+            appData.statuses = appData.statuses.filter(s => s.id !== id);
+            const fallbackStatus = appData.statuses[0]?.id || '';
+            appData.buses.forEach(b => { if (b.statusId === id) b.statusId = fallbackStatus; });
+            autoSaveCloud();
+            renderStatusManagerList();
+            renderApp();
+        }
+    }
+
+    // --- 車輛 Modal 與基本操作 ---
+    function openBusModal(busId) {
+        requireAuth(() => {
+            currentEditBusId = busId;
+            const bus = appData.buses.find(b => b.id === busId);
+            document.getElementById('modalBusTitle').value = bus.plate;
+
+            const bgPalette = document.getElementById('busBgPalette');
+            bgPalette.innerHTML = '';
+            presetBgColors.forEach(c => {
+                const swatch = document.createElement('div');
+                swatch.className = 'color-swatch';
+                swatch.style.background = c;
+                swatch.onclick = () => { bus.bg = c; renderApp(); };
+                bgPalette.appendChild(swatch);
+            });
+
+            const textPalette = document.getElementById('busTextPalette');
+            textPalette.innerHTML = '';
+            presetTextColors.forEach(c => {
+                const swatch = document.createElement('div');
+                swatch.className = 'color-swatch';
+                swatch.style.background = c;
+                swatch.onclick = () => { bus.color = c; renderApp(); };
+                textPalette.appendChild(swatch);
+            });
+
+            document.getElementById('busModal').classList.add('active');
+        });
+    }
+
+    function saveBusModal() {
+        const bus = appData.buses.find(b => b.id === currentEditBusId);
+        if (bus) {
+            bus.plate = document.getElementById('modalBusTitle').value;
+            autoSaveCloud();
+            renderApp();
+        }
+        closeModal('busModal');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+    }
+
+    function handleAddBus() {
+        requireAuth(() => {
+            const plate = prompt("請輸入新增車號或名稱：");
+            if (plate) {
+                appData.buses.push({
+                    id: 'b_' + Date.now(),
+                    plate: plate,
+                    zoneId: appData.zones[0]?.id || '',
+                    statusId: appData.statuses[0]?.id || '',
+                    bg: '#007bff',
+                    color: '#ffffff',
+                    startDate: '',
+                    endDate: '',
+                    note: ''
+                });
+                autoSaveCloud();
+                renderApp();
+            }
+        });
+    }
+
+    function deleteBus(id) {
+        requireAuth(() => {
+            if (confirm("確定刪除此車輛？")) {
+                appData.buses = appData.buses.filter(b => b.id !== id);
+                autoSaveCloud();
+                renderApp();
+            }
+        });
+    }
+
+    function updateBusZoneStatus(busId, field, val) {
+        requireAuth(() => {
+            const bus = appData.buses.find(b => b.id === busId);
+            if (bus) {
+                bus[field] = val;
+                autoSaveCloud();
+                renderApp();
+            }
+        });
+    }
+
+    // --- 車輛拖移 ---
+    let draggedBusId = null;
+
+    function handleBusDragStart(e) {
+        if (!isAuthed()) {
+            e.preventDefault();
+            requireAuth(() => {});
+            return;
+        }
+        e.stopPropagation();
+        draggedBusId = this.dataset.busId;
+        this.classList.add('dragging');
+        e.dataTransfer.setData('type', 'bus');
+        e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleBusDragEnd() {
+        this.classList.remove('dragging');
+        draggedBusId = null;
+    }
+
+    function handleBusDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleBusDrop(e) {
+        const dragType = e.dataTransfer.getData('type');
+        if (dragType === 'bus' && draggedBusId) {
+            e.preventDefault();
+            e.stopPropagation();
+            const targetZoneId = this.dataset.zoneId;
+            if (targetZoneId) {
+                const bus = appData.buses.find(b => b.id === draggedBusId);
+                if (bus) {
+                    bus.zoneId = targetZoneId;
+                    autoSaveCloud();
+                    renderApp();
+                }
+            }
+        }
+    }
+
+    // --- 匯出與匯入功能 ---
+    function exportData() {
+        try {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `柏昇車輛管理資料_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        } catch(err) {
+            alert("匯出失敗，請重試！");
+        }
+    }
+
+    function triggerImport() {
+        requireAuth(() => {
+            document.getElementById('importFileInput').click();
+        });
+    }
+
+    function importData(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const imported = JSON.parse(evt.target.result);
+                    if (imported && imported.zones && imported.buses) {
+                        appData = imported;
+                        autoSaveCloud();
+                        renderApp();
+                        alert("資料匯入成功，並已同步至雲端！");
+                    } else {
+                        alert("檔案內容格式不正確！");
+                    }
+                } catch(err) {
+                    alert("檔案解析失敗，請確認是否為有效的 JSON 備份檔。");
+                }
+            };
+            reader.readAsText(file);
+        }
+        event.target.value = '';
+    }
+
+    window.onscroll = () => {
+        const btn = document.getElementById('btnTop');
+        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+            btn.classList.add('show');
+        } else {
+            btn.classList.remove('show');
+        }
+    };
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setupTabSwitch() {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            };
+        });
+    }
+</script>
+
+</body>
+</html>
