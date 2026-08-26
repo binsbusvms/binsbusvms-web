@@ -23,8 +23,8 @@
 
         /* 控制按鈕列 */
         .controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; transition: all 0.3s ease; }
-        .controls.admin-only { display: none; }
-        .controls.admin-only.show { display: flex; }
+        .controls.admin-only { display: none !important; }
+        .controls.admin-only.show { display: flex !important; }
         
         /* 時間與權限列 */
         .header-top-right { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.2); padding: 4px 10px; border-radius: 6px; }
@@ -48,8 +48,9 @@
         .kpi-card .kpi-title { font-size: 0.7rem; color: #666; font-weight: bold; }
         .kpi-card .kpi-num { font-size: 1.2rem; font-weight: bold; color: #1f4e78; margin-top: 2px; }
 
-        /* 新增：驗交車公告卡片 */
+        /* 驗交車公告卡片 */
         .announcement-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .announcement-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .announcement-title { font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
         .announcement-actions { display: flex; align-items: center; gap: 6px; }
         .btn-announcement { background: #007bff; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
@@ -65,8 +66,8 @@
         .nav-tabs { display: flex; gap: 4px; margin-bottom: 8px; border-bottom: 2px solid #1f4e78; }
         .tab-btn { flex: 1; padding: 8px 4px; background: #e9ecef; border: none; border-radius: 6px 6px 0 0; font-weight: bold; cursor: pointer; color: #495057; font-size: 0.85rem; text-align: center; min-height: 38px; }
         .tab-btn.active { background: #1f4e78; color: white; }
-        .tab-btn.admin-only { display: none; }
-        .tab-btn.admin-only.show { display: block; }
+        .tab-btn.admin-only { display: none !important; }
+        .tab-btn.admin-only.show { display: block !important; }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -190,7 +191,7 @@
 <input type="file" id="globalDirectPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handleDirectPhotoUpload(event)">
 <input type="file" id="announcementFileInput" class="hidden-file-input" accept="image/*" onchange="handleAnnouncementPhotoUpload(event)">
 
-<!-- 1. 數據統計與視覺化儀表板 (Dashboard) -->
+<!-- Dashboard 儀表板區域 -->
 <div class="dashboard-grid">
     <div class="kpi-card" style="border-left-color: #1f4e78;">
         <div class="kpi-title">總在場數量</div>
@@ -210,18 +211,16 @@
     </div>
 </div>
 
-<!-- 新增：驗交車公告卡片 (位於搜尋條上方) -->
+<!-- 驗交車公告卡片 (位於搜尋條上方，文字旁帶有查看圖片按鈕) -->
 <div class="announcement-box" id="announcementBox">
-    <div class="announcement-title">
-        <span>📢 <b>查核 / 驗車 / 交車日公告</b></span>
-        <span id="announcementStatusText" style="font-size:0.75rem; font-weight:normal; opacity:0.8; margin-left:6px;">(點擊右側按鈕查看詳細圖片)</span>
+    <div class="announcement-left">
+        <span class="announcement-title">📢 <b>查核 / 驗車 / 交車日公告</b></span>
+        <button class="btn-announcement" id="btnViewAnnouncement" onclick="viewAnnouncementImg()">🖼️ 查看公告圖片</button>
+        <span id="announcementStatusText" style="font-size:0.75rem; font-weight:normal; opacity:0.85;">(載入中...)</span>
     </div>
-    <div class="announcement-actions">
-        <button class="btn-announcement" onclick="viewAnnouncementImg()">🖼️ 查看公告圖片</button>
-        <div class="controls admin-only" id="adminAnnouncementControls" style="display:inline-flex; gap:4px;">
-            <button class="btn-announcement" style="background:#28a745;" onclick="triggerAnnouncementUpload()">📤 上傳公告圖片</button>
-            <button class="btn-announcement-del" id="btnDelAnnouncementImg" onclick="deleteAnnouncementImg()">🗑️ 刪除圖片</button>
-        </div>
+    <div class="controls admin-only" id="adminAnnouncementControls" style="display:inline-flex; gap:4px;">
+        <button class="btn-announcement" style="background:#28a745;" onclick="triggerAnnouncementUpload()">📤 上傳公告圖片</button>
+        <button class="btn-announcement-del" id="btnDelAnnouncementImg" onclick="deleteAnnouncementImg()">🗑️ 刪除圖片</button>
     </div>
 </div>
 
@@ -421,7 +420,7 @@
     const ADMIN_PASSWORD = "0857";
 
     let appData = {
-        announcementImg: "", // 新增驗交車公告圖片 Base64 存放欄位
+        announcementImg: "", 
         zones: [
             {"id":"B1_1","name":"【B1】麥克內裝區","color":"#2c3e50"},
             {"id":"B2","name":"【B2】麥克板金區","color":"#2c3e50"},
@@ -608,20 +607,24 @@
         renderAuditTrail();
     }
 
-    /* 渲染公告欄資訊 */
+    /* 渲染驗交車公告資訊與按鈕 */
     function renderAnnouncementBox() {
+        const btnView = document.getElementById('btnViewAnnouncement');
         const statusText = document.getElementById('announcementStatusText');
         const delBtn = document.getElementById('btnDelAnnouncementImg');
+
         if (appData.announcementImg) {
-            if (statusText) statusText.innerText = "(已有最新公告圖片，點擊按鈕查看)";
+            btnView.style.display = "inline-flex";
+            if (statusText) statusText.innerText = "(已有最新公告，點擊圖片按鈕查看)";
             if (delBtn) delBtn.style.display = "inline-block";
         } else {
-            if (statusText) statusText.innerText = "(目前尚未上傳公告圖片)";
+            btnView.style.display = "none";
+            if (statusText) statusText.innerText = "(目前無公告圖片)";
             if (delBtn) delBtn.style.display = "none";
         }
     }
 
-    /* 觀看公告圖片 */
+    /* 查看公告圖片 */
     function viewAnnouncementImg() {
         if (appData.announcementImg) {
             showLightbox(appData.announcementImg);
@@ -649,7 +652,7 @@
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
-                const max_size = 1200; // 高解析度處理
+                const max_size = 1200;
 
                 if (width > height) {
                     if (width > max_size) { height *= max_size / width; width = max_size; }
@@ -884,7 +887,7 @@
         });
     }
 
-    /* 開啟照片 Gallery 彈窗（含刪除按鈕邏輯） */
+    /* 開啟照片 Gallery 彈窗 */
     function openPhotoGallery(busId) {
         const bus = appData.buses.find(b => b.id === busId);
         if (!bus) return;
@@ -919,7 +922,7 @@
                 addAuditLog(bus.plate, '刪除了一張現場照片');
                 autoSaveCloud();
                 renderApp();
-                openPhotoGallery(busId); // 重新刷新相片彈窗內容
+                openPhotoGallery(busId);
             }
         });
     }
