@@ -111,6 +111,7 @@
         .dot { width: 8px; height: 8px; background-color: #28a745; border-radius: 50%; transition: background-color 0.3s; }
         .dot.syncing { background-color: #ffc107; }
         .dot.error { background-color: #dc3545; }
+        .dot.success { background-color: #28a745; }
         .hidden-file-input { display: none; }
 
         .back-to-top { position: fixed; bottom: 20px; right: 20px; background: #1f4e78; color: white; width: 42px; height: 42px; border-radius: 50%; border: none; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; z-index: 99; }
@@ -174,7 +175,7 @@
                 <span id="authStatusText">👁️ 唯讀模式</span>
                 <button id="authBtn" class="btn-auth" onclick="toggleAuth()">🔑 登入編輯</button>
             </div>
-            <span class="autosave-badge"><span class="dot" id="syncDot"></span><span id="syncText">資料同步中...</span></span>
+            <span class="autosave-badge"><span class="dot success" id="syncDot"></span><span id="syncText">已連線</span></span>
         </div>
     </h1>
 
@@ -182,7 +183,7 @@
         <button class="btn btn-zone" onclick="openZoneManager()">⚙️ 區域管理</button>
         <button class="btn btn-status" onclick="openStatusManager()">🎨 進度管理</button>
         <button class="btn" id="btnAddBus" onclick="handleAddBus()">➕ 新增車輛</button>
-        <button class="btn btn-save" id="btnSave" onclick="saveData()">💾 儲存與同步</button>
+        <button class="btn btn-save" id="btnSave" onclick="autoSaveCloud()">💾 儲存與同步</button>
         <button class="btn btn-export" onclick="exportDispatchSheet()">📄 匯出派工單</button>
         <button class="btn btn-export" onclick="exportData()">📥 備份 JSON</button>
         <button class="btn btn-import" onclick="triggerImport()">📤 匯入 JSON</button>
@@ -473,6 +474,15 @@
         updateAuthUI();
         initLiveClock();
         await loadCloudData();
+
+        // 💡 啟用每 10 秒自動更新與儲存
+        setInterval(() => {
+            if (isAuthed()) {
+                autoSaveCloud();
+            } else {
+                loadCloudData();
+            }
+        }, 10000);
     };
 
     function initLiveClock() {
@@ -561,7 +571,7 @@
             const { data, error } = await supabaseClient.from('app_data').select('content').eq('id', 'main_data').single();
             if (data && data.content) {
                 appData = data.content;
-                setSyncStatus('success', '連線正常');
+                setSyncStatus('success', '已連線');
             }
         } catch(err) {
             setSyncStatus('error', '離線模式');
