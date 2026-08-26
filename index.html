@@ -19,7 +19,7 @@
         .header h1 { font-size: 1rem; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
         .header-title-box { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .header-logo-icon { height: 26px; width: 26px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
-        .author-tag { font-size: 0.68rem; font-weight: normal; opacity: 0.85; margin-left: 2px; }
+        .author-tag { font-size: 0.65rem; font-weight: normal; opacity: 0.85; margin-left: 2px; }
 
         /* 控制按鈕列 */
         .controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; transition: all 0.3s ease; }
@@ -122,7 +122,7 @@
         .modal.active { display: flex; }
         .modal-content { background: white; border-radius: 8px; width: 92%; max-width: 520px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-height: 88vh; overflow-y: auto; }
         .modal-header { font-weight: bold; margin-bottom: 12px; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; }
-        .color-palette { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 12px 0; }
+        .color-palette { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 12px 0; align-items: center; }
         .color-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 4px rgba(0,0,0,0.3); }
         .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
 
@@ -444,13 +444,13 @@
             {"id":"S_1787581268044","name":"待交車","color":"#7c6a9c"}
         ],
         buses: [
-            {"id":"1787618807848","plate":"0782993 鍾權國","zoneId":"E","statusId":"S_1787581229246","startDate":"","endDate":"","bg":"#f5d505","color":"#ffffff","note":"","photos":[],"logs":[]}
+            {"id":"1787618807848","plate":"0782993 鍾權國","zoneId":"E","statusId":"S_1787581229246","startDate":"","endDate":"","bg":"#8c5d5d","color":"#ffffff","note":"","photos":[],"logs":[]}
         ],
         archivedBuses: [],
         auditLogs: []
     };
 
-    const presetBgColors = ['#007bff', '#28a745', '#dc3545', '#fd7e14', '#8800a3', '#17a2b8', '#2c3e50', '#ffffff', '#000000', '#f5d505'];
+    const presetBgColors = ['#8c5d5d', '#007bff', '#28a745', '#dc3545', '#fd7e14', '#8800a3', '#17a2b8', '#2c3e50', '#ffffff', '#000000', '#f5d505'];
     let currentEditBusId = null;
     let targetUploadBusId = null;
 
@@ -563,7 +563,7 @@
         appData.buses.forEach(b => {
             if (!b.photos) b.photos = [];
             if (!b.logs) b.logs = [];
-            if (!b.bg) b.bg = '#007bff';
+            if (!b.bg) b.bg = '#8c5d5d';
             if (!b.color) b.color = '#ffffff';
         });
     }
@@ -773,7 +773,7 @@
 
                 busCard.innerHTML = `
                     <div class="bus-header">
-                        <div class="bus-plate-input" style="background:${bus.bg}; color:${bus.color};" onclick="handleBusPlateClick('${bus.id}')">
+                        <div class="bus-plate-input" style="background:${bus.bg || '#8c5d5d'}; color:${bus.color || '#ffffff'};" onclick="handleBusPlateClick('${bus.id}')">
                             ${bus.plate}
                         </div>
                         ${authed ? `<button style="background:#ff4d4f;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:0.65rem;" onclick="deleteBus('${bus.id}')">✕</button>` : ''}
@@ -821,7 +821,7 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding:4px; border:1px solid #ccc; text-align:center;">
-                    <span style="background:${bus.bg}; color:${bus.color}; padding:2px 4px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="handleBusPlateClick('${bus.id}')">${bus.plate}</span>
+                    <span style="background:${bus.bg || '#8c5d5d'}; color:${bus.color || '#ffffff'}; padding:2px 4px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="handleBusPlateClick('${bus.id}')">${bus.plate}</span>
                 </td>
                 <td style="padding:4px; border:1px solid #ccc;">
                     <select ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'zoneId', this.value)">
@@ -872,6 +872,8 @@
 
             const bgPalette = document.getElementById('busBgPalette');
             bgPalette.innerHTML = '';
+            
+            // 預設顏色按鈕
             presetBgColors.forEach(c => {
                 const swatch = document.createElement('div');
                 swatch.className = 'color-swatch';
@@ -879,6 +881,17 @@
                 swatch.onclick = () => { bus.bg = c; renderApp(); };
                 bgPalette.appendChild(swatch);
             });
+
+            // 自訂顏色選擇器 (Color Picker)
+            const picker = document.createElement('input');
+            picker.type = 'color';
+            picker.value = bus.bg || '#8c5d5d';
+            picker.style.cssText = 'width:28px; height:28px; border-radius:50%; border:none; cursor:pointer; padding:0; background:none;';
+            picker.onchange = (e) => { 
+                bus.bg = e.target.value; 
+                renderApp(); 
+            };
+            bgPalette.appendChild(picker);
 
             renderPhotoGrid(bus);
             renderModalTimeline(bus);
@@ -1230,7 +1243,7 @@
                     plate: plate.trim(),
                     zoneId: appData.zones[0]?.id || '',
                     statusId: appData.statuses[0]?.id || '',
-                    bg: '#007bff',
+                    bg: '#8c5d5d',
                     color: '#ffffff',
                     startDate: '',
                     endDate: '',
