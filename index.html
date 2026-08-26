@@ -475,10 +475,9 @@
         updateAuthUI();
         initLiveClock();
         await loadCloudData();
-        setupRealtimeSubscription(); // 💡 初始化 Realtime 雙向廣播
+        setupRealtimeSubscription();
     };
 
-    // 💡 監聽 Supabase 雲端資料變化 (跨裝置即時同步)
     function setupRealtimeSubscription() {
         supabaseClient
             .channel('app_data_changes')
@@ -486,7 +485,7 @@
                 'postgres_changes',
                 { event: 'UPDATE', schema: 'public', table: 'app_data', filter: 'id=eq.main_data' },
                 (payload) => {
-                    if (isSaving) return; // 若為本機發起的更新則跳過
+                    if (isSaving) return;
                     if (payload.new && payload.new.content) {
                         appData = payload.new.content;
                         sanitizeData();
@@ -607,8 +606,12 @@
 
     function manualSaveCloud() {
         requireAuth(async () => {
-            await autoSaveCloud();
-            alert("💾 資料已成功儲存並同步至雲端！");
+            const success = await autoSaveCloud();
+            if (success) {
+                alert("💾 資料已成功儲存並同步至雲端！");
+            } else {
+                alert("⚠️ 已儲存於本機，但雲端同步失敗，請檢查網路連線。");
+            }
         });
     }
 
@@ -616,16 +619,19 @@
         isSaving = true;
         localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData));
         setSyncStatus('syncing', '儲存同步中...');
+        let success = false;
         try {
             const { error } = await supabaseClient.from('app_data').upsert({ id: 'main_data', content: appData, updated_at: new Date().toISOString() });
             if (error) throw error;
             setSyncStatus('success', '已同步雲端');
+            success = true;
         } catch (err) {
             console.error("Cloud Save Error:", err);
             setSyncStatus('error', '僅儲存於本地');
         } finally {
             setTimeout(() => { isSaving = false; }, 1000);
         }
+        return success;
     }
 
     function setSyncStatus(type, text) {
@@ -646,7 +652,6 @@
         }
     }
 
-    // 💡 渲染畫面並保留當前滾動位置
     function renderApp() {
         const scrollY = window.scrollY;
         
@@ -656,7 +661,6 @@
         renderTable();
         renderAuditTrail();
 
-        // 恢復原滾動高度
         window.scrollTo(0, scrollY);
     }
 
@@ -762,7 +766,6 @@
     function renderMap() {
         const container = document.getElementById('mapContainer');
         
-        // 記憶各區域內的滾動高度
         const zoneScrolls = {};
         document.querySelectorAll('.zone-body').forEach(zb => {
             if (zb.dataset.zoneId) zoneScrolls[zb.dataset.zoneId] = zb.scrollTop;
@@ -854,7 +857,6 @@
             }
             container.appendChild(zoneEl);
 
-            // 恢復區域滾動高度
             if (zoneScrolls[zone.id]) {
                 bodyEl.scrollTop = zoneScrolls[zone.id];
             }
@@ -921,7 +923,6 @@
         });
     }
 
-    /* 開啟編輯 Modal - 底色與字體色彩分區渲染 */
     function openBusModal(busId) {
         requireAuth(() => {
             currentEditBusId = busId;
@@ -931,7 +932,6 @@
             document.getElementById('modalBusEndDate').value = bus.endDate || '';
             document.getElementById('modalBusNote').value = bus.note || '';
 
-            // --- 1. 渲染「底色」選擇器 ---
             const bgPalette = document.getElementById('busBgPalette');
             bgPalette.innerHTML = '';
             presetBgColors.forEach(c => {
@@ -948,7 +948,6 @@
             bgPicker.onchange = (e) => { bus.bg = e.target.value; renderApp(); };
             bgPalette.appendChild(bgPicker);
 
-            // --- 2. 渲染「字體顏色」選擇器 ---
             const textColorPalette = document.getElementById('busTextColorPalette');
             textColorPalette.innerHTML = '';
             presetTextColors.forEach(c => {
@@ -1113,7 +1112,8 @@
         }
     }
 
-    function saveBusModal() {
+    // 💡 已修正 saveBusModal 函式：包含變更寫入、儲存至雲端、更新 UI 與關閉彈窗
+    async function saveBusModal() {
         const bus = appData.buses.find(b => b.id === currentEditBusId);
         if (bus) {
             const newPlate = document.getElementById('modalBusTitle').value;
@@ -1121,12 +1121,18 @@
             const newEndDate = document.getElementById('modalBusEndDate').value;
             const newNote = document.getElementById('modalBusNote').value;
             
-            if (bus.plate !== newPlate) addAuditLog(newPlate, `車號更名為 ${newPlate}`);
+            if (bus.plate !== newPlate) {
+                addAuditLog(newPlate, `車號更名為 ${newPlate}`);
+            } else {
+                addAuditLog(newPlate, `更新車輛詳細資料與備註`);
+            }
+
             bus.plate = newPlate;
             bus.startDate = newStartDate;
             bus.endDate = newEndDate;
             bus.note = newNote;
-            autoSaveCloud();
+
+            await autoSaveCloud();
             renderApp();
         }
         closeModal('busModal');
