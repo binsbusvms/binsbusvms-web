@@ -48,6 +48,14 @@
         .kpi-card .kpi-title { font-size: 0.7rem; color: #666; font-weight: bold; }
         .kpi-card .kpi-num { font-size: 1.2rem; font-weight: bold; color: #1f4e78; margin-top: 2px; }
 
+        /* 新增：驗交車公告卡片 */
+        .announcement-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .announcement-title { font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
+        .announcement-actions { display: flex; align-items: center; gap: 6px; }
+        .btn-announcement { background: #007bff; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-announcement:hover { background: #0056b3; }
+        .btn-announcement-del { background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; cursor: pointer; }
+
         /* 搜尋與排序條 */
         .sort-bar { display: flex; align-items: center; gap: 6px; background: #e4dfc3; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.8rem; flex-wrap: wrap; }
         .sort-bar select { width: auto; height: 30px; padding: 2px 6px; }
@@ -180,6 +188,7 @@
 
 <!-- 隱藏式上傳 input -->
 <input type="file" id="globalDirectPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handleDirectPhotoUpload(event)">
+<input type="file" id="announcementFileInput" class="hidden-file-input" accept="image/*" onchange="handleAnnouncementPhotoUpload(event)">
 
 <!-- 1. 數據統計與視覺化儀表板 (Dashboard) -->
 <div class="dashboard-grid">
@@ -198,6 +207,21 @@
     <div class="kpi-card" style="border-left-color: #E53935;">
         <div class="kpi-title">暫停施工</div>
         <div class="kpi-num" id="kpiPause">0 台</div>
+    </div>
+</div>
+
+<!-- 新增：驗交車公告卡片 (位於搜尋條上方) -->
+<div class="announcement-box" id="announcementBox">
+    <div class="announcement-title">
+        <span>📢 <b>查核 / 驗車 / 交車日公告</b></span>
+        <span id="announcementStatusText" style="font-size:0.75rem; font-weight:normal; opacity:0.8; margin-left:6px;">(點擊右側按鈕查看詳細圖片)</span>
+    </div>
+    <div class="announcement-actions">
+        <button class="btn-announcement" onclick="viewAnnouncementImg()">🖼️ 查看公告圖片</button>
+        <div class="controls admin-only" id="adminAnnouncementControls" style="display:inline-flex; gap:4px;">
+            <button class="btn-announcement" style="background:#28a745;" onclick="triggerAnnouncementUpload()">📤 上傳公告圖片</button>
+            <button class="btn-announcement-del" id="btnDelAnnouncementImg" onclick="deleteAnnouncementImg()">🗑️ 刪除圖片</button>
+        </div>
     </div>
 </div>
 
@@ -397,6 +421,7 @@
     const ADMIN_PASSWORD = "0857";
 
     let appData = {
+        announcementImg: "", // 新增驗交車公告圖片 Base64 存放欄位
         zones: [
             {"id":"B1_1","name":"【B1】麥克內裝區","color":"#2c3e50"},
             {"id":"B2","name":"【B2】麥克板金區","color":"#2c3e50"},
@@ -434,18 +459,8 @@
         setupTabSwitch();
         updateAuthUI();
         initLiveClock();
-        window.addEventListener('scroll', handleScroll);
         await loadCloudData();
     };
-
-    function handleScroll() {
-        const btnTop = document.getElementById('btnTop');
-        if (window.scrollY > 200) {
-            btnTop.classList.add('show');
-        } else {
-            btnTop.classList.remove('show');
-        }
-    }
 
     function initLiveClock() {
         const updateClock = () => {
@@ -508,6 +523,15 @@
             }
         }
 
+        const adminAnnouncementControls = document.getElementById("adminAnnouncementControls");
+        if (adminAnnouncementControls) {
+            if (authed) {
+                adminAnnouncementControls.classList.add("show");
+            } else {
+                adminAnnouncementControls.classList.remove("show");
+            }
+        }
+
         const logsBtn = document.getElementById("tabLogsBtn");
         if (logsBtn) {
             if (authed) {
@@ -536,6 +560,7 @@
     function sanitizeData() {
         if (!appData.archivedBuses) appData.archivedBuses = [];
         if (!appData.auditLogs) appData.auditLogs = [];
+        if (!appData.announcementImg) appData.announcementImg = "";
         appData.buses.forEach(b => {
             if (!b.photos) b.photos = [];
             if (!b.logs) b.logs = [];
@@ -575,32 +600,90 @@
         }
     }
 
-    function getSortedBuses(filteredBuses) {
-        const sortField = document.getElementById('sortField')?.value || 'plate';
-        const sortOrder = document.getElementById('sortOrder')?.value || 'asc';
-        
-        return [...filteredBuses].sort((a, b) => {
-            let valA = a[sortField] || '';
-            let valB = b[sortField] || '';
-            
-            if (sortField === 'zone') {
-                valA = appData.zones.find(z => z.id === a.zoneId)?.name || '';
-                valB = appData.zones.find(z => z.id === b.zoneId)?.name || '';
-            }
-
-            let result = 0;
-            if (valA < valB) result = -1;
-            if (valA > valB) result = 1;
-
-            return sortOrder === 'desc' ? -result : result;
-        });
-    }
-
     function renderApp() {
         updateDashboard();
+        renderAnnouncementBox();
         renderMap();
         renderTable();
         renderAuditTrail();
+    }
+
+    /* 渲染公告欄資訊 */
+    function renderAnnouncementBox() {
+        const statusText = document.getElementById('announcementStatusText');
+        const delBtn = document.getElementById('btnDelAnnouncementImg');
+        if (appData.announcementImg) {
+            if (statusText) statusText.innerText = "(已有最新公告圖片，點擊按鈕查看)";
+            if (delBtn) delBtn.style.display = "inline-block";
+        } else {
+            if (statusText) statusText.innerText = "(目前尚未上傳公告圖片)";
+            if (delBtn) delBtn.style.display = "none";
+        }
+    }
+
+    /* 觀看公告圖片 */
+    function viewAnnouncementImg() {
+        if (appData.announcementImg) {
+            showLightbox(appData.announcementImg);
+        } else {
+            alert("📢 目前尚未上傳查核/驗車/交車日公告圖片！");
+        }
+    }
+
+    /* 觸發上傳公告圖片 */
+    function triggerAnnouncementUpload() {
+        requireAuth(() => {
+            document.getElementById('announcementFileInput').click();
+        });
+    }
+
+    /* 處理公告圖片上傳並壓縮 */
+    function handleAnnouncementPhotoUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const max_size = 1200; // 高解析度處理
+
+                if (width > height) {
+                    if (width > max_size) { height *= max_size / width; width = max_size; }
+                } else {
+                    if (height > max_size) { width *= max_size / height; height = max_size; }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                appData.announcementImg = canvas.toDataURL('image/jpeg', 0.85);
+                addAuditLog('系統公告', '更新了驗交車公告圖片');
+                autoSaveCloud();
+                renderApp();
+                alert("📢 驗交車公告圖片已更新完成！");
+            };
+            img.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    /* 刪除公告圖片 */
+    function deleteAnnouncementImg() {
+        requireAuth(() => {
+            if (confirm("確定要刪除現有的驗交車公告圖片嗎？")) {
+                appData.announcementImg = "";
+                addAuditLog('系統公告', '刪除了驗交車公告圖片');
+                autoSaveCloud();
+                renderApp();
+                alert("已刪除驗交車公告圖片。");
+            }
+        });
     }
 
     function updateDashboard() {
@@ -632,7 +715,6 @@
         const authed = isAuthed();
         const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
         let filteredBuses = appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword) || (b.note||'').toLowerCase().includes(searchKeyword));
-        filteredBuses = getSortedBuses(filteredBuses);
 
         appData.zones.forEach(zone => {
             const zoneEl = document.createElement('div');
@@ -730,10 +812,7 @@
         const authed = isAuthed();
         const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
 
-        let filtered = appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword) || (b.note||'').toLowerCase().includes(searchKeyword));
-        filtered = getSortedBuses(filtered);
-
-        filtered.forEach(bus => {
+        appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword)).forEach(bus => {
             const photoCount = (bus.photos || []).length;
             const logCount = (bus.logs || []).length;
             const tr = document.createElement('tr');
