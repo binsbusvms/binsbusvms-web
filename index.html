@@ -604,24 +604,56 @@
         });
     }
 
-    function manualSaveCloud() {
-        requireAuth(async () => {
-            const success = await autoSaveCloud();
-            if (success) {
-                alert("💾 資料已成功儲存並同步至雲端！");
+    // 💡 已修復：適合手機端的手動儲存邏輯
+    async function manualSaveCloud() {
+        if (!isAuthed()) {
+            const input = prompt("🔐 請輸入管理員密碼解鎖編輯權限：");
+            if (input === ADMIN_PASSWORD) {
+                sessionStorage.setItem("isAdminLoggedIn", "true");
+                updateAuthUI();
             } else {
-                alert("⚠️ 已儲存於本機，但雲端同步失敗，請檢查網路連線。");
+                if (input !== null) alert("❌ 密碼錯誤！");
+                return;
             }
-        });
+        }
+
+        const success = await autoSaveCloud();
+        if (success) {
+            alert("💾 資料已成功儲存並同步至雲端！");
+        } else {
+            alert("⚠️ 儲存失敗或僅存於本機，請檢查網路連線。");
+        }
     }
 
+    // 💡 已修復：加入超時機制防止手機網路延遲卡死
     async function autoSaveCloud() {
+        if (isSaving) return false;
         isSaving = true;
-        localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData));
+
+        try {
+            localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData));
+        } catch (e) {
+            console.error("Local storage error:", e);
+        }
+
         setSyncStatus('syncing', '儲存同步中...');
         let success = false;
+
         try {
-            const { error } = await supabaseClient.from('app_data').upsert({ id: 'main_data', content: appData, updated_at: new Date().toISOString() });
+            const savePromise = supabaseClient
+                .from('app_data')
+                .upsert({ 
+                    id: 'main_data', 
+                    content: appData, 
+                    updated_at: new Date().toISOString() 
+                });
+
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Network timeout')), 8000)
+            );
+
+            const { error } = await Promise.race([savePromise, timeoutPromise]);
+            
             if (error) throw error;
             setSyncStatus('success', '已同步雲端');
             success = true;
@@ -629,7 +661,7 @@
             console.error("Cloud Save Error:", err);
             setSyncStatus('error', '僅儲存於本地');
         } finally {
-            setTimeout(() => { isSaving = false; }, 1000);
+            isSaving = false;
         }
         return success;
     }
@@ -1112,7 +1144,6 @@
         }
     }
 
-    // 💡 已修正 saveBusModal 函式：包含變更寫入、儲存至雲端、更新 UI 與關閉彈窗
     async function saveBusModal() {
         const bus = appData.buses.find(b => b.id === currentEditBusId);
         if (bus) {
