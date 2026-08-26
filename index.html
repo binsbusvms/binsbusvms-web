@@ -48,11 +48,6 @@
         .kpi-card .kpi-title { font-size: 0.7rem; color: #666; font-weight: bold; }
         .kpi-card .kpi-num { font-size: 1.2rem; font-weight: bold; color: #1f4e78; margin-top: 2px; }
 
-        .chart-box { background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .chart-title { font-size: 0.8rem; font-weight: bold; color: #1f4e78; margin-bottom: 6px; }
-        .progress-bar-wrap { height: 16px; background: #e9ecef; border-radius: 8px; overflow: hidden; display: flex; margin-bottom: 4px; }
-        .progress-segment { height: 100%; font-size: 0.65rem; color: white; text-align: center; line-height: 16px; font-weight: bold; }
-
         /* 搜尋與排序條 */
         .sort-bar { display: flex; align-items: center; gap: 6px; background: #e4dfc3; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.8rem; flex-wrap: wrap; }
         .sort-bar select { width: auto; height: 30px; padding: 2px 6px; }
@@ -189,23 +184,17 @@
         <div class="kpi-num" id="kpiTotal">0 台</div>
     </div>
     <div class="kpi-card" style="border-left-color: #1E88E5;">
-        <div class="kpi-title">施工/鈑金/噴漆中</div>
+        <div class="kpi-title">各作業區域/狀態數量 (施工/鈑金/噴漆中)</div>
         <div class="kpi-num" id="kpiWorking">0 台</div>
     </div>
     <div class="kpi-card" style="border-left-color: #4CAF50;">
-        <div class="kpi-title">待交車 / 完成車</div>
+        <div class="kpi-title">各作業區域/狀態數量 (待交車/完成車)</div>
         <div class="kpi-num" id="kpiDone">0 台</div>
     </div>
     <div class="kpi-card" style="border-left-color: #E53935;">
-        <div class="kpi-title">暫停 / 異常車輛</div>
+        <div class="kpi-title">各作業區域/狀態數量 (暫停/異常車輛)</div>
         <div class="kpi-num" id="kpiPause">0 台</div>
     </div>
-</div>
-
-<div class="chart-box">
-    <div class="chart-title">📊 廠區車輛分佈概況與瓶頸分析</div>
-    <div class="progress-bar-wrap" id="zoneProgressBar"></div>
-    <div id="zoneLegend" style="display:flex; flex-wrap:wrap; gap:8px; font-size:0.7rem; color:#555;"></div>
 </div>
 
 <!-- 搜尋與排序條 -->
@@ -572,33 +561,6 @@
 
         const pause = appData.buses.filter(b => b.statusId === 'repair').length;
         document.getElementById('kpiPause').innerText = `${pause} 台`;
-
-        const barWrap = document.getElementById('zoneProgressBar');
-        const legendWrap = document.getElementById('zoneLegend');
-        barWrap.innerHTML = '';
-        legendWrap.innerHTML = '';
-
-        if (total === 0) return;
-
-        const colors = ['#1f4e78', '#17a2b8', '#28a745', '#fd7e14', '#6f42c1', '#e83e8c', '#20c997', '#6c757d'];
-        appData.zones.forEach((z, idx) => {
-            const count = appData.buses.filter(b => b.zoneId === z.id).length;
-            if (count > 0) {
-                const pct = ((count / total) * 100).toFixed(1);
-                const color = colors[idx % colors.length];
-
-                const seg = document.createElement('div');
-                seg.className = 'progress-segment';
-                seg.style.width = `${pct}%`;
-                seg.style.background = color;
-                seg.innerText = `${count}`;
-                barWrap.appendChild(seg);
-
-                const leg = document.createElement('span');
-                leg.innerHTML = `<span style="display:inline-block;width:8px;height:8px;background:${color};border-radius:50%;margin-right:2px;"></span>${z.name}: <b>${count}</b> (${pct}%)`;
-                legendWrap.appendChild(leg);
-            }
-        });
     }
 
     function renderMap() {
