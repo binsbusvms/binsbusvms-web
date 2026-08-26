@@ -69,10 +69,7 @@
 
         .map-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; }
         .zone { border: 2px solid #b8b193; border-radius: 6px; padding: 6px; background: #e4dfc3; display: flex; flex-direction: column; max-height: 450px; transition: transform 0.15s, opacity 0.15s; }
-        .zone.zone-dragging { opacity: 0.4; transform: scale(0.98); }
-        
-        .zone-header { display: flex; justify-content: space-between; align-items: center; background: #2c3e50; color: white; padding: 6px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; cursor: grab; user-select: none; }
-        .zone-header:active { cursor: grabbing; }
+        .zone-header { display: flex; justify-content: space-between; align-items: center; background: #2c3e50; color: white; padding: 6px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; user-select: none; }
         
         .zone-body { overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-top: 6px; flex-grow: 1; min-height: 50px; }
         .zone-body::-webkit-scrollbar { width: 5px; }
@@ -81,7 +78,6 @@
         /* 車輛卡片與標籤 */
         .bus-card { background: white; border: 1px solid #ccc; border-radius: 5px; padding: 6px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: grab; }
         .bus-card:active { cursor: grabbing; }
-        .bus-card.dragging { opacity: 0.5; }
         .bus-header { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
         .bus-plate-input { font-weight: bold; font-size: 0.8rem; padding: 4px 6px; border-radius: 4px; text-align: center; flex-grow: 1; min-height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.2s; word-break: break-all; }
         .bus-plate-input:hover { opacity: 0.85; }
@@ -89,11 +85,6 @@
         .bus-badge-container { display: flex; gap: 4px; font-size: 0.65rem; }
         .photo-badge { background: #e83e8c; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; }
         .log-badge { background: #17a2b8; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; }
-
-        .bus-dates { display: flex; gap: 3px; font-size: 0.68rem; color: #555; align-items: center; width: 100%; }
-        .bus-dates div { flex: 1; display: flex; align-items: center; gap: 1px; min-width: 0; }
-        .bus-dates span { flex-shrink: 0; white-space: nowrap; font-weight: 500; }
-        .bus-dates input[type="date"] { font-size: 0.62rem; height: 24px; padding: 0 2px; border: 1px solid #ccc; border-radius: 3px; background: #fafafa; width: 100%; min-width: 0; }
 
         /* 表格與滾動 */
         .table-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #ddd; border-radius: 6px; background: #ffffff; }
@@ -226,7 +217,7 @@
 <!-- 分頁 1：動態圖 -->
 <div id="tab-map" class="tab-content active">
     <div class="card">
-        <div class="card-title">📍 廠區分區配置圖 <span style="font-size:0.75rem; font-weight:normal; color:#666;">（按住標題列可拖移區域順序）</span></div>
+        <div class="card-title">📍 廠區分區配置圖</div>
         <div class="map-container" id="mapContainer"></div>
     </div>
 </div>
@@ -335,7 +326,7 @@
 <div class="modal" id="zoneManagerModal">
     <div class="modal-content">
         <div class="modal-header">
-            <span>⚙️ 全廠區域管理（可抓取 ☰ 拖移排序）</span>
+            <span>⚙️ 全廠區域管理</span>
             <button onclick="closeModal('zoneManagerModal')" style="border:none;background:none;cursor:pointer;">✕</button>
         </div>
         <div class="manage-list" id="zoneManageList"></div>
@@ -348,7 +339,7 @@
 <div class="modal" id="statusManagerModal">
     <div class="modal-content">
         <div class="modal-header">
-            <span>🎨 全廠進度選項管理（可抓取 ☰ 拖移排序）</span>
+            <span>🎨 全廠進度選項管理</span>
             <button onclick="closeModal('statusManagerModal')" style="border:none;background:none;cursor:pointer;">✕</button>
         </div>
         <div class="manage-list" id="statusManageList"></div>
@@ -495,11 +486,9 @@
         document.getElementById('syncDot').className = `dot ${type}`;
     }
 
-    // --- 新增履歷日誌 (Audit Log) ---
     function addAuditLog(busPlate, action) {
         const timeStr = new Date().toLocaleString('zh-TW', { hour12: false });
         const logEntry = { time: timeStr, plate: busPlate, action: action };
-        
         if (!appData.auditLogs) appData.auditLogs = [];
         appData.auditLogs.unshift(logEntry);
 
@@ -517,7 +506,6 @@
         renderAuditTrail();
     }
 
-    // 1. 數據統計與儀表板渲染
     function updateDashboard() {
         const total = appData.buses.length;
         document.getElementById('kpiTotal').innerText = `${total} 台`;
@@ -531,7 +519,6 @@
         const pause = appData.buses.filter(b => b.statusId === 'repair').length;
         document.getElementById('kpiPause').innerText = `${pause} 台`;
 
-        // 進度條視覺化
         const barWrap = document.getElementById('zoneProgressBar');
         const legendWrap = document.getElementById('zoneLegend');
         barWrap.innerHTML = '';
@@ -560,15 +547,11 @@
         });
     }
 
-    // 地圖與卡片渲染
     function renderMap() {
         const container = document.getElementById('mapContainer');
         container.innerHTML = '';
 
-        const field = document.getElementById('sortField').value;
-        const order = document.getElementById('sortOrder').value;
         const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
-
         let filteredBuses = appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword) || (b.note||'').toLowerCase().includes(searchKeyword));
 
         appData.zones.forEach(zone => {
@@ -577,9 +560,8 @@
             zoneEl.dataset.zoneId = zone.id;
 
             zoneEl.innerHTML = `
-                <div class="zone-header" style="background:${zone.color||'#2c3e50'}" draggable="true">
+                <div class="zone-header" style="background:${zone.color||'#2c3e50'}">
                     <span>${zone.name}</span>
-                    <span style="font-size:0.7rem; opacity:0.7;">☰ 拖移</span>
                 </div>
                 <div class="zone-body" data-zone-id="${zone.id}"></div>
             `;
@@ -658,7 +640,6 @@
         });
     }
 
-    // 2. 異動紀錄時間軸渲染
     function renderAuditTrail() {
         const list = document.getElementById('globalAuditLogList');
         list.innerHTML = '';
@@ -670,7 +651,7 @@
         });
     }
 
-    // 2. & 4. 開啟車輛 Modal、相片預覽與履歷
+    // Modal 與車輛詳細
     function openBusModal(busId) {
         requireAuth(() => {
             currentEditBusId = busId;
@@ -678,7 +659,6 @@
             document.getElementById('modalBusTitle').value = bus.plate;
             document.getElementById('modalBusNote').value = bus.note || '';
 
-            // 渲染調色盤
             const bgPalette = document.getElementById('busBgPalette');
             bgPalette.innerHTML = '';
             presetBgColors.forEach(c => {
@@ -767,7 +747,93 @@
         closeModal('busModal');
     }
 
-    // 6. PDF/Excel/派工單與歸檔
+    // 區域管理邏輯
+    function openZoneManager() {
+        requireAuth(() => {
+            renderZoneManageList();
+            document.getElementById('zoneManagerModal').classList.add('active');
+        });
+    }
+
+    function renderZoneManageList() {
+        const list = document.getElementById('zoneManageList');
+        if (!list) return;
+        list.innerHTML = '';
+        appData.zones.forEach((z, idx) => {
+            const item = document.createElement('div');
+            item.className = 'manage-item';
+            item.innerHTML = `
+                <input type="color" value="${z.color || '#2c3e50'}" style="width:30px; height:30px; padding:0; border:none; cursor:pointer;" onchange="appData.zones[${idx}].color=this.value; autoSaveCloud(); renderApp();">
+                <input type="text" value="${z.name}" style="flex-grow:1;" onchange="appData.zones[${idx}].name=this.value; autoSaveCloud(); renderApp();">
+                <button class="btn" style="background:#dc3545; min-height:24px; padding:2px 6px;" onclick="deleteZone(${idx})">✕</button>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    function addNewZone() {
+        const name = prompt("請輸入新區域名稱：");
+        if (name && name.trim() !== '') {
+            appData.zones.push({ id: 'Z_' + Date.now(), name: name.trim(), color: '#2c3e50' });
+            autoSaveCloud();
+            renderZoneManageList();
+            renderApp();
+        }
+    }
+
+    function deleteZone(idx) {
+        if (confirm("確定刪除此區域？")) {
+            appData.zones.splice(idx, 1);
+            autoSaveCloud();
+            renderZoneManageList();
+            renderApp();
+        }
+    }
+
+    // 進度管理邏輯
+    function openStatusManager() {
+        requireAuth(() => {
+            renderStatusManageList();
+            document.getElementById('statusManagerModal').classList.add('active');
+        });
+    }
+
+    function renderStatusManageList() {
+        const list = document.getElementById('statusManageList');
+        if (!list) return;
+        list.innerHTML = '';
+        appData.statuses.forEach((s, idx) => {
+            const item = document.createElement('div');
+            item.className = 'manage-item';
+            item.innerHTML = `
+                <input type="color" value="${s.color || '#78909C'}" style="width:30px; height:30px; padding:0; border:none; cursor:pointer;" onchange="appData.statuses[${idx}].color=this.value; autoSaveCloud(); renderApp();">
+                <input type="text" value="${s.name}" style="flex-grow:1;" onchange="appData.statuses[${idx}].name=this.value; autoSaveCloud(); renderApp();">
+                <button class="btn" style="background:#dc3545; min-height:24px; padding:2px 6px;" onclick="deleteStatus(${idx})">✕</button>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    function addNewStatus() {
+        const name = prompt("請輸入新進度名稱：");
+        if (name && name.trim() !== '') {
+            appData.statuses.push({ id: 'S_' + Date.now(), name: name.trim(), color: '#1E88E5' });
+            autoSaveCloud();
+            renderStatusManageList();
+            renderApp();
+        }
+    }
+
+    function deleteStatus(idx) {
+        if (confirm("確定刪除此進度選項？")) {
+            appData.statuses.splice(idx, 1);
+            autoSaveCloud();
+            renderStatusManageList();
+            renderApp();
+        }
+    }
+
+    // 匯出派工單與歸檔
     function exportDispatchSheet() {
         const selectedZone = prompt("請輸入要匯出派工單的區域 (留空為全廠)：");
         let list = appData.buses;
@@ -835,14 +901,11 @@
         renderApp();
     }
 
-    // 基本車輛操作
     function updateBusZoneStatus(busId, field, val) {
         requireAuth(() => {
             const bus = appData.buses.find(b => b.id === busId);
             if (bus) {
-                const oldVal = bus[field];
                 bus[field] = val;
-                
                 if (field === 'zoneId') {
                     const zName = appData.zones.find(z => z.id === val)?.name || '';
                     addAuditLog(bus.plate, `移動至區域：${zName}`);
@@ -850,7 +913,6 @@
                     const sName = appData.statuses.find(s => s.id === val)?.name || '';
                     addAuditLog(bus.plate, `變更進度為：${sName}`);
                 }
-
                 autoSaveCloud();
                 renderApp();
             }
@@ -860,10 +922,10 @@
     function handleAddBus() {
         requireAuth(() => {
             const plate = prompt("請輸入新增車號或名稱：");
-            if (plate) {
+            if (plate && plate.trim() !== '') {
                 const newBus = {
                     id: 'b_' + Date.now(),
-                    plate: plate,
+                    plate: plate.trim(),
                     zoneId: appData.zones[0]?.id || '',
                     statusId: appData.statuses[0]?.id || '',
                     bg: '#007bff',
@@ -875,7 +937,7 @@
                     logs: []
                 };
                 appData.buses.push(newBus);
-                addAuditLog(plate, '建立新車輛');
+                addAuditLog(newBus.plate, '建立新車輛');
                 autoSaveCloud();
                 renderApp();
             }
@@ -894,7 +956,6 @@
         });
     }
 
-    // 拖移移車
     let draggedBusId = null;
     function handleBusDragStart(e) {
         if (!isAuthed()) { e.preventDefault(); requireAuth(() => {}); return; }
@@ -916,7 +977,6 @@
         }
     }
 
-    // 通用介面控制
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
     function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
     function exportData() {
