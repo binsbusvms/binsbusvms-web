@@ -183,7 +183,7 @@
         <button class="btn btn-zone" onclick="openZoneManager()">⚙️ 區域管理</button>
         <button class="btn btn-status" onclick="openStatusManager()">🎨 進度管理</button>
         <button class="btn" id="btnAddBus" onclick="handleAddBus()">➕ 新增車輛</button>
-        <button class="btn btn-save" id="btnSave" onclick="autoSaveCloud()">💾 儲存與同步</button>
+        <button class="btn btn-save" id="btnSave" onclick="manualSaveCloud()">💾 儲存與同步</button>
         <button class="btn btn-export" onclick="exportDispatchSheet()">📄 匯出派工單</button>
         <button class="btn btn-export" onclick="exportData()">📥 備份 JSON</button>
         <button class="btn btn-import" onclick="triggerImport()">📤 匯入 JSON</button>
@@ -468,22 +468,35 @@
 
     let currentEditBusId = null;
     let targetUploadBusId = null;
+    let isSaving = false;
 
     window.onload = async () => {
         setupTabSwitch();
         updateAuthUI();
         initLiveClock();
         await loadCloudData();
-
-        // 💡 啟用每 10 秒自動更新與儲存
-        setInterval(() => {
-            if (isAuthed()) {
-                autoSaveCloud();
-            } else {
-                loadCloudData();
-            }
-        }, 10000);
+        setupRealtimeSubscription(); // 💡 初始化 Realtime 雙向廣播
     };
+
+    // 💡 監聽 Supabase 雲端資料變化 (跨裝置即時同步)
+    function setupRealtimeSubscription() {
+        supabaseClient
+            .channel('app_data_changes')
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'app_data', filter: 'id=eq.main_data' },
+                (payload) => {
+                    if (isSaving) return; // 若為本機發起的更新則跳過
+                    if (payload.new && payload.new.content) {
+                        appData = payload.new.content;
+                        sanitizeData();
+                        renderApp();
+                        setSyncStatus('success', '已同步最新雲端資料');
+                    }
+                }
+            )
+            .subscribe();
+    }
 
     function initLiveClock() {
         const updateClock = () => {
@@ -592,16 +605,26 @@
         });
     }
 
-    function saveData() { requireAuth(() => autoSaveCloud()); }
+    function manualSaveCloud() {
+        requireAuth(async () => {
+            await autoSaveCloud();
+            alert("💾 資料已成功儲存並同步至雲端！");
+        });
+    }
 
     async function autoSaveCloud() {
+        isSaving = true;
         localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData));
         setSyncStatus('syncing', '儲存同步中...');
         try {
-            await supabaseClient.from('app_data').upsert({ id: 'main_data', content: appData, updated_at: new Date().toISOString() });
+            const { error } = await supabaseClient.from('app_data').upsert({ id: 'main_data', content: appData, updated_at: new Date().toISOString() });
+            if (error) throw error;
             setSyncStatus('success', '已同步雲端');
         } catch (err) {
+            console.error("Cloud Save Error:", err);
             setSyncStatus('error', '僅儲存於本地');
+        } finally {
+            setTimeout(() => { isSaving = false; }, 1000);
         }
     }
 
@@ -623,12 +646,18 @@
         }
     }
 
+    // 💡 渲染畫面並保留當前滾動位置
     function renderApp() {
+        const scrollY = window.scrollY;
+        
         updateDashboard();
         renderAnnouncementBox();
         renderMap();
         renderTable();
         renderAuditTrail();
+
+        // 恢復原滾動高度
+        window.scrollTo(0, scrollY);
     }
 
     function renderAnnouncementBox() {
@@ -732,6 +761,13 @@
 
     function renderMap() {
         const container = document.getElementById('mapContainer');
+        
+        // 記憶各區域內的滾動高度
+        const zoneScrolls = {};
+        document.querySelectorAll('.zone-body').forEach(zb => {
+            if (zb.dataset.zoneId) zoneScrolls[zb.dataset.zoneId] = zb.scrollTop;
+        });
+
         container.innerHTML = '';
 
         const authed = isAuthed();
@@ -817,6 +853,11 @@
                 bodyEl.addEventListener('drop', handleBusDrop);
             }
             container.appendChild(zoneEl);
+
+            // 恢復區域滾動高度
+            if (zoneScrolls[zone.id]) {
+                bodyEl.scrollTop = zoneScrolls[zone.id];
+            }
         });
     }
 
