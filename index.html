@@ -3,154 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>柏昇開發工業 - 車輛動態管理系統製作者：柏昇小歐</title> <!--[cite: 3] -->
+    <title>柏昇開發工業 - 車輛動態管理系統製作者：柏昇小歐</title>
     <!-- 引入 Supabase JS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> <!--[cite: 3] -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'><path d='M 500,70 L 270,70 L 90,270 L 440,930 L 500,930 Z' fill='none' stroke='%231D2088' stroke-width='65' stroke-linejoin='miter' stroke-miterlimit='10'/><path d='M 500,70 L 730,70 L 910,270 L 560,930 L 500,930 Z' fill='none' stroke='%23E60012' stroke-width='65' stroke-linejoin='miter' stroke-miterlimit='10'/><path d='M 500,270 L 820,270' fill='none' stroke='%23E60012' stroke-width='65' stroke-linecap='square'/></svg>" type="image/svg+xml"> <!--[cite: 3] -->
+    <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'><path d='M 500,70 L 270,70 L 90,270 L 440,930 L 500,930 Z' fill='none' stroke='%231D2088' stroke-width='65' stroke-linejoin='miter' stroke-miterlimit='10'/><path d='M 500,70 L 730,70 L 910,270 L 560,930 L 500,930 Z' fill='none' stroke='%23E60012' stroke-width='65' stroke-linejoin='miter' stroke-miterlimit='10'/><path d='M 500,270 L 820,270' fill='none' stroke='%23E60012' stroke-width='65' stroke-linecap='square'/></svg>" type="image/svg+xml">
 
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color: transparent; } /*[cite: 3] */
-        body { background-color: #f4f6f9; color: #333; padding: 8px; padding-bottom: 60px; position: relative; min-height: 100vh; } /*[cite: 3] */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f4f6f9; color: #333; padding: 8px; padding-bottom: 60px; position: relative; min-height: 100vh; }
 
         /* 標題與工具列 */
-        .header { background: #1f4e78; color: white; padding: 10px; border-radius: 8px; margin-bottom: 8px; } /*[cite: 3] */
-        .header h1 { font-size: 1rem; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; } /*[cite: 3] */
-        .header-title-box { display: flex; align-items: center; gap: 8px; flex-shrink: 0; } /*[cite: 3] */
-        .header-logo-icon { height: 26px; width: 26px; flex-shrink: 0; display: inline-block; vertical-align: middle; } /*[cite: 3] */
-        .author-tag { font-size: 0.65rem; font-weight: normal; opacity: 0.85; margin-left: 2px; } /*[cite: 3] */
+        .header { background: #1f4e78; color: white; padding: 10px; border-radius: 8px; margin-bottom: 8px; }
+        .header h1 { font-size: 1rem; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+        .header-title-box { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .header-logo-icon { height: 26px; width: 26px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
+        .author-tag { font-size: 0.65rem; font-weight: normal; opacity: 0.85; margin-left: 2px; }
 
         /* 控制按鈕列 */
-        .controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; transition: all 0.3s ease; } /*[cite: 3] */
-        .controls.admin-only { display: none !important; } /*[cite: 3] */
-        .controls.admin-only.show { display: flex !important; } /*[cite: 3] */
+        .controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; transition: all 0.3s ease; }
+        .controls.admin-only { display: none !important; }
+        .controls.admin-only.show { display: flex !important; }
         
         /* 時間與權限列 */
-        .header-top-right { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.2); padding: 4px 10px; border-radius: 6px; } /*[cite: 3] */
-        .live-clock { font-size: 0.8rem; font-weight: 500; color: #fff; white-space: nowrap; } /*[cite: 3] */
-        .auth-bar { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 6px; } /*[cite: 3] */
-        .btn-auth { background: #ffc107; color: #212529; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; } /*[cite: 3] */
-        .btn-logout { background: #dc3545; color: white; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; } /*[cite: 3] */
+        .header-top-right { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.2); padding: 4px 10px; border-radius: 6px; }
+        .live-clock { font-size: 0.8rem; font-weight: 500; color: #fff; white-space: nowrap; }
+        .auth-bar { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 6px; }
+        .btn-auth { background: #ffc107; color: #212529; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; }
+        .btn-logout { background: #dc3545; color: white; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; }
 
         /* 按鈕基本樣式 */
-        .btn { background: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 34px; touch-action: manipulation; } /*[cite: 3] */
-        .btn-zone { background: #17a2b8; }  /*[cite: 3] */
-        .btn-status { background: #6f42c1; }  /*[cite: 3] */
-        .btn-save { background: #fd7e14; }  /*[cite: 3] */
-        .btn-export { background: #20c997; } /*[cite: 3] */
-        .btn-import { background: #e83e8c; } /*[cite: 3] */
-        .btn-archive { background: #6c757d; } /*[cite: 3] */
+        .btn { background: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 34px; touch-action: manipulation; }
+        .btn-zone { background: #17a2b8; } 
+        .btn-status { background: #6f42c1; } 
+        .btn-save { background: #fd7e14; } 
+        .btn-export { background: #20c997; }
+        .btn-import { background: #e83e8c; }
+        .btn-archive { background: #6c757d; }
 
         /* Dashboard 儀表板區域 */
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 8px; } /*[cite: 3] */
-        .kpi-card { background: white; padding: 8px 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #1f4e78; } /*[cite: 3] */
-        .kpi-card .kpi-title { font-size: 0.7rem; color: #666; font-weight: bold; } /*[cite: 3] */
-        .kpi-card .kpi-num { font-size: 1.2rem; font-weight: bold; color: #1f4e78; margin-top: 2px; } /*[cite: 3] */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 8px; }
+        .kpi-card { background: white; padding: 8px 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #1f4e78; }
+        .kpi-card .kpi-title { font-size: 0.7rem; color: #666; font-weight: bold; }
+        .kpi-card .kpi-num { font-size: 1.2rem; font-weight: bold; color: #1f4e78; margin-top: 2px; }
 
         /* 驗交車公告卡片 */
-        .announcement-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); } /*[cite: 3] */
-        .announcement-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; } /*[cite: 3] */
-        .announcement-title { font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; } /*[cite: 3] */
-        .btn-announcement { background: #007bff; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; } /*[cite: 3] */
-        .btn-announcement:hover { background: #0056b3; } /*[cite: 3] */
-        .btn-announcement-del { background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; cursor: pointer; } /*[cite: 3] */
+        .announcement-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .announcement-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .announcement-title { font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
+        .btn-announcement { background: #007bff; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-announcement:hover { background: #0056b3; }
+        .btn-announcement-del { background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; cursor: pointer; }
 
         /* 搜尋與排序條 */
-        .sort-bar { display: flex; align-items: center; gap: 6px; background: #e4dfc3; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.8rem; flex-wrap: wrap; } /*[cite: 3] */
-        .sort-bar select { width: auto; height: 30px; padding: 2px 6px; } /*[cite: 3] */
-        .search-input { height: 30px; padding: 2px 8px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.8rem; width: 180px; background-color: #fff; } /*[cite: 3] */
+        .sort-bar { display: flex; align-items: center; gap: 6px; background: #e4dfc3; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.8rem; flex-wrap: wrap; }
+        .sort-bar select { width: auto; height: 30px; padding: 2px 6px; }
+        .search-input { height: 30px; padding: 2px 8px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.8rem; width: 180px; background-color: #fff; }
 
         /* 頁籤 */
-        .nav-tabs { display: flex; gap: 4px; margin-bottom: 8px; border-bottom: 2px solid #1f4e78; } /*[cite: 3] */
-        .tab-btn { flex: 1; padding: 8px 4px; background: #e9ecef; border: none; border-radius: 6px 6px 0 0; font-weight: bold; cursor: pointer; color: #495057; font-size: 0.85rem; text-align: center; min-height: 38px; } /*[cite: 3] */
-        .tab-btn.active { background: #1f4e78; color: white; } /*[cite: 3] */
-        .tab-btn.admin-only { display: none !important; } /*[cite: 3] */
-        .tab-btn.admin-only.show { display: block !important; } /*[cite: 3] */
+        .nav-tabs { display: flex; gap: 4px; margin-bottom: 8px; border-bottom: 2px solid #1f4e78; }
+        .tab-btn { flex: 1; padding: 8px 4px; background: #e9ecef; border: none; border-radius: 6px 6px 0 0; font-weight: bold; cursor: pointer; color: #495057; font-size: 0.85rem; text-align: center; min-height: 38px; }
+        .tab-btn.active { background: #1f4e78; color: white; }
+        .tab-btn.admin-only { display: none !important; }
+        .tab-btn.admin-only.show { display: block !important; }
 
-        .tab-content { display: none; } /*[cite: 3] */
-        .tab-content.active { display: block; } /*[cite: 3] */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
         /* 卡片與廠區配置圖 */
-        .card { background: #e4dfc3; border-radius: 8px; padding: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-bottom: 10px; border: 1px solid #d4ceb0; } /*[cite: 3] */
-        .card-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: #1f4e78; border-bottom: 2px solid #c8c2a3; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; } /*[cite: 3] */
+        .card { background: #e4dfc3; border-radius: 8px; padding: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-bottom: 10px; border: 1px solid #d4ceb0; }
+        .card-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: #1f4e78; border-bottom: 2px solid #c8c2a3; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
 
-        .map-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; } /*[cite: 3] */
-        .zone { border: 2px solid #b8b193; border-radius: 6px; padding: 6px; background: #e4dfc3; display: flex; flex-direction: column; max-height: 480px; transition: transform 0.15s, opacity 0.15s; } /*[cite: 3] */
-        .zone-header { display: flex; justify-content: space-between; align-items: center; background: #2c3e50; color: white; padding: 6px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; user-select: none; } /*[cite: 3] */
+        .map-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; }
+        .zone { border: 2px solid #b8b193; border-radius: 6px; padding: 6px; background: #e4dfc3; display: flex; flex-direction: column; max-height: 480px; transition: transform 0.15s, opacity 0.15s; }
+        .zone-header { display: flex; justify-content: space-between; align-items: center; background: #2c3e50; color: white; padding: 6px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; user-select: none; }
         
-        .zone-body { overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-top: 6px; flex-grow: 1; min-height: 50px; } /*[cite: 3] */
-        .zone-body::-webkit-scrollbar { width: 5px; } /*[cite: 3] */
-        .zone-body::-webkit-scrollbar-thumb { background: #bbb; border-radius: 4px; } /*[cite: 3] */
+        .zone-body { overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-top: 6px; flex-grow: 1; min-height: 50px; }
+        .zone-body::-webkit-scrollbar { width: 5px; }
+        .zone-body::-webkit-scrollbar-thumb { background: #bbb; border-radius: 4px; }
 
         /* 車輛卡片與標籤 */
-        .bus-card { background: white; border: 1px solid #ccc; border-radius: 5px; padding: 6px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: grab; } /*[cite: 3] */
-        .bus-card:active { cursor: grabbing; } /*[cite: 3] */
-        .bus-header { display: flex; justify-content: space-between; align-items: center; gap: 4px; } /*[cite: 3] */
-        .bus-plate-input { font-weight: bold; font-size: 0.8rem; padding: 4px 6px; border-radius: 4px; text-align: center; flex-grow: 1; min-height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.2s; word-break: break-all; } /*[cite: 3] */
-        .bus-plate-input:hover { opacity: 0.85; } /*[cite: 3] */
+        .bus-card { background: white; border: 1px solid #ccc; border-radius: 5px; padding: 6px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: grab; }
+        .bus-card:active { cursor: grabbing; }
+        .bus-header { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
+        .bus-plate-input { font-weight: bold; font-size: 0.8rem; padding: 4px 6px; border-radius: 4px; text-align: center; flex-grow: 1; min-height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.2s; word-break: break-all; }
+        .bus-plate-input:hover { opacity: 0.85; }
 
-        .bus-badge-container { display: flex; gap: 4px; font-size: 0.68rem; flex-wrap: wrap; margin-top: 2px; } /*[cite: 3] */
-        .photo-badge { background: #e83e8c; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 2px; transition: background 0.2s; } /*[cite: 3] */
-        .photo-badge:hover { background: #d63384; } /*[cite: 3] */
+        .bus-badge-container { display: flex; gap: 4px; font-size: 0.68rem; flex-wrap: wrap; margin-top: 2px; }
+        .photo-badge { background: #e83e8c; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 2px; transition: background 0.2s; }
+        .photo-badge:hover { background: #d63384; }
 
         /* 車輛方塊內的日期選擇列 */
-        .bus-date-row { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: #495057; } /*[cite: 3] */
-        .bus-date-group { display: flex; align-items: center; gap: 2px; flex: 1; } /*[cite: 3] */
-        .bus-date-input { font-size: 0.68rem; padding: 1px 2px; border: 1px solid #ced4da; border-radius: 3px; width: 100%; height: 26px; } /*[cite: 3] */
-        .bus-date-text { font-size: 0.7rem; color: #212529; font-weight: 500; background: #ffffff; padding: 3px 4px; border-radius: 3px; border: 1px solid #ced4da; width: 100%; text-align: center; } /*[cite: 3] */
+        .bus-date-row { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: #495057; }
+        .bus-date-group { display: flex; align-items: center; gap: 2px; flex: 1; }
+        .bus-date-input { font-size: 0.68rem; padding: 1px 2px; border: 1px solid #ced4da; border-radius: 3px; width: 100%; height: 26px; }
+        .bus-date-text { font-size: 0.7rem; color: #212529; font-weight: 500; background: #ffffff; padding: 3px 4px; border-radius: 3px; border: 1px solid #ced4da; width: 100%; text-align: center; }
 
         /* 表格與滾動 */
-        .table-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #ddd; border-radius: 6px; background: #ffffff; } /*[cite: 3] */
-        .table-scroll-tip { font-size: 0.75rem; color: #17a2b8; background: #e8f7f9; padding: 4px 8px; border-radius: 4px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; } /*[cite: 3] */
+        .table-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #ddd; border-radius: 6px; background: #ffffff; }
+        .table-scroll-tip { font-size: 0.75rem; color: #17a2b8; background: #e8f7f9; padding: 4px 8px; border-radius: 4px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
 
-        select, input, textarea { width: 100%; padding: 4px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.8rem; background-color: #fff; color: #333; } /*[cite: 3] */
-        select:disabled, input:disabled { color: #212529 !important; -webkit-text-fill-color: #212529 !important; opacity: 1 !important; background-color: #ffffff !important; border-color: #ced4da !important; } /*[cite: 3] */
+        select, input, textarea { width: 100%; padding: 4px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.8rem; background-color: #fff; color: #333; }
+        select:disabled, input:disabled { color: #212529 !important; -webkit-text-fill-color: #212529 !important; opacity: 1 !important; background-color: #ffffff !important; border-color: #ced4da !important; }
 
-        .autosave-badge { font-size: 0.7rem; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 10px; display: inline-flex; align-items: center; gap: 4px; } /*[cite: 3] */
-        .dot { width: 8px; height: 8px; background-color: #28a745; border-radius: 50%; transition: background-color 0.3s; } /*[cite: 3] */
-        .dot.syncing { background-color: #ffc107; } /*[cite: 3] */
-        .dot.error { background-color: #dc3545; } /*[cite: 3] */
-        .hidden-file-input { display: none; } /*[cite: 3] */
+        .autosave-badge { font-size: 0.7rem; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 10px; display: inline-flex; align-items: center; gap: 4px; }
+        .dot { width: 8px; height: 8px; background-color: #28a745; border-radius: 50%; transition: background-color 0.3s; }
+        .dot.syncing { background-color: #ffc107; }
+        .dot.error { background-color: #dc3545; }
+        .hidden-file-input { display: none; }
 
-        .back-to-top { position: fixed; bottom: 20px; right: 20px; background: #1f4e78; color: white; width: 42px; height: 42px; border-radius: 50%; border: none; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; z-index: 99; } /*[cite: 3] */
-        .back-to-top.show { display: flex; } /*[cite: 3] */
+        .back-to-top { position: fixed; bottom: 20px; right: 20px; background: #1f4e78; color: white; width: 42px; height: 42px; border-radius: 50%; border: none; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; z-index: 99; }
+        .back-to-top.show { display: flex; }
 
         /* Modal 彈窗與相片牆 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; } /*[cite: 3] */
-        .modal.active { display: flex; } /*[cite: 3] */
-        .modal-content { background: white; border-radius: 8px; width: 92%; max-width: 520px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-height: 88vh; overflow-y: auto; } /*[cite: 3] */
-        .modal-header { font-weight: bold; margin-bottom: 12px; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; } /*[cite: 3] */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 8px; width: 92%; max-width: 520px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-height: 88vh; overflow-y: auto; }
+        .modal-header { font-weight: bold; margin-bottom: 12px; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; }
         
         /* 獨立色盤區塊 */
-        .color-section { margin-bottom: 10px; background: #f8f9fa; padding: 8px; border-radius: 6px; border: 1px solid #e9ecef; } /*[cite: 3] */
-        .color-palette { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; align-items: center; } /*[cite: 3] */
-        .color-swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 3px rgba(0,0,0,0.3); } /*[cite: 3] */
-        .color-swatch.selected { border: 2px solid #000; transform: scale(1.1); } /*[cite: 3] */
+        .color-section { margin-bottom: 10px; background: #f8f9fa; padding: 8px; border-radius: 6px; border: 1px solid #e9ecef; }
+        .color-palette { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; align-items: center; }
+        .color-swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 3px rgba(0,0,0,0.3); }
+        .color-swatch.selected { border: 2px solid #000; transform: scale(1.1); }
         
-        .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; } /*[cite: 3] */
+        .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
 
         /* 相片牆樣式 */
-        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 6px; } /*[cite: 3] */
-        .photo-item { position: relative; width: 100%; height: 90px; border-radius: 6px; overflow: hidden; border: 1px solid #ddd; background: #000; } /*[cite: 3] */
-        .photo-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; } /*[cite: 3] */
-        .photo-del-btn { position: absolute; top: 3px; right: 3px; background: rgba(220,53,69,0.9); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.4); z-index: 2; } /*[cite: 3] */
-        .photo-del-btn:hover { background: #dc3545; } /*[cite: 3] */
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 6px; }
+        .photo-item { position: relative; width: 100%; height: 90px; border-radius: 6px; overflow: hidden; border: 1px solid #ddd; background: #000; }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+        .photo-del-btn { position: absolute; top: 3px; right: 3px; background: rgba(220,53,69,0.9); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.4); z-index: 2; }
+        .photo-del-btn:hover { background: #dc3545; }
 
         /* 全螢幕大圖 Modal */
-        .lightbox-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; justify-content:center; align-items:center; } /*[cite: 3] */
-        .lightbox-modal.active { display: flex; } /*[cite: 3] */
-        .lightbox-img { max-width: 92%; max-height: 85vh; border-radius: 4px; box-shadow: 0 0 20px rgba(0,0,0,0.5); } /*[cite: 3] */
+        .lightbox-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; justify-content:center; align-items:center; }
+        .lightbox-modal.active { display: flex; }
+        .lightbox-img { max-width: 92%; max-height: 85vh; border-radius: 4px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
 
         /* 時間軸 / 履歷清單 */
-        .timeline-list { list-style: none; margin-top: 8px; padding-left: 10px; border-left: 2px solid #1f4e78; font-size: 0.75rem; } /*[cite: 3] */
-        .timeline-item { position: relative; margin-bottom: 8px; padding-left: 10px; } /*[cite: 3] */
-        .timeline-item::before { content: ''; position: absolute; left: -15px; top: 4px; width: 8px; height: 8px; background: #1f4e78; border-radius: 50%; } /*[cite: 3] */
-        .timeline-time { color: #777; font-size: 0.68rem; } /*[cite: 3] */
+        .timeline-list { list-style: none; margin-top: 8px; padding-left: 10px; border-left: 2px solid #1f4e78; font-size: 0.75rem; }
+        .timeline-item { position: relative; margin-bottom: 8px; padding-left: 10px; }
+        .timeline-item::before { content: ''; position: absolute; left: -15px; top: 4px; width: 8px; height: 8px; background: #1f4e78; border-radius: 50%; }
+        .timeline-time { color: #777; font-size: 0.68rem; }
 
         /* 管理清單列表 */
-        .manage-list { list-style: none; margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px; } /*[cite: 3] */
-        .manage-item { display: flex; align-items: center; gap: 8px; background: #f8f9fa; padding: 6px 10px; border-radius: 4px; border: 1px solid #ddd; } /*[cite: 3] */
+        .manage-list { list-style: none; margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px; }
+        .manage-item { display: flex; align-items: center; gap: 8px; background: #f8f9fa; padding: 6px 10px; border-radius: 4px; border: 1px solid #ddd; }
     </style>
 </head>
 <body>
@@ -162,119 +162,119 @@
                 <path d="M 500,70 L 270,70 L 90,270 L 440,930 L 500,930 Z" fill="none" stroke="#1D2088" stroke-width="65" stroke-linejoin="miter" stroke-miterlimit="10"/>
                 <path d="M 500,70 L 730,70 L 910,270 L 560,930 L 500,930 Z" fill="none" stroke="#E60012" stroke-width="65" stroke-linejoin="miter" stroke-miterlimit="10"/>
                 <path d="M 500,270 L 820,270" fill="none" stroke="#E60012" stroke-width="65" stroke-linecap="square"/>
-            </svg> <!--[cite: 3] -->
-            <span>柏昇開發工業 - 車輛動態管理系統</span> <!--[cite: 3] -->
-            <span class="author-tag">製作者：柏昇小歐</span> <!--[cite: 3] -->
+            </svg>
+            <span>柏昇開發工業 - 車輛動態管理系統</span>
+            <span class="author-tag">製作者：柏昇小歐</span>
         </div>
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
             <div class="header-top-right">
-                <span id="liveClock" class="live-clock"></span> <!--[cite: 3] -->
+                <span id="liveClock" class="live-clock"></span>
             </div>
             <div id="authBar" class="auth-bar">
-                <span id="authStatusText">👁️ 唯讀模式</span> <!--[cite: 3] -->
-                <button id="authBtn" class="btn-auth" onclick="toggleAuth()">🔑 登入編輯</button> <!--[cite: 3] -->
+                <span id="authStatusText">👁️ 唯讀模式</span>
+                <button id="authBtn" class="btn-auth" onclick="toggleAuth()">🔑 登入編輯</button>
             </div>
-            <span class="autosave-badge"><span class="dot" id="syncDot"></span><span id="syncText">資料同步中...</span></span> <!--[cite: 3] -->
+            <span class="autosave-badge"><span class="dot" id="syncDot"></span><span id="syncText">資料同步中...</span></span>
         </div>
     </h1>
 
     <div class="controls admin-only" id="adminControls">
-        <button class="btn btn-zone" onclick="openZoneManager()">⚙️ 區域管理</button> <!--[cite: 3] -->
-        <button class="btn btn-status" onclick="openStatusManager()">🎨 進度管理</button> <!--[cite: 3] -->
-        <button class="btn" id="btnAddBus" onclick="handleAddBus()">➕ 新增車輛</button> <!--[cite: 3] -->
-        <button class="btn btn-save" id="btnSave" onclick="saveData()">💾 儲存與同步</button> <!--[cite: 3] -->
-        <button class="btn btn-export" onclick="exportDispatchSheet()">📄 匯出派工單</button> <!--[cite: 3] -->
-        <button class="btn btn-export" onclick="exportData()">📥 備份 JSON</button> <!--[cite: 3] -->
-        <button class="btn btn-import" onclick="triggerImport()">📤 匯入 JSON</button> <!--[cite: 3] -->
-        <button class="btn btn-archive" onclick="openArchiveModal()">📦 歸檔庫</button> <!--[cite: 3] -->
-        <input type="file" id="importFileInput" class="hidden-file-input" accept=".json" onchange="importData(event)"> <!--[cite: 3] -->
+        <button class="btn btn-zone" onclick="openZoneManager()">⚙️ 區域管理</button>
+        <button class="btn btn-status" onclick="openStatusManager()">🎨 進度管理</button>
+        <button class="btn" id="btnAddBus" onclick="handleAddBus()">➕ 新增車輛</button>
+        <button class="btn btn-save" id="btnSave" onclick="saveData()">💾 儲存與同步</button>
+        <button class="btn btn-export" onclick="exportDispatchSheet()">📄 匯出派工單</button>
+        <button class="btn btn-export" onclick="exportData()">📥 備份 JSON</button>
+        <button class="btn btn-import" onclick="triggerImport()">📤 匯入 JSON</button>
+        <button class="btn btn-archive" onclick="openArchiveModal()">📦 歸檔庫</button>
+        <input type="file" id="importFileInput" class="hidden-file-input" accept=".json" onchange="importData(event)">
     </div>
 </div>
 
 <!-- 隱藏式上傳 input -->
-<input type="file" id="globalDirectPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handleDirectPhotoUpload(event)"> <!--[cite: 3] -->
-<input type="file" id="announcementFileInput" class="hidden-file-input" accept="image/*" onchange="handleAnnouncementPhotoUpload(event)"> <!--[cite: 3] -->
+<input type="file" id="globalDirectPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handleDirectPhotoUpload(event)">
+<input type="file" id="announcementFileInput" class="hidden-file-input" accept="image/*" onchange="handleAnnouncementPhotoUpload(event)">
 
 <!-- Dashboard 儀表板區域 -->
 <div class="dashboard-grid">
     <div class="kpi-card" style="border-left-color: #1f4e78;">
-        <div class="kpi-title">總在場數量</div> <!--[cite: 3] -->
-        <div class="kpi-num" id="kpiTotal">0 台</div> <!--[cite: 3] -->
+        <div class="kpi-title">總在場數量</div>
+        <div class="kpi-num" id="kpiTotal">0 台</div>
     </div>
     <div class="kpi-card" style="border-left-color: #1E88E5;">
-        <div class="kpi-title">施工中</div> <!--[cite: 3] -->
-        <div class="kpi-num" id="kpiWorking">0 台</div> <!--[cite: 3] -->
+        <div class="kpi-title">施工中</div>
+        <div class="kpi-num" id="kpiWorking">0 台</div>
     </div>
     <div class="kpi-card" style="border-left-color: #4CAF50;">
-        <div class="kpi-title">待交車</div> <!--[cite: 3] -->
-        <div class="kpi-num" id="kpiDone">0 台</div> <!--[cite: 3] -->
+        <div class="kpi-title">待交車</div>
+        <div class="kpi-num" id="kpiDone">0 台</div>
     </div>
     <div class="kpi-card" style="border-left-color: #E53935;">
-        <div class="kpi-title">暫停施工</div> <!--[cite: 3] -->
-        <div class="kpi-num" id="kpiPause">0 台</div> <!--[cite: 3] -->
+        <div class="kpi-title">暫停施工</div>
+        <div class="kpi-num" id="kpiPause">0 台</div>
     </div>
 </div>
 
 <!-- 驗交車公告卡片 -->
 <div class="announcement-box" id="announcementBox">
     <div class="announcement-left">
-        <span class="announcement-title">📢 <b>查核 / 驗車 / 交車日公告</b></span> <!--[cite: 3] -->
-        <button class="btn-announcement" id="btnViewAnnouncement" onclick="viewAnnouncementImg()">🖼️ 查看公告圖片</button> <!--[cite: 3] -->
-        <span id="announcementStatusText" style="font-size:0.75rem; font-weight:normal; opacity:0.85;">(載入中...)</span> <!--[cite: 3] -->
+        <span class="announcement-title">📢 <b>查核 / 驗車 / 交車日公告</b></span>
+        <button class="btn-announcement" id="btnViewAnnouncement" onclick="viewAnnouncementImg()">🖼️ 查看公告圖片</button>
+        <span id="announcementStatusText" style="font-size:0.75rem; font-weight:normal; opacity:0.85;">(載入中...)</span>
     </div>
     <div class="controls admin-only" id="adminAnnouncementControls" style="display:inline-flex; gap:4px;">
-        <button class="btn-announcement" style="background:#28a745;" onclick="triggerAnnouncementUpload()">📤 上傳公告圖片</button> <!--[cite: 3] -->
-        <button class="btn-announcement-del" id="btnDelAnnouncementImg" onclick="deleteAnnouncementImg()">🗑️ 刪除圖片</button> <!--[cite: 3] -->
+        <button class="btn-announcement" style="background:#28a745;" onclick="triggerAnnouncementUpload()">📤 上傳公告圖片</button>
+        <button class="btn-announcement-del" id="btnDelAnnouncementImg" onclick="deleteAnnouncementImg()">🗑️ 刪除圖片</button>
     </div>
 </div>
 
 <!-- 搜尋與排序條 -->
 <div class="sort-bar">
-    <span><b>🔍 搜尋：</b></span> <!--[cite: 3] -->
-    <input type="text" id="searchInput" class="search-input" placeholder="搜尋車號或備註..." oninput="renderApp()"> <!--[cite: 3] -->
+    <span><b>🔍 搜尋：</b></span>
+    <input type="text" id="searchInput" class="search-input" placeholder="搜尋車號或備註..." oninput="renderApp()">
     
-    <span style="margin-left: 10px;"><b>排序車輛：</b></span> <!--[cite: 3] -->
+    <span style="margin-left: 10px;"><b>排序車輛：</b></span>
     <select id="sortField" onchange="renderApp()">
-        <option value="plate">車號 / 名稱</option> <!--[cite: 3] -->
-        <option value="zone">區域</option> <!--[cite: 3] -->
-        <option value="id">建立順序</option> <!--[cite: 3] -->
+        <option value="plate">車號 / 名稱</option>
+        <option value="zone">區域</option>
+        <option value="id">建立順序</option>
     </select>
     <select id="sortOrder" onchange="renderApp()">
-        <option value="asc">升冪 ⬆️</option> <!--[cite: 3] -->
-        <option value="desc">降冪 ⬇️</option> <!--[cite: 3] -->
+        <option value="asc">升冪 ⬆️</option>
+        <option value="desc">降冪 ⬇️</option>
     </select>
 </div>
 
 <!-- 頁籤條 -->
 <div class="nav-tabs">
-    <button class="tab-btn active" data-tab="tab-map">📍 廠區動態圖</button> <!--[cite: 3] -->
-    <button class="tab-btn" data-tab="tab-table">📋 全廠車輛總表</button> <!--[cite: 3] -->
-    <button class="tab-btn admin-only" id="tabLogsBtn" data-tab="tab-logs">📜 全廠歷史履歷日誌</button> <!--[cite: 3] -->
+    <button class="tab-btn active" data-tab="tab-map">📍 廠區動態圖</button>
+    <button class="tab-btn" data-tab="tab-table">📋 全廠車輛總表</button>
+    <button class="tab-btn admin-only" id="tabLogsBtn" data-tab="tab-logs">📜 全廠歷史履歷日誌</button>
 </div>
 
 <!-- 分頁 1：動態圖 -->
 <div id="tab-map" class="tab-content active">
     <div class="card">
-        <div class="card-title">📍 廠區分區配置圖</div> <!--[cite: 3] -->
-        <div class="map-container" id="mapContainer"></div> <!--[cite: 3] -->
+        <div class="card-title">📍 廠區分區配置圖</div>
+        <div class="map-container" id="mapContainer"></div>
     </div>
 </div>
 
 <!-- 分頁 2：表格 -->
 <div id="tab-table" class="tab-content">
     <div class="card">
-        <div class="card-title">📋 車輛詳細總表</div> <!--[cite: 3] -->
-        <div class="table-scroll-tip">👈👉 手機可直接左右滑動檢視所有欄位</div> <!--[cite: 3] -->
+        <div class="card-title">📋 車輛詳細總表</div>
+        <div class="table-scroll-tip">👈👉 手機可直接左右滑動檢視所有欄位</div>
         <div class="table-scroll-container">
             <table id="busTable" style="width:100%; min-width:640px; border-collapse:collapse; font-size:0.78rem;">
                 <thead>
                     <tr style="background:#e9ecef;">
-                        <th style="padding:6px 4px; border:1px solid #ccc; width:130px;">車號 / 備註</th> <!--[cite: 3] -->
-                        <th style="padding:6px 4px; border:1px solid #ccc; width:130px;">所屬區域</th> <!--[cite: 3] -->
-                        <th style="padding:6px 4px; border:1px solid #ccc; width:110px;">當前進度</th> <!--[cite: 3] -->
-                        <th style="padding:6px 4px; border:1px solid #ccc; width:130px;">進場 / 出廠日期</th> <!--[cite: 3] -->
-                        <th style="padding:6px 4px; border:1px solid #ccc; width:120px;">照片/歷史</th> <!--[cite: 3] -->
-                        <th style="padding:6px 4px; border:1px solid #ccc; width:60px;">操作</th> <!--[cite: 3] -->
+                        <th style="padding:6px 4px; border:1px solid #ccc; width:130px;">車號 / 備註</th>
+                        <th style="padding:6px 4px; border:1px solid #ccc; width:130px;">所屬區域</th>
+                        <th style="padding:6px 4px; border:1px solid #ccc; width:110px;">當前進度</th>
+                        <th style="padding:6px 4px; border:1px solid #ccc; width:130px;">進場 / 出廠日期</th>
+                        <th style="padding:6px 4px; border:1px solid #ccc; width:120px;">照片/歷史</th>
+                        <th style="padding:6px 4px; border:1px solid #ccc; width:60px;">操作</th>
                     </tr>
                 </thead>
                 <tbody id="busTableBody"></tbody>
@@ -286,73 +286,73 @@
 <!-- 分頁 3：全廠異動日誌 -->
 <div id="tab-logs" class="tab-content">
     <div class="card">
-        <div class="card-title">📜 全廠作業履歷與異動紀錄 (Audit Trail)</div> <!--[cite: 3] -->
+        <div class="card-title">📜 全廠作業履歷與異動紀錄 (Audit Trail)</div>
         <div style="background:white; padding:10px; border-radius:6px; max-height:500px; overflow-y:auto;">
-            <ul class="timeline-list" id="globalAuditLogList"></ul> <!--[cite: 3] -->
+            <ul class="timeline-list" id="globalAuditLogList"></ul>
         </div>
     </div>
 </div>
 
 <!-- 置頂按鈕 -->
-<button class="back-to-top" id="btnTop" onclick="scrollToTop()">⬆</button> <!--[cite: 3] -->
+<button class="back-to-top" id="btnTop" onclick="scrollToTop()">⬆</button>
 
 <!-- 編輯車輛 + 照片上傳 Modal -->
 <div class="modal" id="busModal">
     <div class="modal-content">
         <div class="modal-header">
-            <span>編輯車輛詳細資訊與施工紀錄</span> <!--[cite: 3] -->
-            <button onclick="closeModal('busModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;">✕</button> <!--[cite: 3] -->
+            <span>編輯車輛詳細資訊與施工紀錄</span>
+            <button onclick="closeModal('busModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;">✕</button>
         </div>
         
-        <label style="font-size:0.8rem; font-weight:bold;">車輛編號 / 車號：</label> <!--[cite: 3] -->
-        <input type="text" id="modalBusTitle" style="margin-top:2px; margin-bottom:8px;"> <!--[cite: 3] -->
+        <label style="font-size:0.8rem; font-weight:bold;">車輛編號 / 車號：</label>
+        <input type="text" id="modalBusTitle" style="margin-top:2px; margin-bottom:8px;">
 
         <div style="display:flex; gap:8px; margin-bottom:8px;">
             <div style="flex:1;">
-                <label style="font-size:0.8rem; font-weight:bold;">進場日期：</label> <!--[cite: 3] -->
-                <input type="date" id="modalBusStartDate"> <!--[cite: 3] -->
+                <label style="font-size:0.8rem; font-weight:bold;">進場日期：</label>
+                <input type="date" id="modalBusStartDate">
             </div>
             <div style="flex:1;">
-                <label style="font-size:0.8rem; font-weight:bold;">預計/出廠日期：</label> <!--[cite: 3] -->
-                <input type="date" id="modalBusEndDate"> <!--[cite: 3] -->
+                <label style="font-size:0.8rem; font-weight:bold;">預計/出廠日期：</label>
+                <input type="date" id="modalBusEndDate">
             </div>
         </div>
         
-        <label style="font-size:0.8rem; font-weight:bold;">施工細節備註：</label> <!--[cite: 3] -->
-        <textarea id="modalBusNote" rows="2" style="margin-top:2px; margin-bottom:8px; font-size:0.78rem;" placeholder="記錄現場注意事項、施工重點..."></textarea> <!--[cite: 3] -->
+        <label style="font-size:0.8rem; font-weight:bold;">施工細節備註：</label>
+        <textarea id="modalBusNote" rows="2" style="margin-top:2px; margin-bottom:8px; font-size:0.78rem;" placeholder="記錄現場注意事項、施工重點..."></textarea>
 
         <!-- 分開設定底色與字體色彩 -->
         <div class="color-section">
-            <label style="font-size:0.8rem; font-weight:bold; color:#1f4e78;">🎨 1. 底色選擇 (Background Color)：</label> <!--[cite: 3] -->
-            <div class="color-palette" id="busBgPalette"></div> <!--[cite: 3] -->
+            <label style="font-size:0.8rem; font-weight:bold; color:#1f4e78;">🎨 1. 底色選擇 (Background Color)：</label>
+            <div class="color-palette" id="busBgPalette"></div>
         </div>
 
         <div class="color-section">
-            <label style="font-size:0.8rem; font-weight:bold; color:#1f4e78;">✏️ 2. 字體顏色選擇 (Text Color)：</label> <!--[cite: 3] -->
-            <div class="color-palette" id="busTextColorPalette"></div> <!--[cite: 3] -->
+            <label style="font-size:0.8rem; font-weight:bold; color:#1f4e78;">✏️ 2. 字體顏色選擇 (Text Color)：</label>
+            <div class="color-palette" id="busTextColorPalette"></div>
         </div>
 
         <!-- 照片上傳區 -->
         <div style="border-top:1px solid #eee; padding-top:8px; margin-top:4px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <label style="font-size:0.8rem; font-weight:bold;">📷 施工瑕疵 / 現場照片：</label> <!--[cite: 3] -->
-                <button class="btn btn-zone" style="min-height:24px; padding:2px 8px; font-size:0.7rem;" onclick="triggerPhotoUpload()">📸 上傳照片</button> <!--[cite: 3] -->
-                <input type="file" id="busPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handlePhotoUpload(event)"> <!--[cite: 3] -->
+                <label style="font-size:0.8rem; font-weight:bold;">📷 施工瑕疵 / 現場照片：</label>
+                <button class="btn btn-zone" style="min-height:24px; padding:2px 8px; font-size:0.7rem;" onclick="triggerPhotoUpload()">📸 上傳照片</button>
+                <input type="file" id="busPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handlePhotoUpload(event)">
             </div>
-            <div class="photo-grid" id="modalPhotoGrid"></div> <!--[cite: 3] -->
+            <div class="photo-grid" id="modalPhotoGrid"></div>
         </div>
 
         <!-- 履歷時間軸 -->
         <div style="border-top:1px solid #eee; padding-top:8px; margin-top:10px;">
-            <label style="font-size:0.8rem; font-weight:bold;">⏱️ 本車歷史履歷異動：</label> <!--[cite: 3] -->
+            <label style="font-size:0.8rem; font-weight:bold;">⏱️ 本車歷史履歷異動：</label>
             <div style="max-height:120px; overflow-y:auto; margin-top:4px;">
-                <ul class="timeline-list" id="modalBusTimeline"></ul> <!--[cite: 3] -->
+                <ul class="timeline-list" id="modalBusTimeline"></ul>
             </div>
         </div>
 
         <div class="modal-footer">
-            <button class="btn btn-archive" onclick="archiveCurrentBus()">📦 歸檔此車輛</button> <!--[cite: 3] -->
-            <button class="btn" onclick="saveBusModal()">💾 儲存並更新</button> <!--[cite: 3] -->
+            <button class="btn btn-archive" onclick="archiveCurrentBus()">📦 歸檔此車輛</button>
+            <button class="btn" onclick="saveBusModal()">💾 儲存並更新</button>
         </div>
     </div>
 </div>
@@ -361,35 +361,35 @@
 <div class="modal" id="photoGalleryModal">
     <div class="modal-content">
         <div class="modal-header">
-            <span id="galleryModalTitle">📷 車輛施工照片</span> <!--[cite: 3] -->
-            <button onclick="closeModal('photoGalleryModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;">✕</button> <!--[cite: 3] -->
+            <span id="galleryModalTitle">📷 車輛施工照片</span>
+            <button onclick="closeModal('photoGalleryModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;">✕</button>
         </div>
-        <div class="photo-grid" id="galleryPhotoGrid"></div> <!--[cite: 3] -->
+        <div class="photo-grid" id="galleryPhotoGrid"></div>
         <div class="modal-footer">
-            <button class="btn" onclick="closeModal('photoGalleryModal')">關閉</button> <!--[cite: 3] -->
+            <button class="btn" onclick="closeModal('photoGalleryModal')">關閉</button>
         </div>
     </div>
 </div>
 
 <!-- 大圖查看 Lightbox Modal -->
 <div class="lightbox-modal" id="lightboxModal" onclick="closeModal('lightboxModal')">
-    <img id="lightboxImg" class="lightbox-img" src="" alt="大圖"> <!--[cite: 3] -->
+    <img id="lightboxImg" class="lightbox-img" src="" alt="大圖">
 </div>
 
 <!-- 歸檔庫 Modal -->
 <div class="modal" id="archiveModal">
     <div class="modal-content">
         <div class="modal-header">
-            <span>📦 歷史歸檔車輛庫</span> <!--[cite: 3] -->
-            <button onclick="closeModal('archiveModal')" style="border:none;background:none;cursor:pointer;">✕</button> <!--[cite: 3] -->
+            <span>📦 歷史歸檔車輛庫</span>
+            <button onclick="closeModal('archiveModal')" style="border:none;background:none;cursor:pointer;">✕</button>
         </div>
         <div style="max-height:350px; overflow-y:auto;">
             <table style="width:100%; border-collapse:collapse; font-size:0.75rem;">
                 <thead>
                     <tr style="background:#f1f1f1;">
-                        <th style="padding:4px; border:1px solid #ccc;">車號</th> <!--[cite: 3] -->
-                        <th style="padding:4px; border:1px solid #ccc;">最後區域</th> <!--[cite: 3] -->
-                        <th style="padding:4px; border:1px solid #ccc;">操作</th> <!--[cite: 3] -->
+                        <th style="padding:4px; border:1px solid #ccc;">車號</th>
+                        <th style="padding:4px; border:1px solid #ccc;">最後區域</th>
+                        <th style="padding:4px; border:1px solid #ccc;">操作</th>
                     </tr>
                 </thead>
                 <tbody id="archiveTableBody"></tbody>
@@ -402,12 +402,12 @@
 <div class="modal" id="zoneManagerModal">
     <div class="modal-content">
         <div class="modal-header">
-            <span>⚙️ 全廠區域管理</span> <!--[cite: 3] -->
-            <button onclick="closeModal('zoneManagerModal')" style="border:none;background:none;cursor:pointer;">✕</button> <!--[cite: 3] -->
+            <span>⚙️ 全廠區域管理</span>
+            <button onclick="closeModal('zoneManagerModal')" style="border:none;background:none;cursor:pointer;">✕</button>
         </div>
-        <div class="manage-list" id="zoneManageList"></div> <!--[cite: 3] -->
-        <button class="btn btn-zone" style="width:100%;" onclick="addNewZone()">➕ 新增區域</button> <!--[cite: 3] -->
-        <div class="modal-footer"><button class="btn" onclick="closeModal('zoneManagerModal')">關閉</button></div> <!--[cite: 3] -->
+        <div class="manage-list" id="zoneManageList"></div>
+        <button class="btn btn-zone" style="width:100%;" onclick="addNewZone()">➕ 新增區域</button>
+        <div class="modal-footer"><button class="btn" onclick="closeModal('zoneManagerModal')">關閉</button></div>
     </div>
 </div>
 
@@ -415,382 +415,341 @@
 <div class="modal" id="statusManagerModal">
     <div class="modal-content">
         <div class="modal-header">
-            <span>🎨 全廠進度選項管理</span> <!--[cite: 3] -->
-            <button onclick="closeModal('statusManagerModal')" style="border:none;background:none;cursor:pointer;">✕</button> <!--[cite: 3] -->
+            <span>🎨 全廠進度選項管理</span>
+            <button onclick="closeModal('statusManagerModal')" style="border:none;background:none;cursor:pointer;">✕</button>
         </div>
-        <div class="manage-list" id="statusManageList"></div> <!--[cite: 3] -->
-        <button class="btn btn-status" style="width:100%;" onclick="addNewStatus()">➕ 新增進度選項</button> <!--[cite: 3] -->
-        <div class="modal-footer"><button class="btn" onclick="closeModal('statusManagerModal')">關閉</button></div> <!--[cite: 3] -->
+        <div class="manage-list" id="statusManageList"></div>
+        <button class="btn btn-status" style="width:100%;" onclick="addNewStatus()">➕ 新增進度選項</button>
+        <div class="modal-footer"><button class="btn" onclick="closeModal('statusManagerModal')">關閉</button></div>
     </div>
 </div>
 
 <script>
-    // ⚠️ 請確保專案的 Supabase Project URL 與公共 Anon Key 正確[cite: 3]
-    const SUPABASE_URL = 'https://dkyuxneazojqohcuvjsp.supabase.co';[cite: 3]
-    // 💡 提示：請至 Supabase -> Settings -> API 複製完整的 anon (public) jwt key 替換下方字串[cite: 3]
-    const SUPABASE_KEY = 'sb_publishable_twR6l-aVWBSFei-FZUd1JQ_XEBEpwga';[cite: 3]
-    
-    let supabaseClient = null;
-    try {
-        if(window.supabase) {
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);[cite: 3]
-        }
-    } catch(e) {
-        console.warn("Supabase 初始化遭遇問題，將回退為 LocalStorage 離線存取模式", e);[cite: 3]
-    }
+    const SUPABASE_URL = 'https://dkyuxneazojqohcuvjsp.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_twR6l-aVWBSFei-FZUd1JQ_XEBEpwga';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const ADMIN_PASSWORD = "0857957";[cite: 3]
+    const ADMIN_PASSWORD = "0857957";
 
     let appData = {
         announcementImg: "", 
         zones: [
-            {"id":"B1_1","name":"【B1】麥克內裝區","color":"#2c3e50"},[cite: 3]
-            {"id":"B2","name":"【B2】麥克板金區","color":"#2c3e50"},[cite: 3]
-            {"id":"B3","name":"【B3】阿安內裝區","color":"#2c3e50"},[cite: 3]
-            {"id":"B4","name":"【B4】阿益骨架區","color":"#2c3e50"},[cite: 3]
-            {"id":"A","name":"【A】A棟臨停區","color":"#2c3e50"},[cite: 3]
-            {"id":"B1_2","name":"【B1】後方臨停+座椅區","color":"#2c3e50"},[cite: 3]
-            {"id":"C","name":"【C】噴漆補土區","color":"#2c3e50"},[cite: 3]
-            {"id":"D","name":"【D】紅丹區","color":"#2c3e50"},[cite: 3]
-            {"id":"E","name":"【E】烤漆爐","color":"#2c3e50"},[cite: 3]
-            {"id":"F","name":"【F】後方空地底盤區","color":"#2c3e50"}[cite: 3]
+            {"id":"B1_1","name":"【B1】麥克內裝區","color":"#2c3e50"},
+            {"id":"B2","name":"【B2】麥克板金區","color":"#2c3e50"},
+            {"id":"B3","name":"【B3】阿安內裝區","color":"#2c3e50"},
+            {"id":"B4","name":"【B4】阿益骨架區","color":"#2c3e50"},
+            {"id":"A","name":"【A】A棟臨停區","color":"#2c3e50"},
+            {"id":"B1_2","name":"【B1】後方臨停+座椅區","color":"#2c3e50"},
+            {"id":"C","name":"【C】噴漆補土區","color":"#2c3e50"},
+            {"id":"D","name":"【D】紅丹區","color":"#2c3e50"},
+            {"id":"E","name":"【E】烤漆爐","color":"#2c3e50"},
+            {"id":"F","name":"【F】後方空地底盤區","color":"#2c3e50"}
         ],
         statuses: [
-            {"id":"pending","name":"待施工","color":"#78909C"},[cite: 3]
-            {"id":"working","name":"施工中","color":"#1E88E5"},[cite: 3]
-            {"id":"inspection","name":"待驗收","color":"#FFB300"},[cite: 3]
-            {"id":"done","name":"已完成","color":"#4CAF50"},[cite: 3]
-            {"id":"repair","name":"暫停","color":"#E53935"},[cite: 3]
-            {"id":"S_1787581229246","name":"待廣告","color":"#f88810"},[cite: 3]
-            {"id":"S_1787581237270","name":"待金油","color":"#773e9a"},[cite: 3]
-            {"id":"S_1787581268044","name":"待交車","color":"#7c6a9c"}[cite: 3]
+            {"id":"pending","name":"待施工","color":"#78909C"},
+            {"id":"working","name":"施工中","color":"#1E88E5"},
+            {"id":"inspection","name":"待驗收","color":"#FFB300"},
+            {"id":"done","name":"已完成","color":"#4CAF50"},
+            {"id":"repair","name":"暫停","color":"#E53935"},
+            {"id":"S_1787581229246","name":"待廣告","color":"#f88810"},
+            {"id":"S_1787581237270","name":"待金油","color":"#773e9a"},
+            {"id":"S_1787581268044","name":"待交車","color":"#7c6a9c"}
         ],
         buses: [
-            {"id":"1787618807848","plate":"0782993 鍾權國","zoneId":"E","statusId":"S_1787581229246","startDate":"","endDate":"","bg":"#8c5d5d","color":"#ffffff","note":"","photos":[],"logs":[]}[cite: 3]
+            {"id":"1787618807848","plate":"0782993 鍾權國","zoneId":"E","statusId":"S_1787581229246","startDate":"","endDate":"","bg":"#8c5d5d","color":"#ffffff","note":"","photos":[],"logs":[]}
         ],
-        archivedBuses: [],[cite: 3]
-        auditLogs: [][cite: 3]
+        archivedBuses: [],
+        auditLogs: []
     };
 
-    const presetBgColors = ['#8c5d5d', '#007bff', '#28a745', '#dc3545', '#fd7e14', '#8800a3', '#17a2b8', '#2c3e50', '#ffffff', '#000000', '#f5d505'];[cite: 3]
-    const presetTextColors = ['#ffffff', '#000000', '#212529', '#f8f9fa', '#ffc107', '#dc3545', '#17a2b8'];[cite: 3]
+    const presetBgColors = ['#8c5d5d', '#007bff', '#28a745', '#dc3545', '#fd7e14', '#8800a3', '#17a2b8', '#2c3e50', '#ffffff', '#000000', '#f5d505'];
+    const presetTextColors = ['#ffffff', '#000000', '#212529', '#f8f9fa', '#ffc107', '#dc3545', '#17a2b8'];
 
-    let currentEditBusId = null;[cite: 3]
-    let targetUploadBusId = null;[cite: 3]
+    let currentEditBusId = null;
+    let targetUploadBusId = null;
 
     window.onload = async () => {
-        setupTabSwitch();[cite: 3]
-        updateAuthUI();[cite: 3]
-        initLiveClock();[cite: 3]
-        await loadCloudData();[cite: 3]
+        setupTabSwitch();
+        updateAuthUI();
+        initLiveClock();
+        await loadCloudData();
     };
 
     function initLiveClock() {
         const updateClock = () => {
             const now = new Date();
-            const weekDays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];[cite: 3]
+            const weekDays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
             document.getElementById('liveClock').textContent = 
-                `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${weekDays[now.getDay()]} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;[cite: 3]
+                `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${weekDays[now.getDay()]} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
         };
         setInterval(updateClock, 1000);
         updateClock();
     }
 
-    function isAuthed() { return sessionStorage.getItem("isAdminLoggedIn") === "true"; }[cite: 3]
+    function isAuthed() { return sessionStorage.getItem("isAdminLoggedIn") === "true"; }
 
     function requireAuth(callback) {
         if (isAuthed()) {
             callback();
         } else {
-            const input = prompt("🔐 請輸入管理員密碼解鎖編輯權限：");[cite: 3]
+            const input = prompt("🔐 請輸入管理員密碼解鎖編輯權限：");
             if (input === ADMIN_PASSWORD) {
-                sessionStorage.setItem("isAdminLoggedIn", "true");[cite: 3]
-                updateAuthUI();[cite: 3]
-                alert("🔓 登入成功！已開啟管理控制列。");[cite: 3]
+                sessionStorage.setItem("isAdminLoggedIn", "true");
+                updateAuthUI();
+                alert("🔓 登入成功！已開啟管理控制列。");
                 callback();
             } else if (input !== null) {
-                alert("❌ 密碼錯誤！");[cite: 3]
+                alert("❌ 密碼錯誤！");
             }
         }
     }
 
     function toggleAuth() {
         if (isAuthed()) {
-            if (confirm("確定要登出嗎？將會隱藏管理按鈕並切換為唯讀模式。")) {[cite: 3]
-                sessionStorage.removeItem("isAdminLoggedIn");[cite: 3]
-                updateAuthUI();[cite: 3]
-                const logTabBtn = document.getElementById('tabLogsBtn');[cite: 3]
+            if (confirm("確定要登出嗎？將會隱藏管理按鈕並切換為唯讀模式。")) {
+                sessionStorage.removeItem("isAdminLoggedIn");
+                updateAuthUI();
+                const logTabBtn = document.getElementById('tabLogsBtn');
                 if (logTabBtn && logTabBtn.classList.contains('active')) {
-                    document.querySelector('.tab-btn[data-tab="tab-map"]').click();[cite: 3]
+                    document.querySelector('.tab-btn[data-tab="tab-map"]').click();
                 }
-                renderApp();[cite: 3]
+                renderApp();
             }
         } else {
-            requireAuth(() => { renderApp(); });[cite: 3]
+            requireAuth(() => { renderApp(); });
         }
     }
 
     function updateAuthUI() {
-        const authed = isAuthed();[cite: 3]
-        document.getElementById("authStatusText").innerHTML = authed ? "🟢 管理員模式" : "👁️ 唯讀模式";[cite: 3]
-        const btn = document.getElementById("authBtn");[cite: 3]
-        btn.innerHTML = authed ? "🚪 登出" : "🔑 登入編輯";[cite: 3]
-        btn.className = authed ? "btn-logout" : "btn-auth";[cite: 3]
+        const authed = isAuthed();
+        document.getElementById("authStatusText").innerHTML = authed ? "🟢 管理員模式" : "👁️ 唯讀模式";
+        const btn = document.getElementById("authBtn");
+        btn.innerHTML = authed ? "🚪 登出" : "🔑 登入編輯";
+        btn.className = authed ? "btn-logout" : "btn-auth";
 
-        const controls = document.getElementById("adminControls");[cite: 3]
+        const controls = document.getElementById("adminControls");
         if (controls) {
             if (authed) {
-                controls.classList.add("show");[cite: 3]
+                controls.classList.add("show");
             } else {
-                controls.classList.remove("show");[cite: 3]
+                controls.classList.remove("show");
             }
         }
 
-        const adminAnnouncementControls = document.getElementById("adminAnnouncementControls");[cite: 3]
+        const adminAnnouncementControls = document.getElementById("adminAnnouncementControls");
         if (adminAnnouncementControls) {
             if (authed) {
-                adminAnnouncementControls.classList.add("show");[cite: 3]
+                adminAnnouncementControls.classList.add("show");
             } else {
-                adminAnnouncementControls.classList.remove("show");[cite: 3]
+                adminAnnouncementControls.classList.remove("show");
             }
         }
 
-        const logsBtn = document.getElementById("tabLogsBtn");[cite: 3]
+        const logsBtn = document.getElementById("tabLogsBtn");
         if (logsBtn) {
             if (authed) {
-                logsBtn.classList.add("show");[cite: 3]
+                logsBtn.classList.add("show");
             } else {
-                logsBtn.classList.remove("show");[cite: 3]
+                logsBtn.classList.remove("show");
             }
         }
     }
 
     async function loadCloudData() {
-        setSyncStatus('syncing', '同步雲端中...');[cite: 3]
-        let loaded = false;
-        
-        // 1. 嘗試從 Supabase 雲端讀取[cite: 3]
-        if (supabaseClient) {
-            try {
-                const { data, error } = await supabaseClient.from('app_data').select('content').eq('id', 'main_data').single();[cite: 3]
-                if (!error && data && data.content) {
-                    appData = data.content;[cite: 3]
-                    setSyncStatus('success', '連線正常');[cite: 3]
-                    loaded = true;
-                }
-            } catch(err) {
-                console.error("雲端讀取失敗:", err);[cite: 3]
+        setSyncStatus('syncing', '同步雲端中...');
+        try {
+            const { data, error } = await supabaseClient.from('app_data').select('content').eq('id', 'main_data').single();
+            if (data && data.content) {
+                appData = data.content;
+                setSyncStatus('success', '連線正常');
             }
+        } catch(err) {
+            setSyncStatus('error', '離線模式');
         }
-
-        // 2. 雲端失敗或無法讀取時，載入本機 LocalStorage 備份[cite: 3]
-        if (!loaded) {
-            const local = localStorage.getItem('bus_manage_data_v2');[cite: 3]
-            if (local) {
-                try {
-                    appData = JSON.parse(local);[cite: 3]
-                    setSyncStatus('error', '本機離線模式');[cite: 3]
-                } catch(e) {
-                    setSyncStatus('error', '資料載入異常');[cite: 3]
-                }
-            } else {
-                setSyncStatus('error', '尚未同步 (使用初始值)');[cite: 3]
-            }
-        }
-
-        sanitizeData();[cite: 3]
-        renderApp();[cite: 3]
+        sanitizeData();
+        renderApp();
     }
 
     function sanitizeData() {
-        if (!appData.archivedBuses) appData.archivedBuses = [];[cite: 3]
-        if (!appData.auditLogs) appData.auditLogs = [];[cite: 3]
-        if (!appData.announcementImg) appData.announcementImg = "";[cite: 3]
+        if (!appData.archivedBuses) appData.archivedBuses = [];
+        if (!appData.auditLogs) appData.auditLogs = [];
+        if (!appData.announcementImg) appData.announcementImg = "";
         appData.buses.forEach(b => {
-            if (!b.photos) b.photos = [];[cite: 3]
-            if (!b.logs) b.logs = [];[cite: 3]
-            if (!b.bg) b.bg = '#8c5d5d';[cite: 3]
-            if (!b.color) b.color = '#ffffff';[cite: 3]
+            if (!b.photos) b.photos = [];
+            if (!b.logs) b.logs = [];
+            if (!b.bg) b.bg = '#8c5d5d';
+            if (!b.color) b.color = '#ffffff';
         });
     }
 
-    function saveData() { requireAuth(() => autoSaveCloud()); }[cite: 3]
+    function saveData() { requireAuth(() => autoSaveCloud()); }
 
     async function autoSaveCloud() {
-        // 先寫入本地備份[cite: 3]
-        localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData));[cite: 3]
-        setSyncStatus('syncing', '儲存同步中...');[cite: 3]
-        
-        if (!supabaseClient) {
-            setSyncStatus('error', '離線存取中 (僅儲存於手機)');[cite: 3]
-            return;
-        }
-
+        localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData));
+        setSyncStatus('syncing', '儲存同步中...');
         try {
-            const { error } = await supabaseClient.from('app_data').upsert({ id: 'main_data', content: appData, updated_at: new Date().toISOString() });[cite: 3]
-            if(error) throw error;
-            setSyncStatus('success', '已同步雲端');[cite: 3]
+            await supabaseClient.from('app_data').upsert({ id: 'main_data', content: appData, updated_at: new Date().toISOString() });
+            setSyncStatus('success', '已同步雲端');
         } catch (err) {
-            console.error("雲端儲存錯誤:", err);[cite: 3]
-            setSyncStatus('error', '同步失敗 (金鑰無效/離線)');[cite: 3]
+            setSyncStatus('error', '僅儲存於本地');
         }
     }
 
     function setSyncStatus(type, text) {
-        document.getElementById('syncText').innerText = text;[cite: 3]
-        document.getElementById('syncDot').className = `dot ${type}`;[cite: 3]
+        document.getElementById('syncText').innerText = text;
+        document.getElementById('syncDot').className = `dot ${type}`;
     }
 
     function addAuditLog(busPlate, action) {
-        const timeStr = new Date().toLocaleString('zh-TW', { hour12: false });[cite: 3]
-        const logEntry = { time: timeStr, plate: busPlate, action: action };[cite: 3]
-        if (!appData.auditLogs) appData.auditLogs = [];[cite: 3]
-        appData.auditLogs.unshift(logEntry);[cite: 3]
+        const timeStr = new Date().toLocaleString('zh-TW', { hour12: false });
+        const logEntry = { time: timeStr, plate: busPlate, action: action };
+        if (!appData.auditLogs) appData.auditLogs = [];
+        appData.auditLogs.unshift(logEntry);
 
-        const bus = appData.buses.find(b => b.plate === busPlate);[cite: 3]
+        const bus = appData.buses.find(b => b.plate === busPlate);
         if (bus) {
-            if (!bus.logs) bus.logs = [];[cite: 3]
-            bus.logs.unshift(logEntry);[cite: 3]
+            if (!bus.logs) bus.logs = [];
+            bus.logs.unshift(logEntry);
         }
     }
 
     function renderApp() {
-        updateDashboard();[cite: 3]
-        renderAnnouncementBox();[cite: 3]
-        renderMap();[cite: 3]
-        renderTable();[cite: 3]
-        renderAuditTrail();[cite: 3]
+        updateDashboard();
+        renderAnnouncementBox();
+        renderMap();
+        renderTable();
+        renderAuditTrail();
     }
 
     function renderAnnouncementBox() {
-        const btnView = document.getElementById('btnViewAnnouncement');[cite: 3]
-        const statusText = document.getElementById('announcementStatusText');[cite: 3]
-        const delBtn = document.getElementById('btnDelAnnouncementImg');[cite: 3]
+        const btnView = document.getElementById('btnViewAnnouncement');
+        const statusText = document.getElementById('announcementStatusText');
+        const delBtn = document.getElementById('btnDelAnnouncementImg');
 
         if (appData.announcementImg) {
-            btnView.style.display = "inline-flex";[cite: 3]
-            if (statusText) statusText.innerText = "(已有最新公告，點擊圖片按鈕查看)";[cite: 3]
-            if (delBtn) delBtn.style.display = "inline-block";[cite: 3]
+            btnView.style.display = "inline-flex";
+            if (statusText) statusText.innerText = "(已有最新公告，點擊圖片按鈕查看)";
+            if (delBtn) delBtn.style.display = "inline-block";
         } else {
-            btnView.style.display = "none";[cite: 3]
-            if (statusText) statusText.innerText = "(目前無公告圖片)";[cite: 3]
-            if (delBtn) delBtn.style.display = "none";[cite: 3]
+            btnView.style.display = "none";
+            if (statusText) statusText.innerText = "(目前無公告圖片)";
+            if (delBtn) delBtn.style.display = "none";
         }
     }
 
     function viewAnnouncementImg() {
         if (appData.announcementImg) {
-            showLightbox(appData.announcementImg);[cite: 3]
+            showLightbox(appData.announcementImg);
         } else {
-            alert("📢 目前尚未上傳查核/驗車/交車日公告圖片！");[cite: 3]
+            alert("📢 目前尚未上傳查核/驗車/交車日公告圖片！");
         }
     }
 
     function triggerAnnouncementUpload() {
         requireAuth(() => {
-            document.getElementById('announcementFileInput').click();[cite: 3]
+            document.getElementById('announcementFileInput').click();
         });
     }
 
     function handleAnnouncementPhotoUpload(e) {
-        const file = e.target.files[0];[cite: 3]
+        const file = e.target.files[0];
         if (!file) return;
 
-        const reader = new FileReader();[cite: 3]
+        const reader = new FileReader();
         reader.onload = (evt) => {
-            const img = new Image();[cite: 3]
+            const img = new Image();
             img.onload = () => {
-                const canvas = document.createElement('canvas');[cite: 3]
-                let width = img.width;[cite: 3]
-                let height = img.height;[cite: 3]
-                const max_size = 1200;[cite: 3]
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const max_size = 1200;
 
                 if (width > height) {
-                    if (width > max_size) { height *= max_size / width; width = max_size; }[cite: 3]
+                    if (width > max_size) { height *= max_size / width; width = max_size; }
                 } else {
-                    if (height > max_size) { width *= max_size / height; height = max_size; }[cite: 3]
+                    if (height > max_size) { width *= max_size / height; height = max_size; }
                 }
 
-                canvas.width = width;[cite: 3]
-                canvas.height = height;[cite: 3]
-                const ctx = canvas.getContext('2d');[cite: 3]
-                ctx.drawImage(img, 0, 0, width, height);[cite: 3]
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
 
-                appData.announcementImg = canvas.toDataURL('image/jpeg', 0.85);[cite: 3]
-                addAuditLog('系統公告', '更新了驗交車公告圖片');[cite: 3]
-                autoSaveCloud();[cite: 3]
-                renderApp();[cite: 3]
-                alert("📢 驗交車公告圖片已更新完成！");[cite: 3]
+                appData.announcementImg = canvas.toDataURL('image/jpeg', 0.85);
+                addAuditLog('系統公告', '更新了驗交車公告圖片');
+                autoSaveCloud();
+                renderApp();
+                alert("📢 驗交車公告圖片已更新完成！");
             };
-            img.src = evt.target.result;[cite: 3]
+            img.src = evt.target.result;
         };
-        reader.readAsDataURL(file);[cite: 3]
+        reader.readAsDataURL(file);
     }
 
     function deleteAnnouncementImg() {
         requireAuth(() => {
-            if (confirm("確定要刪除現有的驗交車公告圖片嗎？")) {[cite: 3]
-                appData.announcementImg = "";[cite: 3]
-                addAuditLog('系統公告', '刪除了驗交車公告圖片');[cite: 3]
-                autoSaveCloud();[cite: 3]
-                renderApp();[cite: 3]
-                alert("已刪除驗交車公告圖片。");[cite: 3]
+            if (confirm("確定要刪除現有的驗交車公告圖片嗎？")) {
+                appData.announcementImg = "";
+                addAuditLog('系統公告', '刪除了驗交車公告圖片');
+                autoSaveCloud();
+                renderApp();
+                alert("已刪除驗交車公告圖片。");
             }
         });
     }
 
     function updateDashboard() {
-        const total = appData.buses.length;[cite: 3]
-        document.getElementById('kpiTotal').innerText = `${total} 台`;[cite: 3]
+        const total = appData.buses.length;
+        document.getElementById('kpiTotal').innerText = `${total} 台`;
 
         const doneDeliveryIds = appData.statuses
-            .filter(s => s.name.includes('待交車') || s.name.includes('待美容') || s.name.includes('已完成') || s.id === 'done' || s.id === 'S_1787581268044')[cite: 3]
-            .map(s => s.id);[cite: 3]
+            .filter(s => s.name.includes('待交車') || s.name.includes('待美容') || s.name.includes('已完成') || s.id === 'done' || s.id === 'S_1787581268044')
+            .map(s => s.id);
 
         const pauseIds = appData.statuses
-            .filter(s => s.name.includes('暫停') || s.id === 'repair')[cite: 3]
-            .map(s => s.id);[cite: 3]
+            .filter(s => s.name.includes('暫停') || s.id === 'repair')
+            .map(s => s.id);
 
-        const doneCount = appData.buses.filter(b => doneDeliveryIds.includes(b.statusId)).length;[cite: 3]
-        document.getElementById('kpiDone').innerText = `${doneCount} 台`;[cite: 3]
+        const doneCount = appData.buses.filter(b => doneDeliveryIds.includes(b.statusId)).length;
+        document.getElementById('kpiDone').innerText = `${doneCount} 台`;
 
-        const pauseCount = appData.buses.filter(b => pauseIds.includes(b.statusId)).length;[cite: 3]
-        document.getElementById('kpiPause').innerText = `${pauseCount} 台`;[cite: 3]
+        const pauseCount = appData.buses.filter(b => pauseIds.includes(b.statusId)).length;
+        document.getElementById('kpiPause').innerText = `${pauseCount} 台`;
 
-        const workingCount = appData.buses.filter(b => !doneDeliveryIds.includes(b.statusId)).length;[cite: 3]
-        document.getElementById('kpiWorking').innerText = `${workingCount} 台`;[cite: 3]
+        const workingCount = appData.buses.filter(b => !doneDeliveryIds.includes(b.statusId)).length;
+        document.getElementById('kpiWorking').innerText = `${workingCount} 台`;
     }
 
     function renderMap() {
-        const container = document.getElementById('mapContainer');[cite: 3]
-        container.innerHTML = '';[cite: 3]
+        const container = document.getElementById('mapContainer');
+        container.innerHTML = '';
 
-        const authed = isAuthed();[cite: 3]
-        const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();[cite: 3]
-        let filteredBuses = appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword) || (b.note||'').toLowerCase().includes(searchKeyword));[cite: 3]
+        const authed = isAuthed();
+        const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
+        let filteredBuses = appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword) || (b.note||'').toLowerCase().includes(searchKeyword));
 
         appData.zones.forEach(zone => {
-            const zoneEl = document.createElement('div');[cite: 3]
-            zoneEl.className = 'zone';[cite: 3]
-            zoneEl.dataset.zoneId = zone.id;[cite: 3]
+            const zoneEl = document.createElement('div');
+            zoneEl.className = 'zone';
+            zoneEl.dataset.zoneId = zone.id;
 
             zoneEl.innerHTML = `
                 <div class="zone-header" style="background:${zone.color||'#2c3e50'}">
                     <span>${zone.name}</span>
                 </div>
                 <div class="zone-body" data-zone-id="${zone.id}"></div>
-            `;[cite: 3]
+            `;
 
-            const bodyEl = zoneEl.querySelector('.zone-body');[cite: 3]
-            const zoneBuses = filteredBuses.filter(b => b.zoneId === zone.id);[cite: 3]
+            const bodyEl = zoneEl.querySelector('.zone-body');
+            const zoneBuses = filteredBuses.filter(b => b.zoneId === zone.id);
 
             zoneBuses.forEach(bus => {
-                const busCard = document.createElement('div');[cite: 3]
-                busCard.className = 'bus-card';[cite: 3]
-                busCard.draggable = authed;[cite: 3]
-                busCard.dataset.busId = bus.id;[cite: 3]
+                const busCard = document.createElement('div');
+                busCard.className = 'bus-card';
+                busCard.draggable = authed;
+                busCard.dataset.busId = bus.id;
 
-                const photoCount = (bus.photos || []).length;[cite: 3]
+                const photoCount = (bus.photos || []).length;
 
                 let dateHtml = '';
                 if (authed) {
@@ -805,10 +764,10 @@
                                 <input type="date" class="bus-date-input" value="${bus.endDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)">
                             </div>
                         </div>
-                    `;[cite: 3]
+                    `;
                 } else {
-                    const startStr = bus.startDate ? bus.startDate : '未定';[cite: 3]
-                    const endStr = bus.endDate ? bus.endDate : '未定';[cite: 3]
+                    const startStr = bus.startDate ? bus.startDate : '未定';
+                    const endStr = bus.endDate ? bus.endDate : '未定';
                     dateHtml = `
                         <div class="bus-date-row">
                             <div class="bus-date-group">
@@ -818,15 +777,8 @@
                                 <span class="bus-date-text">出：${endStr}</span>
                             </div>
                         </div>
-                    `;[cite: 3]
+                    `;
                 }
-
-                // 增加手機端快速選區域的選項，解決手機觸控無法拖曳的問題[cite: 3]
-                const zoneOptionsHtml = authed ? `
-                    <select style="margin-top:2px;" onchange="updateBusZoneStatus('${bus.id}', 'zoneId', this.value)">
-                        ${appData.zones.map(z => `<option value="${z.id}" ${z.id === bus.zoneId ? 'selected' : ''}>📍 ${z.name}</option>`).join('')}
-                    </select>
-                ` : '';
 
                 busCard.innerHTML = `
                     <div class="bus-header">
@@ -835,7 +787,6 @@
                         </div>
                         ${authed ? `<button style="background:#ff4d4f;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:0.65rem;" onclick="deleteBus('${bus.id}')">✕</button>` : ''}
                     </div>
-                    ${zoneOptionsHtml}
                     <select ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'statusId', this.value)">
                         ${appData.statuses.map(s => `<option value="${s.id}" ${s.id === bus.statusId ? 'selected' : ''}>${s.name}</option>`).join('')}
                     </select>
@@ -843,40 +794,40 @@
                     <div class="bus-badge-container">
                         <span class="photo-badge" onclick="openPhotoGallery('${bus.id}')">📷 照片 (${photoCount})</span>
                     </div>
-                `;[cite: 3]
+                `;
 
                 if (authed) {
-                    busCard.addEventListener('dragstart', handleBusDragStart);[cite: 3]
+                    busCard.addEventListener('dragstart', handleBusDragStart);
                 }
-                bodyEl.appendChild(busCard);[cite: 3]
+                bodyEl.appendChild(busCard);
             });
 
             if (authed) {
-                bodyEl.addEventListener('dragover', e => e.preventDefault());[cite: 3]
-                bodyEl.addEventListener('drop', handleBusDrop);[cite: 3]
+                bodyEl.addEventListener('dragover', e => e.preventDefault());
+                bodyEl.addEventListener('drop', handleBusDrop);
             }
-            container.appendChild(zoneEl);[cite: 3]
+            container.appendChild(zoneEl);
         });
     }
 
     function handleBusPlateClick(busId) {
         if (isAuthed()) {
-            openBusModal(busId);[cite: 3]
+            openBusModal(busId);
         } else {
-            openPhotoGallery(busId);[cite: 3]
+            openPhotoGallery(busId);
         }
     }
 
     function renderTable() {
-        const tbody = document.getElementById('busTableBody');[cite: 3]
-        tbody.innerHTML = '';[cite: 3]
-        const authed = isAuthed();[cite: 3]
-        const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();[cite: 3]
+        const tbody = document.getElementById('busTableBody');
+        tbody.innerHTML = '';
+        const authed = isAuthed();
+        const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
 
         appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword)).forEach(bus => {
-            const photoCount = (bus.photos || []).length;[cite: 3]
-            const logCount = (bus.logs || []).length;[cite: 3]
-            const tr = document.createElement('tr');[cite: 3]
+            const photoCount = (bus.photos || []).length;
+            const logCount = (bus.logs || []).length;
+            const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding:4px; border:1px solid #ccc; text-align:center;">
                     <span style="background:${bus.bg || '#8c5d5d'}; color:${bus.color || '#ffffff'}; padding:2px 4px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="handleBusPlateClick('${bus.id}')">${bus.plate}</span>
@@ -902,410 +853,410 @@
                 <td style="padding:4px; border:1px solid #ccc; text-align:center;">
                     ${authed ? `<button class="btn" style="background:#dc3545; min-height:22px; padding:2px 4px; font-size:0.7rem;" onclick="deleteBus('${bus.id}')">✕</button>` : '-'}
                 </td>
-            `;[cite: 3]
-            tbody.appendChild(tr);[cite: 3]
+            `;
+            tbody.appendChild(tr);
         });
     }
 
     function renderAuditTrail() {
-        const list = document.getElementById('globalAuditLogList');[cite: 3]
+        const list = document.getElementById('globalAuditLogList');
         if (!list) return;
-        list.innerHTML = '';[cite: 3]
+        list.innerHTML = '';
         (appData.auditLogs || []).forEach(log => {
-            const item = document.createElement('li');[cite: 3]
-            item.className = 'timeline-item';[cite: 3]
-            item.innerHTML = `<span class="timeline-time">${log.time}</span> - <b>${log.plate}</b>：${log.action}`;[cite: 3]
-            list.appendChild(item);[cite: 3]
+            const item = document.createElement('li');
+            item.className = 'timeline-item';
+            item.innerHTML = `<span class="timeline-time">${log.time}</span> - <b>${log.plate}</b>：${log.action}`;
+            list.appendChild(item);
         });
     }
 
     /* 開啟編輯 Modal - 底色與字體色彩分區渲染 */
     function openBusModal(busId) {
         requireAuth(() => {
-            currentEditBusId = busId;[cite: 3]
-            const bus = appData.buses.find(b => b.id === busId);[cite: 3]
-            document.getElementById('modalBusTitle').value = bus.plate;[cite: 3]
-            document.getElementById('modalBusStartDate').value = bus.startDate || '';[cite: 3]
-            document.getElementById('modalBusEndDate').value = bus.endDate || '';[cite: 3]
-            document.getElementById('modalBusNote').value = bus.note || '';[cite: 3]
+            currentEditBusId = busId;
+            const bus = appData.buses.find(b => b.id === busId);
+            document.getElementById('modalBusTitle').value = bus.plate;
+            document.getElementById('modalBusStartDate').value = bus.startDate || '';
+            document.getElementById('modalBusEndDate').value = bus.endDate || '';
+            document.getElementById('modalBusNote').value = bus.note || '';
 
             // --- 1. 渲染「底色」選擇器 ---
-            const bgPalette = document.getElementById('busBgPalette');[cite: 3]
-            bgPalette.innerHTML = '';[cite: 3]
+            const bgPalette = document.getElementById('busBgPalette');
+            bgPalette.innerHTML = '';
             presetBgColors.forEach(c => {
-                const swatch = document.createElement('div');[cite: 3]
-                swatch.className = `color-swatch ${(bus.bg === c) ? 'selected' : ''}`;[cite: 3]
-                swatch.style.background = c;[cite: 3]
-                swatch.onclick = () => { bus.bg = c; openBusModal(busId); renderApp(); };[cite: 3]
-                bgPalette.appendChild(swatch);[cite: 3]
+                const swatch = document.createElement('div');
+                swatch.className = `color-swatch ${(bus.bg === c) ? 'selected' : ''}`;
+                swatch.style.background = c;
+                swatch.onclick = () => { bus.bg = c; openBusModal(busId); renderApp(); };
+                bgPalette.appendChild(swatch);
             });
-            const bgPicker = document.createElement('input');[cite: 3]
-            bgPicker.type = 'color';[cite: 3]
-            bgPicker.value = bus.bg || '#8c5d5d';[cite: 3]
-            bgPicker.style.cssText = 'width:28px; height:28px; border-radius:50%; border:none; cursor:pointer; padding:0; background:none;';[cite: 3]
-            bgPicker.onchange = (e) => { bus.bg = e.target.value; renderApp(); };[cite: 3]
-            bgPalette.appendChild(bgPicker);[cite: 3]
+            const bgPicker = document.createElement('input');
+            bgPicker.type = 'color';
+            bgPicker.value = bus.bg || '#8c5d5d';
+            bgPicker.style.cssText = 'width:28px; height:28px; border-radius:50%; border:none; cursor:pointer; padding:0; background:none;';
+            bgPicker.onchange = (e) => { bus.bg = e.target.value; renderApp(); };
+            bgPalette.appendChild(bgPicker);
 
             // --- 2. 渲染「字體顏色」選擇器 ---
-            const textColorPalette = document.getElementById('busTextColorPalette');[cite: 3]
-            textColorPalette.innerHTML = '';[cite: 3]
+            const textColorPalette = document.getElementById('busTextColorPalette');
+            textColorPalette.innerHTML = '';
             presetTextColors.forEach(c => {
-                const swatch = document.createElement('div');[cite: 3]
-                swatch.className = `color-swatch ${(bus.color === c) ? 'selected' : ''}`;[cite: 3]
-                swatch.style.background = c;[cite: 3]
-                swatch.onclick = () => { bus.color = c; openBusModal(busId); renderApp(); };[cite: 3]
-                textColorPalette.appendChild(swatch);[cite: 3]
+                const swatch = document.createElement('div');
+                swatch.className = `color-swatch ${(bus.color === c) ? 'selected' : ''}`;
+                swatch.style.background = c;
+                swatch.onclick = () => { bus.color = c; openBusModal(busId); renderApp(); };
+                textColorPalette.appendChild(swatch);
             });
-            const textPicker = document.createElement('input');[cite: 3]
-            textPicker.type = 'color';[cite: 3]
-            textPicker.value = bus.color || '#ffffff';[cite: 3]
-            textPicker.style.cssText = 'width:28px; height:28px; border-radius:50%; border:none; cursor:pointer; padding:0; background:none;';[cite: 3]
-            textPicker.onchange = (e) => { bus.color = e.target.value; renderApp(); };[cite: 3]
-            textColorPalette.appendChild(textPicker);[cite: 3]
+            const textPicker = document.createElement('input');
+            textPicker.type = 'color';
+            textPicker.value = bus.color || '#ffffff';
+            textPicker.style.cssText = 'width:28px; height:28px; border-radius:50%; border:none; cursor:pointer; padding:0; background:none;';
+            textPicker.onchange = (e) => { bus.color = e.target.value; renderApp(); };
+            textColorPalette.appendChild(textPicker);
 
-            renderPhotoGrid(bus);[cite: 3]
-            renderModalTimeline(bus);[cite: 3]
+            renderPhotoGrid(bus);
+            renderModalTimeline(bus);
 
-            document.getElementById('busModal').classList.add('active');[cite: 3]
+            document.getElementById('busModal').classList.add('active');
         });
     }
 
     function openPhotoGallery(busId) {
-        const bus = appData.buses.find(b => b.id === busId);[cite: 3]
+        const bus = appData.buses.find(b => b.id === busId);
         if (!bus) return;
 
-        const authed = isAuthed();[cite: 3]
-        document.getElementById('galleryModalTitle').innerText = `📷 ${bus.plate} - 現場施工照片 (${(bus.photos||[]).length}張)`;[cite: 3]
-        const grid = document.getElementById('galleryPhotoGrid');[cite: 3]
-        grid.innerHTML = '';[cite: 3]
+        const authed = isAuthed();
+        document.getElementById('galleryModalTitle').innerText = `📷 ${bus.plate} - 現場施工照片 (${(bus.photos||[]).length}張)`;
+        const grid = document.getElementById('galleryPhotoGrid');
+        grid.innerHTML = '';
 
         if (!bus.photos || bus.photos.length === 0) {
-            grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:#888;">目前尚無圖片記錄</div>`;[cite: 3]
+            grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:#888;">目前尚無圖片記錄</div>`;
         } else {
             bus.photos.forEach((pUrl, idx) => {
-                const item = document.createElement('div');[cite: 3]
-                item.className = 'photo-item';[cite: 3]
+                const item = document.createElement('div');
+                item.className = 'photo-item';
                 item.innerHTML = `
                     <img src="${pUrl}" alt="現場照片" onclick="showLightbox('${pUrl}')">
                     ${authed ? `<button class="photo-del-btn" title="刪除照片" onclick="deleteGalleryPhoto('${bus.id}', ${idx})">✕</button>` : ''}
-                `;[cite: 3]
-                grid.appendChild(item);[cite: 3]
+                `;
+                grid.appendChild(item);
             });
         }
-        document.getElementById('photoGalleryModal').classList.add('active');[cite: 3]
+        document.getElementById('photoGalleryModal').classList.add('active');
     }
 
     function deleteGalleryPhoto(busId, photoIndex) {
         requireAuth(() => {
-            if (!confirm("確定要刪除這張照片嗎？")) return;[cite: 3]
-            const bus = appData.buses.find(b => b.id === busId);[cite: 3]
+            if (!confirm("確定要刪除這張照片嗎？")) return;
+            const bus = appData.buses.find(b => b.id === busId);
             if (bus && bus.photos) {
-                bus.photos.splice(photoIndex, 1);[cite: 3]
-                addAuditLog(bus.plate, '刪除了一張現場照片');[cite: 3]
-                autoSaveCloud();[cite: 3]
-                renderApp();[cite: 3]
-                openPhotoGallery(busId);[cite: 3]
+                bus.photos.splice(photoIndex, 1);
+                addAuditLog(bus.plate, '刪除了一張現場照片');
+                autoSaveCloud();
+                renderApp();
+                openPhotoGallery(busId);
             }
         });
     }
 
     function showLightbox(imgUrl) {
-        document.getElementById('lightboxImg').src = imgUrl;[cite: 3]
-        document.getElementById('lightboxModal').classList.add('active');[cite: 3]
+        document.getElementById('lightboxImg').src = imgUrl;
+        document.getElementById('lightboxModal').classList.add('active');
     }
 
     function renderPhotoGrid(bus) {
-        const grid = document.getElementById('modalPhotoGrid');[cite: 3]
-        grid.innerHTML = '';[cite: 3]
+        const grid = document.getElementById('modalPhotoGrid');
+        grid.innerHTML = '';
         (bus.photos || []).forEach((pUrl, idx) => {
-            const item = document.createElement('div');[cite: 3]
-            item.className = 'photo-item';[cite: 3]
+            const item = document.createElement('div');
+            item.className = 'photo-item';
             item.innerHTML = `
                 <img src="${pUrl}" alt="照片" onclick="showLightbox('${pUrl}')">
                 <button class="photo-del-btn" onclick="deletePhoto(${idx})">✕</button>
-            `;[cite: 3]
-            grid.appendChild(item);[cite: 3]
+            `;
+            grid.appendChild(item);
         });
     }
 
     function renderModalTimeline(bus) {
-        const timeline = document.getElementById('modalBusTimeline');[cite: 3]
-        timeline.innerHTML = '';[cite: 3]
+        const timeline = document.getElementById('modalBusTimeline');
+        timeline.innerHTML = '';
         (bus.logs || []).forEach(log => {
-            const li = document.createElement('li');[cite: 3]
-            li.className = 'timeline-item';[cite: 3]
-            li.innerHTML = `<span class="timeline-time">${log.time}</span>：${log.action}`;[cite: 3]
-            timeline.appendChild(li);[cite: 3]
+            const li = document.createElement('li');
+            li.className = 'timeline-item';
+            li.innerHTML = `<span class="timeline-time">${log.time}</span>：${log.action}`;
+            timeline.appendChild(li);
         });
     }
 
-    function triggerPhotoUpload() { document.getElementById('busPhotoInput').click(); }[cite: 3]
+    function triggerPhotoUpload() { document.getElementById('busPhotoInput').click(); }
 
     function processAndUploadFiles(files, bus) {
         if (!files || !files.length || !bus) return;
 
         Array.from(files).forEach(file => {
-            const reader = new FileReader();[cite: 3]
+            const reader = new FileReader();
             reader.onload = (evt) => {
-                const img = new Image();[cite: 3]
+                const img = new Image();
                 img.onload = () => {
-                    const canvas = document.createElement('canvas');[cite: 3]
-                    let width = img.width;[cite: 3]
-                    let height = img.height;[cite: 3]
-                    const max_size = 1024;[cite: 3]
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const max_size = 1024;
 
                     if (width > height) {
-                        if (width > max_size) { height *= max_size / width; width = max_size; }[cite: 3]
+                        if (width > max_size) { height *= max_size / width; width = max_size; }
                     } else {
-                        if (height > max_size) { width *= max_size / height; height = max_size; }[cite: 3]
+                        if (height > max_size) { width *= max_size / height; height = max_size; }
                     }
 
-                    canvas.width = width;[cite: 3]
-                    canvas.height = height;[cite: 3]
-                    const ctx = canvas.getContext('2d');[cite: 3]
-                    ctx.drawImage(img, 0, 0, width, height);[cite: 3]
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
 
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);[cite: 3]
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
 
-                    if (!bus.photos) bus.photos = [];[cite: 3]
-                    bus.photos.push(compressedBase64);[cite: 3]
-                    addAuditLog(bus.plate, '上傳了新的現場施工照片');[cite: 3]
+                    if (!bus.photos) bus.photos = [];
+                    bus.photos.push(compressedBase64);
+                    addAuditLog(bus.plate, '上傳了新的現場施工照片');
                     
                     if (currentEditBusId === bus.id) {
-                        renderPhotoGrid(bus);[cite: 3]
+                        renderPhotoGrid(bus);
                     }
-                    autoSaveCloud();[cite: 3]
-                    renderApp();[cite: 3]
+                    autoSaveCloud();
+                    renderApp();
                 };
-                img.src = evt.target.result;[cite: 3]
+                img.src = evt.target.result;
             };
-            reader.readAsDataURL(file);[cite: 3]
+            reader.readAsDataURL(file);
         });
     }
 
     function handlePhotoUpload(e) {
-        const bus = appData.buses.find(b => b.id === currentEditBusId);[cite: 3]
-        processAndUploadFiles(e.target.files, bus);[cite: 3]
+        const bus = appData.buses.find(b => b.id === currentEditBusId);
+        processAndUploadFiles(e.target.files, bus);
     }
 
     function triggerDirectPhotoUpload(busId) {
         requireAuth(() => {
-            targetUploadBusId = busId;[cite: 3]
-            document.getElementById('globalDirectPhotoInput').click();[cite: 3]
+            targetUploadBusId = busId;
+            document.getElementById('globalDirectPhotoInput').click();
         });
     }
 
     function handleDirectPhotoUpload(e) {
-        const bus = appData.buses.find(b => b.id === targetUploadBusId);[cite: 3]
-        processAndUploadFiles(e.target.files, bus);[cite: 3]
+        const bus = appData.buses.find(b => b.id === targetUploadBusId);
+        processAndUploadFiles(e.target.files, bus);
     }
 
     function deletePhoto(index) {
-        const bus = appData.buses.find(b => b.id === currentEditBusId);[cite: 3]
+        const bus = appData.buses.find(b => b.id === currentEditBusId);
         if (bus && bus.photos) {
-            bus.photos.splice(index, 1);[cite: 3]
-            addAuditLog(bus.plate, '刪除了一張現場照片');[cite: 3]
-            renderPhotoGrid(bus);[cite: 3]
-            autoSaveCloud();[cite: 3]
-            renderApp();[cite: 3]
+            bus.photos.splice(index, 1);
+            addAuditLog(bus.plate, '刪除了一張現場照片');
+            renderPhotoGrid(bus);
+            autoSaveCloud();
+            renderApp();
         }
     }
 
     function saveBusModal() {
-        const bus = appData.buses.find(b => b.id === currentEditBusId);[cite: 3]
+        const bus = appData.buses.find(b => b.id === currentEditBusId);
         if (bus) {
-            const newPlate = document.getElementById('modalBusTitle').value;[cite: 3]
-            const newStartDate = document.getElementById('modalBusStartDate').value;[cite: 3]
-            const newEndDate = document.getElementById('modalBusEndDate').value;[cite: 3]
-            const newNote = document.getElementById('modalBusNote').value;[cite: 3]
+            const newPlate = document.getElementById('modalBusTitle').value;
+            const newStartDate = document.getElementById('modalBusStartDate').value;
+            const newEndDate = document.getElementById('modalBusEndDate').value;
+            const newNote = document.getElementById('modalBusNote').value;
             
-            if (bus.plate !== newPlate) addAuditLog(newPlate, `車號更名為 ${newPlate}`);[cite: 3]
-            bus.plate = newPlate;[cite: 3]
-            bus.startDate = newStartDate;[cite: 3]
-            bus.endDate = newEndDate;[cite: 3]
-            bus.note = newNote;[cite: 3]
-            autoSaveCloud();[cite: 3]
-            renderApp();[cite: 3]
+            if (bus.plate !== newPlate) addAuditLog(newPlate, `車號更名為 ${newPlate}`);
+            bus.plate = newPlate;
+            bus.startDate = newStartDate;
+            bus.endDate = newEndDate;
+            bus.note = newNote;
+            autoSaveCloud();
+            renderApp();
         }
-        closeModal('busModal');[cite: 3]
+        closeModal('busModal');
     }
 
     function openZoneManager() {
         requireAuth(() => {
-            renderZoneManageList();[cite: 3]
-            document.getElementById('zoneManagerModal').classList.add('active');[cite: 3]
+            renderZoneManageList();
+            document.getElementById('zoneManagerModal').classList.add('active');
         });
     }
 
     function renderZoneManageList() {
-        const list = document.getElementById('zoneManageList');[cite: 3]
+        const list = document.getElementById('zoneManageList');
         if (!list) return;
-        list.innerHTML = '';[cite: 3]
+        list.innerHTML = '';
         appData.zones.forEach((z, idx) => {
-            const item = document.createElement('div');[cite: 3]
-            item.className = 'manage-item';[cite: 3]
+            const item = document.createElement('div');
+            item.className = 'manage-item';
             item.innerHTML = `
                 <input type="color" value="${z.color || '#2c3e50'}" style="width:30px; height:30px; padding:0; border:none; cursor:pointer;" onchange="appData.zones[${idx}].color=this.value; autoSaveCloud(); renderApp();">
                 <input type="text" value="${z.name}" style="flex-grow:1;" onchange="appData.zones[${idx}].name=this.value; autoSaveCloud(); renderApp();">
                 <button class="btn" style="background:#dc3545; min-height:24px; padding:2px 6px;" onclick="deleteZone(${idx})">✕</button>
-            `;[cite: 3]
-            list.appendChild(item);[cite: 3]
+            `;
+            list.appendChild(item);
         });
     }
 
     function addNewZone() {
-        const name = prompt("請輸入新區域名稱：");[cite: 3]
+        const name = prompt("請輸入新區域名稱：");
         if (name && name.trim() !== '') {
-            appData.zones.push({ id: 'Z_' + Date.now(), name: name.trim(), color: '#2c3e50' });[cite: 3]
-            autoSaveCloud();[cite: 3]
-            renderZoneManageList();[cite: 3]
-            renderApp();[cite: 3]
+            appData.zones.push({ id: 'Z_' + Date.now(), name: name.trim(), color: '#2c3e50' });
+            autoSaveCloud();
+            renderZoneManageList();
+            renderApp();
         }
     }
 
     function deleteZone(idx) {
-        if (confirm("確定刪除此區域？")) {[cite: 3]
-            appData.zones.splice(idx, 1);[cite: 3]
-            autoSaveCloud();[cite: 3]
-            renderZoneManageList();[cite: 3]
-            renderApp();[cite: 3]
+        if (confirm("確定刪除此區域？")) {
+            appData.zones.splice(idx, 1);
+            autoSaveCloud();
+            renderZoneManageList();
+            renderApp();
         }
     }
 
     function openStatusManager() {
         requireAuth(() => {
-            renderStatusManageList();[cite: 3]
-            document.getElementById('statusManagerModal').classList.add('active');[cite: 3]
+            renderStatusManageList();
+            document.getElementById('statusManagerModal').classList.add('active');
         });
     }
 
     function renderStatusManageList() {
-        const list = document.getElementById('statusManageList');[cite: 3]
+        const list = document.getElementById('statusManageList');
         if (!list) return;
-        list.innerHTML = '';[cite: 3]
+        list.innerHTML = '';
         appData.statuses.forEach((s, idx) => {
-            const item = document.createElement('div');[cite: 3]
-            item.className = 'manage-item';[cite: 3]
+            const item = document.createElement('div');
+            item.className = 'manage-item';
             item.innerHTML = `
                 <input type="color" value="${s.color || '#78909C'}" style="width:30px; height:30px; padding:0; border:none; cursor:pointer;" onchange="appData.statuses[${idx}].color=this.value; autoSaveCloud(); renderApp();">
                 <input type="text" value="${s.name}" style="flex-grow:1;" onchange="appData.statuses[${idx}].name=this.value; autoSaveCloud(); renderApp();">
                 <button class="btn" style="background:#dc3545; min-height:24px; padding:2px 6px;" onclick="deleteStatus(${idx})">✕</button>
-            `;[cite: 3]
-            list.appendChild(item);[cite: 3]
+            `;
+            list.appendChild(item);
         });
     }
 
     function addNewStatus() {
-        const name = prompt("請輸入新進度名稱：");[cite: 3]
+        const name = prompt("請輸入新進度名稱：");
         if (name && name.trim() !== '') {
-            appData.statuses.push({ id: 'S_' + Date.now(), name: name.trim(), color: '#1E88E5' });[cite: 3]
-            autoSaveCloud();[cite: 3]
-            renderStatusManageList();[cite: 3]
-            renderApp();[cite: 3]
+            appData.statuses.push({ id: 'S_' + Date.now(), name: name.trim(), color: '#1E88E5' });
+            autoSaveCloud();
+            renderStatusManageList();
+            renderApp();
         }
     }
 
     function deleteStatus(idx) {
-        if (confirm("確定刪除此進度選項？")) {[cite: 3]
-            appData.statuses.splice(idx, 1);[cite: 3]
-            autoSaveCloud();[cite: 3]
-            renderStatusManageList();[cite: 3]
-            renderApp();[cite: 3]
+        if (confirm("確定刪除此進度選項？")) {
+            appData.statuses.splice(idx, 1);
+            autoSaveCloud();
+            renderStatusManageList();
+            renderApp();
         }
     }
 
     function exportDispatchSheet() {
-        const selectedZone = prompt("請輸入要匯出派工單的區域 (留空為全廠)：");[cite: 3]
-        let list = appData.buses;[cite: 3]
+        const selectedZone = prompt("請輸入要匯出派工單的區域 (留空為全廠)：");
+        let list = appData.buses;
         if (selectedZone) {
             list = list.filter(b => {
-                const z = appData.zones.find(zone => zone.id === b.zoneId);[cite: 3]
-                return z && z.name.includes(selectedZone);[cite: 3]
+                const z = appData.zones.find(zone => zone.id === b.zoneId);
+                return z && z.name.includes(selectedZone);
             });
         }
 
-        let csvContent = "data:text/csv;charset=utf-8,\uFEFF車號/名稱,區域,進度狀態,進廠日期,出廠日期,備註\n";[cite: 3]
+        let csvContent = "data:text/csv;charset=utf-8,\uFEFF車號/名稱,區域,進度狀態,進廠日期,出廠日期,備註\n";
         list.forEach(b => {
-            const zName = appData.zones.find(z => z.id === b.zoneId)?.name || '';[cite: 3]
-            const sName = appData.statuses.find(s => s.id === b.statusId)?.name || '';[cite: 3]
-            csvContent += `"${b.plate}","${zName}","${sName}","${b.startDate||''}","${b.endDate||''}","${b.note||''}"\n`;[cite: 3]
+            const zName = appData.zones.find(z => z.id === b.zoneId)?.name || '';
+            const sName = appData.statuses.find(s => s.id === b.statusId)?.name || '';
+            csvContent += `"${b.plate}","${zName}","${sName}","${b.startDate||''}","${b.endDate||''}","${b.note||''}"\n`;
         });
 
-        const encodedUri = encodeURI(csvContent);[cite: 3]
-        const link = document.createElement("a");[cite: 3]
-        link.setAttribute("href", encodedUri);[cite: 3]
-        link.setAttribute("download", `柏昇現場派工單_${new Date().toISOString().slice(0,10)}.csv`);[cite: 3]
-        document.body.appendChild(link);[cite: 3]
-        link.click();[cite: 3]
-        link.remove();[cite: 3]
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `柏昇現場派工單_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
     }
 
     function archiveCurrentBus() {
-        if (!confirm("確定將此車輛移至歷史歸檔庫嗎？")) return;[cite: 3]
-        const index = appData.buses.findIndex(b => b.id === currentEditBusId);[cite: 3]
+        if (!confirm("確定將此車輛移至歷史歸檔庫嗎？")) return;
+        const index = appData.buses.findIndex(b => b.id === currentEditBusId);
         if (index !== -1) {
-            const [bus] = appData.buses.splice(index, 1);[cite: 3]
-            if (!appData.archivedBuses) appData.archivedBuses = [];[cite: 3]
-            appData.archivedBuses.push(bus);[cite: 3]
-            addAuditLog(bus.plate, '已完成並移至歷史歸檔庫');[cite: 3]
-            closeModal('busModal');[cite: 3]
-            autoSaveCloud();[cite: 3]
-            renderApp();[cite: 3]
+            const [bus] = appData.buses.splice(index, 1);
+            if (!appData.archivedBuses) appData.archivedBuses = [];
+            appData.archivedBuses.push(bus);
+            addAuditLog(bus.plate, '已完成並移至歷史歸檔庫');
+            closeModal('busModal');
+            autoSaveCloud();
+            renderApp();
         }
     }
 
     function openArchiveModal() {
-        const tbody = document.getElementById('archiveTableBody');[cite: 3]
-        tbody.innerHTML = '';[cite: 3]
+        const tbody = document.getElementById('archiveTableBody');
+        tbody.innerHTML = '';
         (appData.archivedBuses || []).forEach((b, idx) => {
-            const zName = appData.zones.find(z => z.id === b.zoneId)?.name || '';[cite: 3]
-            const tr = document.createElement('tr');[cite: 3]
+            const zName = appData.zones.find(z => z.id === b.zoneId)?.name || '';
+            const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding:4px; border:1px solid #ccc;">${b.plate}</td>
                 <td style="padding:4px; border:1px solid #ccc;">${zName}</td>
                 <td style="padding:4px; border:1px solid #ccc; text-align:center;">
                     <button class="btn" style="min-height:22px; padding:2px 6px; font-size:0.7rem;" onclick="restoreBus(${idx})">還原</button>
                 </td>
-            `;[cite: 3]
-            tbody.appendChild(tr);[cite: 3]
+            `;
+            tbody.appendChild(tr);
         });
-        document.getElementById('archiveModal').classList.add('active');[cite: 3]
+        document.getElementById('archiveModal').classList.add('active');
     }
 
     function restoreBus(idx) {
-        const [bus] = appData.archivedBuses.splice(idx, 1);[cite: 3]
-        appData.buses.push(bus);[cite: 3]
-        addAuditLog(bus.plate, '從歷史歸檔庫還原');[cite: 3]
-        autoSaveCloud();[cite: 3]
-        openArchiveModal();[cite: 3]
-        renderApp();[cite: 3]
+        const [bus] = appData.archivedBuses.splice(idx, 1);
+        appData.buses.push(bus);
+        addAuditLog(bus.plate, '從歷史歸檔庫還原');
+        autoSaveCloud();
+        openArchiveModal();
+        renderApp();
     }
 
     function updateBusZoneStatus(busId, field, val) {
         requireAuth(() => {
-            const bus = appData.buses.find(b => b.id === busId);[cite: 3]
+            const bus = appData.buses.find(b => b.id === busId);
             if (bus) {
-                bus[field] = val;[cite: 3]
+                bus[field] = val;
                 if (field === 'zoneId') {
-                    const zName = appData.zones.find(z => z.id === val)?.name || '';[cite: 3]
-                    addAuditLog(bus.plate, `移動至區域：${zName}`);[cite: 3]
+                    const zName = appData.zones.find(z => z.id === val)?.name || '';
+                    addAuditLog(bus.plate, `移動至區域：${zName}`);
                 } else if (field === 'statusId') {
-                    const sName = appData.statuses.find(s => s.id === val)?.name || '';[cite: 3]
-                    addAuditLog(bus.plate, `變更進度為：${sName}`);[cite: 3]
+                    const sName = appData.statuses.find(s => s.id === val)?.name || '';
+                    addAuditLog(bus.plate, `變更進度為：${sName}`);
                 } else if (field === 'startDate') {
-                    addAuditLog(bus.plate, `更換進廠日期為：${val}`);[cite: 3]
+                    addAuditLog(bus.plate, `更換進廠日期為：${val}`);
                 } else if (field === 'endDate') {
-                    addAuditLog(bus.plate, `更換出廠日期為：${val}`);[cite: 3]
+                    addAuditLog(bus.plate, `更換出廠日期為：${val}`);
                 }
-                autoSaveCloud();[cite: 3]
-                renderApp();[cite: 3]
+                autoSaveCloud();
+                renderApp();
             }
         });
     }
 
     function handleAddBus() {
         requireAuth(() => {
-            const plate = prompt("請輸入新增車號或名稱：");[cite: 3]
+            const plate = prompt("請輸入新增車號或名稱：");
             if (plate && plate.trim() !== '') {
                 const newBus = {
                     id: 'b_' + Date.now(),
@@ -1319,79 +1270,79 @@
                     note: '',
                     photos: [],
                     logs: []
-                };[cite: 3]
-                appData.buses.push(newBus);[cite: 3]
-                addAuditLog(newBus.plate, '建立新車輛');[cite: 3]
-                autoSaveCloud();[cite: 3]
-                renderApp();[cite: 3]
+                };
+                appData.buses.push(newBus);
+                addAuditLog(newBus.plate, '建立新車輛');
+                autoSaveCloud();
+                renderApp();
             }
         });
     }
 
     function deleteBus(id) {
         requireAuth(() => {
-            if (confirm("確定刪除此車輛？")) {[cite: 3]
-                const bus = appData.buses.find(b => b.id === id);[cite: 3]
-                if (bus) addAuditLog(bus.plate, '已被刪除');[cite: 3]
-                appData.buses = appData.buses.filter(b => b.id !== id);[cite: 3]
-                autoSaveCloud();[cite: 3]
-                renderApp();[cite: 3]
+            if (confirm("確定刪除此車輛？")) {
+                const bus = appData.buses.find(b => b.id === id);
+                if (bus) addAuditLog(bus.plate, '已被刪除');
+                appData.buses = appData.buses.filter(b => b.id !== id);
+                autoSaveCloud();
+                renderApp();
             }
         });
     }
 
-    let draggedBusId = null;[cite: 3]
+    let draggedBusId = null;
     function handleBusDragStart(e) {
-        if (!isAuthed()) { e.preventDefault(); requireAuth(() => {}); return; }[cite: 3]
-        draggedBusId = this.dataset.busId;[cite: 3]
+        if (!isAuthed()) { e.preventDefault(); requireAuth(() => {}); return; }
+        draggedBusId = this.dataset.busId;
     }
 
     function handleBusDrop(e) {
-        e.preventDefault();[cite: 3]
-        const targetZoneId = this.dataset.zoneId;[cite: 3]
+        e.preventDefault();
+        const targetZoneId = this.dataset.zoneId;
         if (draggedBusId && targetZoneId) {
-            const bus = appData.buses.find(b => b.id === draggedBusId);[cite: 3]
+            const bus = appData.buses.find(b => b.id === draggedBusId);
             if (bus && bus.zoneId !== targetZoneId) {
-                bus.zoneId = targetZoneId;[cite: 3]
-                const zName = appData.zones.find(z => z.id === targetZoneId)?.name || '';[cite: 3]
-                addAuditLog(bus.plate, `拖移至區域：${zName}`);[cite: 3]
-                autoSaveCloud();[cite: 3]
-                renderApp();[cite: 3]
+                bus.zoneId = targetZoneId;
+                const zName = appData.zones.find(z => z.id === targetZoneId)?.name || '';
+                addAuditLog(bus.plate, `拖移至區域：${zName}`);
+                autoSaveCloud();
+                renderApp();
             }
         }
     }
 
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); }[cite: 3]
-    function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }[cite: 3]
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
     function exportData() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));[cite: 3]
-        const anchor = document.createElement('a');[cite: 3]
-        anchor.setAttribute("href", dataStr);[cite: 3]
-        anchor.setAttribute("download", `柏昇車輛備份_${new Date().toISOString().slice(0,10)}.json`);[cite: 3]
-        anchor.click();[cite: 3]
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+        const anchor = document.createElement('a');
+        anchor.setAttribute("href", dataStr);
+        anchor.setAttribute("download", `柏昇車輛備份_${new Date().toISOString().slice(0,10)}.json`);
+        anchor.click();
     }
-    function triggerImport() { requireAuth(() => document.getElementById('importFileInput').click()); }[cite: 3]
+    function triggerImport() { requireAuth(() => document.getElementById('importFileInput').click()); }
     function importData(evt) {
-        const file = evt.target.files[0];[cite: 3]
+        const file = evt.target.files[0];
         if (file) {
-            const reader = new FileReader();[cite: 3]
+            const reader = new FileReader();
             reader.onload = e => {
-                appData = JSON.parse(e.target.result);[cite: 3]
-                autoSaveCloud();[cite: 3]
-                renderApp();[cite: 3]
-                alert("匯入成功！");[cite: 3]
+                appData = JSON.parse(e.target.result);
+                autoSaveCloud();
+                renderApp();
+                alert("匯入成功！");
             };
-            reader.readAsText(file);[cite: 3]
+            reader.readAsText(file);
         }
     }
 
     function setupTabSwitch() {
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.onclick = () => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));[cite: 3]
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));[cite: 3]
-                btn.classList.add('active');[cite: 3]
-                document.getElementById(btn.dataset.tab).classList.add('active');[cite: 3]
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
             };
         });
     }
