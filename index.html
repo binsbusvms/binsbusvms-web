@@ -62,6 +62,8 @@
         .nav-tabs { display: flex; gap: 4px; margin-bottom: 8px; border-bottom: 2px solid #1f4e78; }
         .tab-btn { flex: 1; padding: 8px 4px; background: #e9ecef; border: none; border-radius: 6px 6px 0 0; font-weight: bold; cursor: pointer; color: #495057; font-size: 0.85rem; text-align: center; min-height: 38px; }
         .tab-btn.active { background: #1f4e78; color: white; }
+        .tab-btn.admin-only { display: none; } /* 未登入時隱藏日誌頁籤 */
+        .tab-btn.admin-only.show { display: block; }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -88,7 +90,12 @@
         .bus-badge-container { display: flex; gap: 4px; font-size: 0.65rem; flex-wrap: wrap; }
         .photo-badge { background: #e83e8c; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; }
         .log-badge { background: #17a2b8; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; }
-        .date-badge { background: #6c757d; color: white; padding: 1px 4px; border-radius: 3px; font-size: 0.62rem; }
+
+        /* 車輛方塊內的日期選擇列 */
+        .bus-date-row { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: #495057; }
+        .bus-date-group { display: flex; align-items: center; gap: 2px; flex: 1; }
+        .bus-date-input { font-size: 0.68rem; padding: 1px 2px; border: 1px solid #ced4da; border-radius: 3px; width: 100%; height: 26px; }
+        .bus-date-text { font-size: 0.68rem; color: #555; background: #f8f9fa; padding: 2px 4px; border-radius: 3px; border: 1px solid #e9ecef; width: 100%; text-align: center; }
 
         /* 表格與滾動 */
         .table-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #ddd; border-radius: 6px; background: #ffffff; }
@@ -217,7 +224,8 @@
 <div class="nav-tabs">
     <button class="tab-btn active" data-tab="tab-map">📍 廠區動態圖</button>
     <button class="tab-btn" data-tab="tab-table">📋 全廠車輛總表</button>
-    <button class="tab-btn" data-tab="tab-logs">📜 全廠歷史履歷日誌</button>
+    <!-- 全廠歷史日誌僅登入後顯示 -->
+    <button class="tab-btn admin-only" id="tabLogsBtn" data-tab="tab-logs">📜 全廠歷史履歷日誌</button>
 </div>
 
 <!-- 分頁 1：動態圖 -->
@@ -264,7 +272,7 @@
 <!-- 置頂按鈕 -->
 <button class="back-to-top" id="btnTop" onclick="scrollToTop()">⬆</button>
 
-<!-- 2. & 4. 編輯車輛 + 照片上傳 + 歷程 Modal -->
+<!-- 編輯車輛 + 照片上傳 + 歷程 Modal -->
 <div class="modal" id="busModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -446,9 +454,15 @@
             if (confirm("確定要登出嗎？將會隱藏管理按鈕並切換為唯讀模式。")) {
                 sessionStorage.removeItem("isAdminLoggedIn");
                 updateAuthUI();
+                // 若當前停留在全廠日誌頁籤，登出時自動切換回動態圖頁籤
+                const logTabBtn = document.getElementById('tabLogsBtn');
+                if (logTabBtn && logTabBtn.classList.contains('active')) {
+                    document.querySelector('.tab-btn[data-tab="tab-map"]').click();
+                }
+                renderApp();
             }
         } else {
-            requireAuth(() => {});
+            requireAuth(() => { renderApp(); });
         }
     }
 
@@ -466,6 +480,16 @@
                 controls.classList.add("show");
             } else {
                 controls.classList.remove("show");
+            }
+        }
+
+        // 控制全廠歷史日誌頁籤是否顯示
+        const logsBtn = document.getElementById("tabLogsBtn");
+        if (logsBtn) {
+            if (authed) {
+                logsBtn.classList.add("show");
+            } else {
+                logsBtn.classList.remove("show");
             }
         }
     }
@@ -579,6 +603,7 @@
         const container = document.getElementById('mapContainer');
         container.innerHTML = '';
 
+        const authed = isAuthed();
         const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
         let filteredBuses = appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword) || (b.note||'').toLowerCase().includes(searchKeyword));
 
@@ -600,18 +625,40 @@
             zoneBuses.forEach(bus => {
                 const busCard = document.createElement('div');
                 busCard.className = 'bus-card';
-                busCard.draggable = true;
+                busCard.draggable = authed;
                 busCard.dataset.busId = bus.id;
 
                 const photoCount = (bus.photos || []).length;
                 const logCount = (bus.logs || []).length;
-                
-                // 格式化日期標籤顯示
-                let dateDisplay = '';
-                if (bus.startDate || bus.endDate) {
-                    const start = bus.startDate ? bus.startDate.slice(5) : '未定';
-                    const end = bus.endDate ? bus.endDate.slice(5) : '未定';
-                    dateDisplay = `<span class="date-badge">📅 ${start} ~ ${end}</span>`;
+
+                // 根據登入狀態呈現日期選擇框或純文字
+                let dateHtml = '';
+                if (authed) {
+                    dateHtml = `
+                        <div class="bus-date-row">
+                            <div class="bus-date-group">
+                                <span>進</span>
+                                <input type="date" class="bus-date-input" value="${bus.startDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)">
+                            </div>
+                            <div class="bus-date-group">
+                                <span>出</span>
+                                <input type="date" class="bus-date-input" value="${bus.endDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)">
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const startStr = bus.startDate ? bus.startDate : '未定';
+                    const endStr = bus.endDate ? bus.endDate : '未定';
+                    dateHtml = `
+                        <div class="bus-date-row">
+                            <div class="bus-date-group">
+                                <span class="bus-date-text">進：${startStr}</span>
+                            </div>
+                            <div class="bus-date-group">
+                                <span class="bus-date-text">出：${endStr}</span>
+                            </div>
+                        </div>
+                    `;
                 }
 
                 busCard.innerHTML = `
@@ -619,24 +666,30 @@
                         <div class="bus-plate-input" style="background:${bus.bg}; color:${bus.color};" onclick="openBusModal('${bus.id}')">
                             ${bus.plate}
                         </div>
-                        <button style="background:#ff4d4f;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:0.65rem;" onclick="deleteBus('${bus.id}')">✕</button>
+                        ${authed ? `<button style="background:#ff4d4f;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:0.65rem;" onclick="deleteBus('${bus.id}')">✕</button>` : ''}
                     </div>
-                    <div class="bus-badge-container">
-                        ${dateDisplay}
-                        ${photoCount > 0 ? `<span class="photo-badge">📷 ${photoCount}</span>` : ''}
-                        ${logCount > 0 ? `<span class="log-badge">⏱️ ${logCount}</span>` : ''}
-                    </div>
-                    <select onchange="updateBusZoneStatus('${bus.id}', 'statusId', this.value)">
+                    <select ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'statusId', this.value)">
                         ${appData.statuses.map(s => `<option value="${s.id}" ${s.id === bus.statusId ? 'selected' : ''}>${s.name}</option>`).join('')}
                     </select>
+                    ${dateHtml}
+                    ${(photoCount > 0 || logCount > 0) ? `
+                        <div class="bus-badge-container">
+                            ${photoCount > 0 ? `<span class="photo-badge">📷 ${photoCount}</span>` : ''}
+                            ${logCount > 0 ? `<span class="log-badge">⏱️ ${logCount}</span>` : ''}
+                        </div>
+                    ` : ''}
                 `;
 
-                busCard.addEventListener('dragstart', handleBusDragStart);
+                if (authed) {
+                    busCard.addEventListener('dragstart', handleBusDragStart);
+                }
                 bodyEl.appendChild(busCard);
             });
 
-            bodyEl.addEventListener('dragover', e => e.preventDefault());
-            bodyEl.addEventListener('drop', handleBusDrop);
+            if (authed) {
+                bodyEl.addEventListener('dragover', e => e.preventDefault());
+                bodyEl.addEventListener('drop', handleBusDrop);
+            }
             container.appendChild(zoneEl);
         });
     }
@@ -644,6 +697,7 @@
     function renderTable() {
         const tbody = document.getElementById('busTableBody');
         tbody.innerHTML = '';
+        const authed = isAuthed();
         const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
 
         appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword)).forEach(bus => {
@@ -653,24 +707,24 @@
                     <span style="background:${bus.bg}; color:${bus.color}; padding:2px 4px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="openBusModal('${bus.id}')">${bus.plate}</span>
                 </td>
                 <td style="padding:4px; border:1px solid #ccc;">
-                    <select onchange="updateBusZoneStatus('${bus.id}', 'zoneId', this.value)">
+                    <select ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'zoneId', this.value)">
                         ${appData.zones.map(z => `<option value="${z.id}" ${z.id === bus.zoneId ? 'selected' : ''}>${z.name}</option>`).join('')}
                     </select>
                 </td>
                 <td style="padding:4px; border:1px solid #ccc;">
-                    <select onchange="updateBusZoneStatus('${bus.id}', 'statusId', this.value)">
+                    <select ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'statusId', this.value)">
                         ${appData.statuses.map(s => `<option value="${s.id}" ${s.id === bus.statusId ? 'selected' : ''}>${s.name}</option>`).join('')}
                     </select>
                 </td>
                 <td style="padding:4px; border:1px solid #ccc; font-size:0.7rem;">
-                    進:<input type="date" value="${bus.startDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)">
-                    出:<input type="date" value="${bus.endDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)">
+                    進:<input type="date" value="${bus.startDate || ''}" ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)">
+                    出:<input type="date" value="${bus.endDate || ''}" ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)">
                 </td>
                 <td style="padding:4px; border:1px solid #ccc; text-align:center;">
                     📷 ${bus.photos?.length || 0} / ⏱️ ${bus.logs?.length || 0}
                 </td>
                 <td style="padding:4px; border:1px solid #ccc; text-align:center;">
-                    <button class="btn" style="background:#dc3545; min-height:22px; padding:2px 4px; font-size:0.7rem;" onclick="deleteBus('${bus.id}')">✕</button>
+                    ${authed ? `<button class="btn" style="background:#dc3545; min-height:22px; padding:2px 4px; font-size:0.7rem;" onclick="deleteBus('${bus.id}')">✕</button>` : '-'}
                 </td>
             `;
             tbody.appendChild(tr);
@@ -679,6 +733,7 @@
 
     function renderAuditTrail() {
         const list = document.getElementById('globalAuditLogList');
+        if (!list) return;
         list.innerHTML = '';
         (appData.auditLogs || []).forEach(log => {
             const item = document.createElement('li');
@@ -956,6 +1011,10 @@
                 } else if (field === 'statusId') {
                     const sName = appData.statuses.find(s => s.id === val)?.name || '';
                     addAuditLog(bus.plate, `變更進度為：${sName}`);
+                } else if (field === 'startDate') {
+                    addAuditLog(bus.plate, `更換進廠日期為：${val}`);
+                } else if (field === 'endDate') {
+                    addAuditLog(bus.plate, `更換出廠日期為：${val}`);
                 }
                 autoSaveCloud();
                 renderApp();
