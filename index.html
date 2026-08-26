@@ -21,7 +21,10 @@
         .header-logo-icon { height: 26px; width: 26px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
         .author-tag { font-size: 0.8rem; font-weight: normal; opacity: 0.85; margin-left: 2px; }
 
-        .controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        /* 控制按鈕列預設為動態控制顯示/隱藏 */
+        .controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; transition: all 0.3s ease; }
+        .controls.admin-only { display: none; } /* 唯讀模式下預設隱藏 */
+        .controls.admin-only.show { display: flex; } /* 登入後顯示 */
         
         /* 時間與權限列 */
         .header-top-right { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.2); padding: 4px 10px; border-radius: 6px; }
@@ -68,7 +71,7 @@
         .card-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: #1f4e78; border-bottom: 2px solid #c8c2a3; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
 
         .map-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; }
-        .zone { border: 2px solid #b8b193; border-radius: 6px; padding: 6px; background: #e4dfc3; display: flex; flex-direction: column; max-height: 450px; transition: transform 0.15s, opacity 0.15s; }
+        .zone { border: 2px solid #b8b193; border-radius: 6px; padding: 6px; background: #e4dfc3; display: flex; flex-direction: column; max-height: 480px; transition: transform 0.15s, opacity 0.15s; }
         .zone-header { display: flex; justify-content: space-between; align-items: center; background: #2c3e50; color: white; padding: 6px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; user-select: none; }
         
         .zone-body { overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-top: 6px; flex-grow: 1; min-height: 50px; }
@@ -82,9 +85,10 @@
         .bus-plate-input { font-weight: bold; font-size: 0.8rem; padding: 4px 6px; border-radius: 4px; text-align: center; flex-grow: 1; min-height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.2s; word-break: break-all; }
         .bus-plate-input:hover { opacity: 0.85; }
 
-        .bus-badge-container { display: flex; gap: 4px; font-size: 0.65rem; }
+        .bus-badge-container { display: flex; gap: 4px; font-size: 0.65rem; flex-wrap: wrap; }
         .photo-badge { background: #e83e8c; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; }
         .log-badge { background: #17a2b8; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; }
+        .date-badge { background: #6c757d; color: white; padding: 1px 4px; border-radius: 3px; font-size: 0.62rem; }
 
         /* 表格與滾動 */
         .table-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #ddd; border-radius: 6px; background: #ffffff; }
@@ -151,7 +155,9 @@
             <span class="autosave-badge"><span class="dot" id="syncDot"></span><span id="syncText">資料同步中...</span></span>
         </div>
     </h1>
-    <div class="controls">
+
+    <!-- 僅在管理員登入狀態下顯示的控制列 -->
+    <div class="controls admin-only" id="adminControls">
         <button class="btn btn-zone" onclick="openZoneManager()">⚙️ 區域管理</button>
         <button class="btn btn-status" onclick="openStatusManager()">🎨 進度管理</button>
         <button class="btn" id="btnAddBus" onclick="handleAddBus()">➕ 新增車輛</button>
@@ -268,6 +274,17 @@
         
         <label style="font-size:0.8rem; font-weight:bold;">車輛編號 / 車號：</label>
         <input type="text" id="modalBusTitle" style="margin-top:2px; margin-bottom:8px;">
+
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+            <div style="flex:1;">
+                <label style="font-size:0.8rem; font-weight:bold;">進場日期：</label>
+                <input type="date" id="modalBusStartDate">
+            </div>
+            <div style="flex:1;">
+                <label style="font-size:0.8rem; font-weight:bold;">預計/出廠日期：</label>
+                <input type="date" id="modalBusEndDate">
+            </div>
+        </div>
         
         <label style="font-size:0.8rem; font-weight:bold;">施工細節備註：</label>
         <textarea id="modalBusNote" rows="2" style="margin-top:2px; margin-bottom:8px; font-size:0.78rem;" placeholder="記錄現場注意事項、施工重點..."></textarea>
@@ -416,7 +433,7 @@
             if (input === ADMIN_PASSWORD) {
                 sessionStorage.setItem("isAdminLoggedIn", "true");
                 updateAuthUI();
-                alert("🔓 登入成功！");
+                alert("🔓 登入成功！已開啟管理控制列。");
                 callback();
             } else if (input !== null) {
                 alert("❌ 密碼錯誤！");
@@ -426,7 +443,7 @@
 
     function toggleAuth() {
         if (isAuthed()) {
-            if (confirm("確定要登出嗎？")) {
+            if (confirm("確定要登出嗎？將會隱藏管理按鈕並切換為唯讀模式。")) {
                 sessionStorage.removeItem("isAdminLoggedIn");
                 updateAuthUI();
             }
@@ -436,10 +453,21 @@
     }
 
     function updateAuthUI() {
-        document.getElementById("authStatusText").innerHTML = isAuthed() ? "🟢 管理員模式" : "👁️ 唯讀模式";
+        const authed = isAuthed();
+        document.getElementById("authStatusText").innerHTML = authed ? "🟢 管理員模式" : "👁️ 唯讀模式";
         const btn = document.getElementById("authBtn");
-        btn.innerHTML = isAuthed() ? "🚪 登出" : "🔑 登入編輯";
-        btn.className = isAuthed() ? "btn-logout" : "btn-auth";
+        btn.innerHTML = authed ? "🚪 登出" : "🔑 登入編輯";
+        btn.className = authed ? "btn-logout" : "btn-auth";
+
+        // 控制管理按鈕區域是否顯示
+        const controls = document.getElementById("adminControls");
+        if (controls) {
+            if (authed) {
+                controls.classList.add("show");
+            } else {
+                controls.classList.remove("show");
+            }
+        }
     }
 
     async function loadCloudData() {
@@ -577,6 +605,14 @@
 
                 const photoCount = (bus.photos || []).length;
                 const logCount = (bus.logs || []).length;
+                
+                // 格式化日期標籤顯示
+                let dateDisplay = '';
+                if (bus.startDate || bus.endDate) {
+                    const start = bus.startDate ? bus.startDate.slice(5) : '未定';
+                    const end = bus.endDate ? bus.endDate.slice(5) : '未定';
+                    dateDisplay = `<span class="date-badge">📅 ${start} ~ ${end}</span>`;
+                }
 
                 busCard.innerHTML = `
                     <div class="bus-header">
@@ -586,6 +622,7 @@
                         <button style="background:#ff4d4f;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:0.65rem;" onclick="deleteBus('${bus.id}')">✕</button>
                     </div>
                     <div class="bus-badge-container">
+                        ${dateDisplay}
                         ${photoCount > 0 ? `<span class="photo-badge">📷 ${photoCount}</span>` : ''}
                         ${logCount > 0 ? `<span class="log-badge">⏱️ ${logCount}</span>` : ''}
                     </div>
@@ -657,6 +694,8 @@
             currentEditBusId = busId;
             const bus = appData.buses.find(b => b.id === busId);
             document.getElementById('modalBusTitle').value = bus.plate;
+            document.getElementById('modalBusStartDate').value = bus.startDate || '';
+            document.getElementById('modalBusEndDate').value = bus.endDate || '';
             document.getElementById('modalBusNote').value = bus.note || '';
 
             const bgPalette = document.getElementById('busBgPalette');
@@ -737,9 +776,14 @@
         const bus = appData.buses.find(b => b.id === currentEditBusId);
         if (bus) {
             const newPlate = document.getElementById('modalBusTitle').value;
+            const newStartDate = document.getElementById('modalBusStartDate').value;
+            const newEndDate = document.getElementById('modalBusEndDate').value;
             const newNote = document.getElementById('modalBusNote').value;
+            
             if (bus.plate !== newPlate) addAuditLog(newPlate, `車號更名為 ${newPlate}`);
             bus.plate = newPlate;
+            bus.startDate = newStartDate;
+            bus.endDate = newEndDate;
             bus.note = newNote;
             autoSaveCloud();
             renderApp();
