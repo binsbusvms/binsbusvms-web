@@ -82,8 +82,9 @@
         .bus-plate-input { font-weight: bold; font-size: 0.8rem; padding: 4px 6px; border-radius: 4px; text-align: center; flex-grow: 1; min-height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.2s; word-break: break-all; }
         .bus-plate-input:hover { opacity: 0.85; }
 
-        .bus-badge-container { display: flex; gap: 4px; font-size: 0.65rem; flex-wrap: wrap; }
-        .photo-badge { background: #e83e8c; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; }
+        .bus-badge-container { display: flex; gap: 4px; font-size: 0.68rem; flex-wrap: wrap; margin-top: 2px; }
+        .photo-badge { background: #e83e8c; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 2px; transition: background 0.2s; }
+        .photo-badge:hover { background: #d63384; }
 
         /* 車輛方塊內的日期選擇列 */
         .bus-date-row { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: #495057; }
@@ -121,10 +122,15 @@
         .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
 
         /* 相片牆樣式 */
-        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 6px; margin-top: 6px; }
-        .photo-item { position: relative; width: 100%; height: 70px; border-radius: 4px; overflow: hidden; border: 1px solid #ddd; }
-        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
-        .photo-del-btn { position: absolute; top: 2px; right: 2px; background: rgba(220,53,69,0.85); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; cursor: pointer; }
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 6px; }
+        .photo-item { position: relative; width: 100%; height: 90px; border-radius: 6px; overflow: hidden; border: 1px solid #ddd; background: #000; }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+        .photo-del-btn { position: absolute; top: 3px; right: 3px; background: rgba(220,53,69,0.9); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        /* 全螢幕大圖 Modal */
+        .lightbox-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; justify-content:center; align-items:center; }
+        .lightbox-modal.active { display: flex; }
+        .lightbox-img { max-width: 92%; max-height: 85vh; border-radius: 4px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
 
         /* 時間軸 / 履歷清單 */
         .timeline-list { list-style: none; margin-top: 8px; padding-left: 10px; border-left: 2px solid #1f4e78; font-size: 0.75rem; }
@@ -175,6 +181,9 @@
         <input type="file" id="importFileInput" class="hidden-file-input" accept=".json" onchange="importData(event)">
     </div>
 </div>
+
+<!-- 全域隱藏式手機照片上傳 Input，供全廠車輛總表直接調用 -->
+<input type="file" id="globalDirectPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handleDirectPhotoUpload(event)">
 
 <!-- 1. 數據統計與視覺化儀表板 (Dashboard) -->
 <div class="dashboard-grid">
@@ -235,15 +244,15 @@
         <div class="card-title">📋 車輛詳細總表</div>
         <div class="table-scroll-tip">👈👉 手機可直接左右滑動檢視所有欄位</div>
         <div class="table-scroll-container">
-            <table id="busTable" style="width:100%; min-width:620px; border-collapse:collapse; font-size:0.78rem;">
+            <table id="busTable" style="width:100%; min-width:640px; border-collapse:collapse; font-size:0.78rem;">
                 <thead>
                     <tr style="background:#e9ecef;">
                         <th style="padding:6px 4px; border:1px solid #ccc; width:130px;">車號 / 備註</th>
                         <th style="padding:6px 4px; border:1px solid #ccc; width:130px;">所屬區域</th>
                         <th style="padding:6px 4px; border:1px solid #ccc; width:110px;">當前進度</th>
                         <th style="padding:6px 4px; border:1px solid #ccc; width:130px;">進場 / 出廠日期</th>
-                        <th style="padding:6px 4px; border:1px solid #ccc; width:90px;">照片/歷史</th>
-                        <th style="padding:6px 4px; border:1px solid #ccc; width:80px;">操作</th>
+                        <th style="padding:6px 4px; border:1px solid #ccc; width:120px;">照片/歷史</th>
+                        <th style="padding:6px 4px; border:1px solid #ccc; width:60px;">操作</th>
                     </tr>
                 </thead>
                 <tbody id="busTableBody"></tbody>
@@ -297,8 +306,8 @@
         <div style="border-top:1px solid #eee; padding-top:8px; margin-top:4px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <label style="font-size:0.8rem; font-weight:bold;">📷 施工瑕疵 / 現場照片：</label>
-                <button class="btn btn-zone" style="min-height:24px; padding:2px 8px; font-size:0.7rem;" onclick="triggerPhotoUpload()">上傳照片</button>
-                <input type="file" id="busPhotoInput" class="hidden-file-input" accept="image/*" multiple onchange="handlePhotoUpload(event)">
+                <button class="btn btn-zone" style="min-height:24px; padding:2px 8px; font-size:0.7rem;" onclick="triggerPhotoUpload()">📸 上傳照片</button>
+                <input type="file" id="busPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handlePhotoUpload(event)">
             </div>
             <div class="photo-grid" id="modalPhotoGrid"></div>
         </div>
@@ -316,6 +325,25 @@
             <button class="btn" onclick="saveBusModal()">💾 儲存並更新</button>
         </div>
     </div>
+</div>
+
+<!-- 唯讀模式照片檢視彈窗 (Photo Gallery) -->
+<div class="modal" id="photoGalleryModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span id="galleryModalTitle">📷 車輛施工照片</span>
+            <button onclick="closeModal('photoGalleryModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;">✕</button>
+        </div>
+        <div class="photo-grid" id="galleryPhotoGrid"></div>
+        <div class="modal-footer">
+            <button class="btn" onclick="closeModal('photoGalleryModal')">關閉</button>
+        </div>
+    </div>
+</div>
+
+<!-- 大圖查看 Lightbox Modal -->
+<div class="lightbox-modal" id="lightboxModal" onclick="closeModal('lightboxModal')">
+    <img id="lightboxImg" class="lightbox-img" src="" alt="大圖">
 </div>
 
 <!-- 歸檔庫 Modal -->
@@ -405,6 +433,7 @@
 
     const presetBgColors = ['#007bff', '#28a745', '#dc3545', '#fd7e14', '#8800a3', '#17a2b8', '#2c3e50', '#ffffff', '#000000', '#f5d505'];
     let currentEditBusId = null;
+    let targetUploadBusId = null;
 
     window.onload = async () => {
         setupTabSwitch();
@@ -552,25 +581,20 @@
         const total = appData.buses.length;
         document.getElementById('kpiTotal').innerText = `${total} 台`;
 
-        // 判斷「待美容/待交車」相關狀態的 ID 列表
         const doneDeliveryIds = appData.statuses
             .filter(s => s.name.includes('待交車') || s.name.includes('待美容') || s.name.includes('已完成') || s.id === 'done' || s.id === 'S_1787581268044')
             .map(s => s.id);
 
-        // 判斷「暫停」狀態的 ID 列表
         const pauseIds = appData.statuses
             .filter(s => s.name.includes('暫停') || s.id === 'repair')
             .map(s => s.id);
 
-        // 1. 待交車：僅顯示 待美容 與 待交車 之車輛
         const doneCount = appData.buses.filter(b => doneDeliveryIds.includes(b.statusId)).length;
         document.getElementById('kpiDone').innerText = `${doneCount} 台`;
 
-        // 2. 暫停施工：僅顯示 暫停 之車輛
         const pauseCount = appData.buses.filter(b => pauseIds.includes(b.statusId)).length;
         document.getElementById('kpiPause').innerText = `${pauseCount} 台`;
 
-        // 3. 施工中：除了待交車、待美容以外一律算進來
         const workingCount = appData.buses.filter(b => !doneDeliveryIds.includes(b.statusId)).length;
         document.getElementById('kpiWorking').innerText = `${workingCount} 台`;
     }
@@ -637,7 +661,7 @@
 
                 busCard.innerHTML = `
                     <div class="bus-header">
-                        <div class="bus-plate-input" style="background:${bus.bg}; color:${bus.color};" onclick="openBusModal('${bus.id}')">
+                        <div class="bus-plate-input" style="background:${bus.bg}; color:${bus.color};" onclick="handleBusPlateClick('${bus.id}')">
                             ${bus.plate}
                         </div>
                         ${authed ? `<button style="background:#ff4d4f;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:0.65rem;" onclick="deleteBus('${bus.id}')">✕</button>` : ''}
@@ -646,11 +670,9 @@
                         ${appData.statuses.map(s => `<option value="${s.id}" ${s.id === bus.statusId ? 'selected' : ''}>${s.name}</option>`).join('')}
                     </select>
                     ${dateHtml}
-                    ${(photoCount > 0) ? `
-                        <div class="bus-badge-container">
-                            <span class="photo-badge">📷 ${photoCount}</span>
-                        </div>
-                    ` : ''}
+                    <div class="bus-badge-container">
+                        <span class="photo-badge" onclick="openPhotoGallery('${bus.id}')">📷 照片 (${photoCount})</span>
+                    </div>
                 `;
 
                 if (authed) {
@@ -667,6 +689,14 @@
         });
     }
 
+    function handleBusPlateClick(busId) {
+        if (isAuthed()) {
+            openBusModal(busId);
+        } else {
+            openPhotoGallery(busId);
+        }
+    }
+
     function renderTable() {
         const tbody = document.getElementById('busTableBody');
         tbody.innerHTML = '';
@@ -674,10 +704,12 @@
         const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
 
         appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword)).forEach(bus => {
+            const photoCount = (bus.photos || []).length;
+            const logCount = (bus.logs || []).length;
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding:4px; border:1px solid #ccc; text-align:center;">
-                    <span style="background:${bus.bg}; color:${bus.color}; padding:2px 4px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="openBusModal('${bus.id}')">${bus.plate}</span>
+                    <span style="background:${bus.bg}; color:${bus.color}; padding:2px 4px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="handleBusPlateClick('${bus.id}')">${bus.plate}</span>
                 </td>
                 <td style="padding:4px; border:1px solid #ccc;">
                     <select ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'zoneId', this.value)">
@@ -693,8 +725,9 @@
                     進:<input type="date" value="${bus.startDate || ''}" ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)">
                     出:<input type="date" value="${bus.endDate || ''}" ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)">
                 </td>
-                <td style="padding:4px; border:1px solid #ccc; text-align:center;">
-                    📷 ${bus.photos?.length || 0} / ⏱️ ${bus.logs?.length || 0}
+                <td style="padding:4px; border:1px solid #ccc; text-align:center; font-size:0.75rem;">
+                    <span style="cursor:pointer;" onclick="openPhotoGallery('${bus.id}')">📷 ${photoCount}</span> / ⏱️ ${logCount}
+                    ${authed ? `<button class="btn" style="min-height:20px; padding:1px 4px; font-size:0.65rem; background:#e83e8c; margin-left:2px;" onclick="triggerDirectPhotoUpload('${bus.id}')">+上傳</button>` : ''}
                 </td>
                 <td style="padding:4px; border:1px solid #ccc; text-align:center;">
                     ${authed ? `<button class="btn" style="background:#dc3545; min-height:22px; padding:2px 4px; font-size:0.7rem;" onclick="deleteBus('${bus.id}')">✕</button>` : '-'}
@@ -742,6 +775,32 @@
         });
     }
 
+    /* 唯讀觀看照片 Modal */
+    function openPhotoGallery(busId) {
+        const bus = appData.buses.find(b => b.id === busId);
+        if (!bus) return;
+        document.getElementById('galleryModalTitle').innerText = `📷 ${bus.plate} - 現場施工照片 (${(bus.photos||[]).length}張)`;
+        const grid = document.getElementById('galleryPhotoGrid');
+        grid.innerHTML = '';
+
+        if (!bus.photos || bus.photos.length === 0) {
+            grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:#888;">目前尚無圖片記錄</div>`;
+        } else {
+            bus.photos.forEach((pUrl) => {
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+                item.innerHTML = `<img src="${pUrl}" alt="現場照片" onclick="showLightbox('${pUrl}')">`;
+                grid.appendChild(item);
+            });
+        }
+        document.getElementById('photoGalleryModal').classList.add('active');
+    }
+
+    function showLightbox(imgUrl) {
+        document.getElementById('lightboxImg').src = imgUrl;
+        document.getElementById('lightboxModal').classList.add('active');
+    }
+
     function renderPhotoGrid(bus) {
         const grid = document.getElementById('modalPhotoGrid');
         grid.innerHTML = '';
@@ -749,7 +808,7 @@
             const item = document.createElement('div');
             item.className = 'photo-item';
             item.innerHTML = `
-                <img src="${pUrl}" alt="照片">
+                <img src="${pUrl}" alt="照片" onclick="showLightbox('${pUrl}')">
                 <button class="photo-del-btn" onclick="deletePhoto(${idx})">✕</button>
             `;
             grid.appendChild(item);
@@ -769,24 +828,65 @@
 
     function triggerPhotoUpload() { document.getElementById('busPhotoInput').click(); }
 
-    function handlePhotoUpload(e) {
-        const files = e.target.files;
-        if (!files.length) return;
-
-        const bus = appData.buses.find(b => b.id === currentEditBusId);
-        if (!bus) return;
+    /* 壓縮與處理照片上傳 */
+    function processAndUploadFiles(files, bus) {
+        if (!files || !files.length || !bus) return;
 
         Array.from(files).forEach(file => {
             const reader = new FileReader();
             reader.onload = (evt) => {
-                if (!bus.photos) bus.photos = [];
-                bus.photos.push(evt.target.result);
-                addAuditLog(bus.plate, '上傳了新的現場施工照片');
-                renderPhotoGrid(bus);
-                renderApp();
+                const img = new Image();
+                img.onload = () => {
+                    // 自動壓縮照片寬度至最高1024px，減輕資料傳輸與資料庫容量
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const max_size = 1024;
+
+                    if (width > height) {
+                        if (width > max_size) { height *= max_size / width; width = max_size; }
+                    } else {
+                        if (height > max_size) { width *= max_size / height; height = max_size; }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
+
+                    if (!bus.photos) bus.photos = [];
+                    bus.photos.push(compressedBase64);
+                    addAuditLog(bus.plate, '上傳了新的現場施工照片');
+                    
+                    if (currentEditBusId === bus.id) {
+                        renderPhotoGrid(bus);
+                    }
+                    autoSaveCloud();
+                    renderApp();
+                };
+                img.src = evt.target.result;
             };
             reader.readAsDataURL(file);
         });
+    }
+
+    function handlePhotoUpload(e) {
+        const bus = appData.buses.find(b => b.id === currentEditBusId);
+        processAndUploadFiles(e.target.files, bus);
+    }
+
+    function triggerDirectPhotoUpload(busId) {
+        requireAuth(() => {
+            targetUploadBusId = busId;
+            document.getElementById('globalDirectPhotoInput').click();
+        });
+    }
+
+    function handleDirectPhotoUpload(e) {
+        const bus = appData.buses.find(b => b.id === targetUploadBusId);
+        processAndUploadFiles(e.target.files, bus);
     }
 
     function deletePhoto(index) {
@@ -795,6 +895,7 @@
             bus.photos.splice(index, 1);
             addAuditLog(bus.plate, '刪除了一張現場照片');
             renderPhotoGrid(bus);
+            autoSaveCloud();
             renderApp();
         }
     }
