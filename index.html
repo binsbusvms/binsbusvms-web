@@ -21,10 +21,10 @@
         .header-logo-icon { height: 26px; width: 26px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
         .author-tag { font-size: 0.8rem; font-weight: normal; opacity: 0.85; margin-left: 2px; }
 
-        /* 控制按鈕列預設為動態控制顯示/隱藏 */
+        /* 控制按鈕列 */
         .controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; transition: all 0.3s ease; }
-        .controls.admin-only { display: none; } /* 唯讀模式下預設隱藏 */
-        .controls.admin-only.show { display: flex; } /* 登入後顯示 */
+        .controls.admin-only { display: none; }
+        .controls.admin-only.show { display: flex; }
         
         /* 時間與權限列 */
         .header-top-right { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.2); padding: 4px 10px; border-radius: 6px; }
@@ -57,7 +57,7 @@
         .nav-tabs { display: flex; gap: 4px; margin-bottom: 8px; border-bottom: 2px solid #1f4e78; }
         .tab-btn { flex: 1; padding: 8px 4px; background: #e9ecef; border: none; border-radius: 6px 6px 0 0; font-weight: bold; cursor: pointer; color: #495057; font-size: 0.85rem; text-align: center; min-height: 38px; }
         .tab-btn.active { background: #1f4e78; color: white; }
-        .tab-btn.admin-only { display: none; } /* 未登入時隱藏日誌頁籤 */
+        .tab-btn.admin-only { display: none; }
         .tab-btn.admin-only.show { display: block; }
 
         .tab-content { display: none; }
@@ -90,8 +90,6 @@
         .bus-date-row { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: #495057; }
         .bus-date-group { display: flex; align-items: center; gap: 2px; flex: 1; }
         .bus-date-input { font-size: 0.68rem; padding: 1px 2px; border: 1px solid #ced4da; border-radius: 3px; width: 100%; height: 26px; }
-        
-        /* 唯讀模式下的日期與選單顏色修正，防止字體變灰過淡 */
         .bus-date-text { font-size: 0.7rem; color: #212529; font-weight: 500; background: #ffffff; padding: 3px 4px; border-radius: 3px; border: 1px solid #ced4da; width: 100%; text-align: center; }
 
         /* 表格與滾動 */
@@ -99,8 +97,6 @@
         .table-scroll-tip { font-size: 0.75rem; color: #17a2b8; background: #e8f7f9; padding: 4px 8px; border-radius: 4px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
 
         select, input, textarea { width: 100%; padding: 4px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.8rem; background-color: #fff; color: #333; }
-        
-        /* 強制 disabled 的選單與輸入框維持正常清晰顏色 */
         select:disabled, input:disabled { color: #212529 !important; -webkit-text-fill-color: #212529 !important; opacity: 1 !important; background-color: #ffffff !important; border-color: #ced4da !important; }
 
         .autosave-badge { font-size: 0.7rem; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 10px; display: inline-flex; align-items: center; gap: 4px; }
@@ -125,7 +121,8 @@
         .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 6px; }
         .photo-item { position: relative; width: 100%; height: 90px; border-radius: 6px; overflow: hidden; border: 1px solid #ddd; background: #000; }
         .photo-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
-        .photo-del-btn { position: absolute; top: 3px; right: 3px; background: rgba(220,53,69,0.9); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .photo-del-btn { position: absolute; top: 3px; right: 3px; background: rgba(220,53,69,0.9); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.4); z-index: 2; }
+        .photo-del-btn:hover { background: #dc3545; }
 
         /* 全螢幕大圖 Modal */
         .lightbox-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; justify-content:center; align-items:center; }
@@ -168,7 +165,6 @@
         </div>
     </h1>
 
-    <!-- 僅在管理員登入狀態下顯示的控制列 -->
     <div class="controls admin-only" id="adminControls">
         <button class="btn btn-zone" onclick="openZoneManager()">⚙️ 區域管理</button>
         <button class="btn btn-status" onclick="openStatusManager()">🎨 進度管理</button>
@@ -182,7 +178,7 @@
     </div>
 </div>
 
-<!-- 全域隱藏式手機照片上傳 Input，供全廠車輛總表直接調用 -->
+<!-- 隱藏式上傳 input -->
 <input type="file" id="globalDirectPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handleDirectPhotoUpload(event)">
 
 <!-- 1. 數據統計與視覺化儀表板 (Dashboard) -->
@@ -226,7 +222,6 @@
 <div class="nav-tabs">
     <button class="tab-btn active" data-tab="tab-map">📍 廠區動態圖</button>
     <button class="tab-btn" data-tab="tab-table">📋 全廠車輛總表</button>
-    <!-- 全廠歷史日誌僅登入後顯示 -->
     <button class="tab-btn admin-only" id="tabLogsBtn" data-tab="tab-logs">📜 全廠歷史履歷日誌</button>
 </div>
 
@@ -261,7 +256,7 @@
     </div>
 </div>
 
-<!-- 分頁 3：全廠異動日誌 (Audit Log) -->
+<!-- 分頁 3：全廠異動日誌 -->
 <div id="tab-logs" class="tab-content">
     <div class="card">
         <div class="card-title">📜 全廠作業履歷與異動紀錄 (Audit Trail)</div>
@@ -274,7 +269,7 @@
 <!-- 置頂按鈕 -->
 <button class="back-to-top" id="btnTop" onclick="scrollToTop()">⬆</button>
 
-<!-- 編輯車輛 + 照片上傳 + 歷程 Modal -->
+<!-- 編輯車輛 + 照片上傳 Modal -->
 <div class="modal" id="busModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -302,7 +297,7 @@
         <label style="font-size:0.8rem; font-weight:bold;">底色與字體色彩：</label>
         <div class="color-palette" id="busBgPalette"></div>
 
-        <!-- 照片上傳與預覽區 -->
+        <!-- 照片上傳區 -->
         <div style="border-top:1px solid #eee; padding-top:8px; margin-top:4px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <label style="font-size:0.8rem; font-weight:bold;">📷 施工瑕疵 / 現場照片：</label>
@@ -312,7 +307,7 @@
             <div class="photo-grid" id="modalPhotoGrid"></div>
         </div>
 
-        <!-- 個別車輛履歷時間軸 -->
+        <!-- 履歷時間軸 -->
         <div style="border-top:1px solid #eee; padding-top:8px; margin-top:10px;">
             <label style="font-size:0.8rem; font-weight:bold;">⏱️ 本車歷史履歷異動：</label>
             <div style="max-height:120px; overflow-y:auto; margin-top:4px;">
@@ -327,7 +322,7 @@
     </div>
 </div>
 
-<!-- 唯讀模式照片檢視彈窗 (Photo Gallery) -->
+<!-- 照片檢視與管理彈窗 (Photo Gallery) -->
 <div class="modal" id="photoGalleryModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -775,10 +770,12 @@
         });
     }
 
-    /* 唯讀觀看照片 Modal */
+    /* 開啟照片 Gallery 彈窗（含刪除按鈕邏輯） */
     function openPhotoGallery(busId) {
         const bus = appData.buses.find(b => b.id === busId);
         if (!bus) return;
+
+        const authed = isAuthed();
         document.getElementById('galleryModalTitle').innerText = `📷 ${bus.plate} - 現場施工照片 (${(bus.photos||[]).length}張)`;
         const grid = document.getElementById('galleryPhotoGrid');
         grid.innerHTML = '';
@@ -786,14 +783,31 @@
         if (!bus.photos || bus.photos.length === 0) {
             grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:#888;">目前尚無圖片記錄</div>`;
         } else {
-            bus.photos.forEach((pUrl) => {
+            bus.photos.forEach((pUrl, idx) => {
                 const item = document.createElement('div');
                 item.className = 'photo-item';
-                item.innerHTML = `<img src="${pUrl}" alt="現場照片" onclick="showLightbox('${pUrl}')">`;
+                item.innerHTML = `
+                    <img src="${pUrl}" alt="現場照片" onclick="showLightbox('${pUrl}')">
+                    ${authed ? `<button class="photo-del-btn" title="刪除照片" onclick="deleteGalleryPhoto('${bus.id}', ${idx})">✕</button>` : ''}
+                `;
                 grid.appendChild(item);
             });
         }
         document.getElementById('photoGalleryModal').classList.add('active');
+    }
+
+    function deleteGalleryPhoto(busId, photoIndex) {
+        requireAuth(() => {
+            if (!confirm("確定要刪除這張照片嗎？")) return;
+            const bus = appData.buses.find(b => b.id === busId);
+            if (bus && bus.photos) {
+                bus.photos.splice(photoIndex, 1);
+                addAuditLog(bus.plate, '刪除了一張現場照片');
+                autoSaveCloud();
+                renderApp();
+                openPhotoGallery(busId); // 重新刷新相片彈窗內容
+            }
+        });
     }
 
     function showLightbox(imgUrl) {
@@ -828,7 +842,6 @@
 
     function triggerPhotoUpload() { document.getElementById('busPhotoInput').click(); }
 
-    /* 壓縮與處理照片上傳 */
     function processAndUploadFiles(files, bus) {
         if (!files || !files.length || !bus) return;
 
@@ -837,7 +850,6 @@
             reader.onload = (evt) => {
                 const img = new Image();
                 img.onload = () => {
-                    // 自動壓縮照片寬度至最高1024px，減輕資料傳輸與資料庫容量
                     const canvas = document.createElement('canvas');
                     let width = img.width;
                     let height = img.height;
