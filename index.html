@@ -84,7 +84,6 @@
 
         .bus-badge-container { display: flex; gap: 4px; font-size: 0.65rem; flex-wrap: wrap; }
         .photo-badge { background: #e83e8c; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; }
-        .log-badge { background: #17a2b8; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; }
 
         /* 車輛方塊內的日期選擇列 */
         .bus-date-row { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: #495057; }
@@ -180,19 +179,19 @@
 <!-- 1. 數據統計與視覺化儀表板 (Dashboard) -->
 <div class="dashboard-grid">
     <div class="kpi-card" style="border-left-color: #1f4e78;">
-        <div class="kpi-title">總在廠車輛</div>
+        <div class="kpi-title">總在場數量</div>
         <div class="kpi-num" id="kpiTotal">0 台</div>
     </div>
     <div class="kpi-card" style="border-left-color: #1E88E5;">
-        <div class="kpi-title">各作業區域/狀態數量 (施工/鈑金/噴漆中)</div>
+        <div class="kpi-title">施工中</div>
         <div class="kpi-num" id="kpiWorking">0 台</div>
     </div>
     <div class="kpi-card" style="border-left-color: #4CAF50;">
-        <div class="kpi-title">各作業區域/狀態數量 (待交車/完成車)</div>
+        <div class="kpi-title">待交車</div>
         <div class="kpi-num" id="kpiDone">0 台</div>
     </div>
     <div class="kpi-card" style="border-left-color: #E53935;">
-        <div class="kpi-title">各作業區域/狀態數量 (暫停/異常車輛)</div>
+        <div class="kpi-title">暫停施工</div>
         <div class="kpi-num" id="kpiPause">0 台</div>
     </div>
 </div>
@@ -553,14 +552,27 @@
         const total = appData.buses.length;
         document.getElementById('kpiTotal').innerText = `${total} 台`;
 
-        const working = appData.buses.filter(b => ['working', 'S_1787626075987', 'S_1787618100398'].includes(b.statusId)).length;
-        document.getElementById('kpiWorking').innerText = `${working} 台`;
+        // 判斷「待美容/待交車」相關狀態的 ID 列表
+        const doneDeliveryIds = appData.statuses
+            .filter(s => s.name.includes('待交車') || s.name.includes('待美容') || s.name.includes('已完成') || s.id === 'done' || s.id === 'S_1787581268044')
+            .map(s => s.id);
 
-        const done = appData.buses.filter(b => ['done', 'S_1787581268044', 'S_1787581276756'].includes(b.statusId)).length;
-        document.getElementById('kpiDone').innerText = `${done} 台`;
+        // 判斷「暫停」狀態的 ID 列表
+        const pauseIds = appData.statuses
+            .filter(s => s.name.includes('暫停') || s.id === 'repair')
+            .map(s => s.id);
 
-        const pause = appData.buses.filter(b => b.statusId === 'repair').length;
-        document.getElementById('kpiPause').innerText = `${pause} 台`;
+        // 1. 待交車：僅顯示 待美容 與 待交車 之車輛
+        const doneCount = appData.buses.filter(b => doneDeliveryIds.includes(b.statusId)).length;
+        document.getElementById('kpiDone').innerText = `${doneCount} 台`;
+
+        // 2. 暫停施工：僅顯示 暫停 之車輛
+        const pauseCount = appData.buses.filter(b => pauseIds.includes(b.statusId)).length;
+        document.getElementById('kpiPause').innerText = `${pauseCount} 台`;
+
+        // 3. 施工中：除了待交車、待美容以外一律算進來
+        const workingCount = appData.buses.filter(b => !doneDeliveryIds.includes(b.statusId)).length;
+        document.getElementById('kpiWorking').innerText = `${workingCount} 台`;
     }
 
     function renderMap() {
@@ -593,7 +605,6 @@
                 busCard.dataset.busId = bus.id;
 
                 const photoCount = (bus.photos || []).length;
-                const logCount = (bus.logs || []).length;
 
                 let dateHtml = '';
                 if (authed) {
@@ -635,10 +646,9 @@
                         ${appData.statuses.map(s => `<option value="${s.id}" ${s.id === bus.statusId ? 'selected' : ''}>${s.name}</option>`).join('')}
                     </select>
                     ${dateHtml}
-                    ${(photoCount > 0 || logCount > 0) ? `
+                    ${(photoCount > 0) ? `
                         <div class="bus-badge-container">
-                            ${photoCount > 0 ? `<span class="photo-badge">📷 ${photoCount}</span>` : ''}
-                            ${logCount > 0 ? `<span class="log-badge">⏱️ ${logCount}</span>` : ''}
+                            <span class="photo-badge">📷 ${photoCount}</span>
                         </div>
                     ` : ''}
                 `;
