@@ -614,7 +614,11 @@
                 .from('app_data')
                 .upsert({ 
                     id: 'main_data', 
-                    content: appData, 
+                    content: {
+  ...appData,
+  // 假設 appData 內有過長的 logs 陣列，只保留最新 20 筆
+  logs: Array.isArray(appData.logs) ? appData.logs.slice(-20) : appData.logs
+},
                     updated_at: new Date().toISOString() 
                 });
 
