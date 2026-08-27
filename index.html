@@ -1131,10 +1131,7 @@ function compressImageToBlob(file, maxSize = 800, quality = 0.6) {
         reader.readAsDataURL(file);
     });
 }
-            reader.readAsDataURL(file);
-        });
-    }
-
+            
     function handlePhotoUpload(e) {
         const bus = appData.buses.find(b => b.id === currentEditBusId);
         processAndUploadFiles(e.target.files, bus);
