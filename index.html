@@ -11,8 +11,55 @@
     <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'><path d='M 500,70 L 270,70 L 90,270 L 440,930 L 500,930 Z' fill='none' stroke='%231D2088' stroke-width='65' stroke-linejoin='miter' stroke-miterlimit='10'/><path d='M 500,70 L 730,70 L 910,270 L 560,930 L 500,930 Z' fill='none' stroke='%23E60012' stroke-width='65' stroke-linejoin='miter' stroke-miterlimit='10'/><path d='M 500,270 L 820,270' fill='none' stroke='%23E60012' stroke-width='65' stroke-linecap='square'/></svg>" type="image/svg+xml">
 
     <style>
+        /* CSS 主題變數定義 */
+        :root {
+            --bg-main: #f4f6f9;
+            --bg-card: #e4dfc3;
+            --border-card: #d4ceb0;
+            --bg-kpi: #ffffff;
+            --bg-zone: #e4dfc3;
+            --border-zone: #b8b193;
+            --bg-bus-card: #ffffff;
+            --bg-input: #ffffff;
+            --bg-table: #ffffff;
+            --bg-table-header: #e9ecef;
+            --bg-announcement: #fff3cd;
+            --border-announcement: #ffeeba;
+            --text-announcement: #856404;
+            --bg-sortbar: #e4dfc3;
+            --text-main: #333333;
+            --text-sub: #666666;
+            --title-color: #1f4e78;
+            --border-color: #ced4da;
+            --bg-modal: #ffffff;
+            --bg-color-sec: #f8f9fa;
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #121212;
+            --bg-card: #1e1e1e;
+            --border-card: #333333;
+            --bg-kpi: #252525;
+            --bg-zone: #252525;
+            --border-zone: #3d3d3d;
+            --bg-bus-card: #2d2d2d;
+            --bg-input: #333333;
+            --bg-table: #1e1e1e;
+            --bg-table-header: #2d2d2d;
+            --bg-announcement: #2c2512;
+            --border-announcement: #4a3e1a;
+            --text-announcement: #ffe082;
+            --bg-sortbar: #252525;
+            --text-main: #e0e0e0;
+            --text-sub: #aaaaaa;
+            --title-color: #64b5f6;
+            --border-color: #444444;
+            --bg-modal: #252525;
+            --bg-color-sec: #1a1a1a;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f4f6f9; color: #333; padding: 8px; padding-bottom: 60px; position: relative; min-height: 100vh; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding: 8px; padding-bottom: 60px; position: relative; min-height: 100vh; transition: background-color 0.3s ease, color 0.3s ease; }
 
         .header { background: #1f4e78; color: white; padding: 10px; border-radius: 8px; margin-bottom: 8px; }
         .header h1 { font-size: 1rem; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
@@ -29,6 +76,8 @@
         .auth-bar { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 6px; }
         .btn-auth { background: #ffc107; color: #212529; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; }
         .btn-logout { background: #dc3545; color: white; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; }
+        .btn-theme { background: #4a5568; color: white; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; transition: background 0.2s; }
+        .btn-theme:hover { background: #718096; }
 
         .btn { background: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 34px; touch-action: manipulation; }
         .btn-zone { background: #17a2b8; } 
@@ -39,23 +88,23 @@
         .btn-archive { background: #6c757d; }
 
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 8px; }
-        .kpi-card { background: white; padding: 8px 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #1f4e78; }
-        .kpi-card .kpi-title { font-size: 0.7rem; color: #666; font-weight: bold; }
-        .kpi-card .kpi-num { font-size: 1.2rem; font-weight: bold; color: #1f4e78; margin-top: 2px; }
+        .kpi-card { background: var(--bg-kpi); padding: 8px 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #1f4e78; transition: background-color 0.3s ease; }
+        .kpi-card .kpi-title { font-size: 0.7rem; color: var(--text-sub); font-weight: bold; }
+        .kpi-card .kpi-num { font-size: 1.2rem; font-weight: bold; color: var(--title-color); margin-top: 2px; }
 
-        .announcement-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .announcement-box { background: var(--bg-announcement); border: 1px solid var(--border-announcement); color: var(--text-announcement); padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .announcement-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .announcement-title { font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
         .btn-announcement { background: #007bff; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
         .btn-announcement:hover { background: #0056b3; }
         .btn-announcement-del { background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; cursor: pointer; }
 
-        .sort-bar { display: flex; align-items: center; gap: 6px; background: #e4dfc3; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.8rem; flex-wrap: wrap; }
+        .sort-bar { display: flex; align-items: center; gap: 6px; background: var(--bg-sortbar); color: var(--text-main); padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.8rem; flex-wrap: wrap; }
         .sort-bar select { width: auto; height: 30px; padding: 2px 6px; }
-        .search-input { height: 30px; padding: 2px 8px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.8rem; width: 180px; background-color: #fff; }
+        .search-input { height: 30px; padding: 2px 8px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.8rem; width: 180px; background-color: var(--bg-input); color: var(--text-main); }
 
         .nav-tabs { display: flex; gap: 4px; margin-bottom: 8px; border-bottom: 2px solid #1f4e78; }
-        .tab-btn { flex: 1; padding: 8px 4px; background: #e9ecef; border: none; border-radius: 6px 6px 0 0; font-weight: bold; cursor: pointer; color: #495057; font-size: 0.85rem; text-align: center; min-height: 38px; }
+        .tab-btn { flex: 1; padding: 8px 4px; background: var(--bg-table-header); border: none; border-radius: 6px 6px 0 0; font-weight: bold; cursor: pointer; color: var(--text-main); font-size: 0.85rem; text-align: center; min-height: 38px; }
         .tab-btn.active { background: #1f4e78; color: white; }
         .tab-btn.admin-only { display: none !important; }
         .tab-btn.admin-only.show { display: block !important; }
@@ -63,18 +112,18 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .card { background: #e4dfc3; border-radius: 8px; padding: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-bottom: 10px; border: 1px solid #d4ceb0; }
-        .card-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: #1f4e78; border-bottom: 2px solid #c8c2a3; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .card { background: var(--bg-card); border-radius: 8px; padding: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-bottom: 10px; border: 1px solid var(--border-card); transition: background-color 0.3s ease; }
+        .card-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: var(--title-color); border-bottom: 2px solid var(--border-card); padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
 
         .map-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; }
-        .zone { border: 2px solid #b8b193; border-radius: 6px; padding: 6px; background: #e4dfc3; display: flex; flex-direction: column; max-height: 480px; transition: transform 0.15s, opacity 0.15s; }
+        .zone { border: 2px solid var(--border-zone); border-radius: 6px; padding: 6px; background: var(--bg-zone); display: flex; flex-direction: column; max-height: 480px; transition: transform 0.15s, opacity 0.15s, background-color 0.3s ease; }
         .zone-header { display: flex; justify-content: space-between; align-items: center; background: #2c3e50; color: white; padding: 6px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; user-select: none; }
         
         .zone-body { overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-top: 6px; flex-grow: 1; min-height: 50px; }
         .zone-body::-webkit-scrollbar { width: 5px; }
         .zone-body::-webkit-scrollbar-thumb { background: #bbb; border-radius: 4px; }
 
-        .bus-card { background: white; border: 1px solid #ccc; border-radius: 5px; padding: 6px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: grab; }
+        .bus-card { background: var(--bg-bus-card); border: 1px solid var(--border-color); border-radius: 5px; padding: 6px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: grab; transition: background-color 0.3s ease; }
         .bus-card:active { cursor: grabbing; }
         .bus-header { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
         .bus-plate-input { font-weight: bold; font-size: 0.8rem; padding: 4px 6px; border-radius: 4px; text-align: center; flex-grow: 1; min-height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.2s; word-break: break-all; }
@@ -84,16 +133,16 @@
         .photo-badge { background: #e83e8c; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 2px; transition: background 0.2s; }
         .photo-badge:hover { background: #d63384; }
 
-        .bus-date-row { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: #495057; }
+        .bus-date-row { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-sub); }
         .bus-date-group { display: flex; align-items: center; gap: 2px; flex: 1; }
-        .bus-date-input { font-size: 0.68rem; padding: 1px 2px; border: 1px solid #ced4da; border-radius: 3px; width: 100%; height: 26px; }
-        .bus-date-text { font-size: 0.7rem; color: #212529; font-weight: 500; background: #ffffff; padding: 3px 4px; border-radius: 3px; border: 1px solid #ced4da; width: 100%; text-align: center; }
+        .bus-date-input { font-size: 0.68rem; padding: 1px 2px; border: 1px solid var(--border-color); border-radius: 3px; width: 100%; height: 26px; background-color: var(--bg-input); color: var(--text-main); }
+        .bus-date-text { font-size: 0.7rem; color: var(--text-main); font-weight: 500; background: var(--bg-input); padding: 3px 4px; border-radius: 3px; border: 1px solid var(--border-color); width: 100%; text-align: center; }
 
-        .table-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #ddd; border-radius: 6px; background: #ffffff; }
-        .table-scroll-tip { font-size: 0.75rem; color: #17a2b8; background: #e8f7f9; padding: 4px 8px; border-radius: 4px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+        .table-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-table); }
+        .table-scroll-tip { font-size: 0.75rem; color: #17a2b8; background: rgba(23, 162, 184, 0.15); padding: 4px 8px; border-radius: 4px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
 
-        select, input, textarea { width: 100%; padding: 4px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.8rem; background-color: #fff; color: #333; }
-        select:disabled, input:disabled { color: #212529 !important; -webkit-text-fill-color: #212529 !important; opacity: 1 !important; background-color: #ffffff !important; border-color: #ced4da !important; }
+        select, input, textarea { width: 100%; padding: 4px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.8rem; background-color: var(--bg-input); color: var(--text-main); }
+        select:disabled, input:disabled { color: var(--text-main) !important; -webkit-text-fill-color: var(--text-main) !important; opacity: 1 !important; background-color: var(--bg-input) !important; border-color: var(--border-color) !important; }
 
         .autosave-badge { font-size: 0.7rem; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 10px; display: inline-flex; align-items: center; gap: 4px; }
         .dot { width: 8px; height: 8px; background-color: #28a745; border-radius: 50%; transition: background-color 0.3s; }
@@ -107,10 +156,10 @@
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: 8px; width: 92%; max-width: 520px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-height: 88vh; overflow-y: auto; }
+        .modal-content { background: var(--bg-modal); color: var(--text-main); border-radius: 8px; width: 92%; max-width: 520px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-height: 88vh; overflow-y: auto; }
         .modal-header { font-weight: bold; margin-bottom: 12px; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; }
         
-        .color-section { margin-bottom: 10px; background: #f8f9fa; padding: 8px; border-radius: 6px; border: 1px solid #e9ecef; }
+        .color-section { margin-bottom: 10px; background: var(--bg-color-sec); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); }
         .color-palette { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; align-items: center; }
         .color-swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 3px rgba(0,0,0,0.3); }
         .color-swatch.selected { border: 2px solid #000; transform: scale(1.1); }
@@ -118,7 +167,7 @@
         .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
 
         .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 6px; }
-        .photo-item { position: relative; width: 100%; height: 90px; border-radius: 6px; overflow: hidden; border: 1px solid #ddd; background: #000; }
+        .photo-item { position: relative; width: 100%; height: 90px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border-color); background: #000; }
         .photo-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
         .photo-del-btn { position: absolute; top: 3px; right: 3px; background: rgba(220,53,69,0.9); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.4); z-index: 2; }
         .photo-del-btn:hover { background: #dc3545; }
@@ -130,10 +179,10 @@
         .timeline-list { list-style: none; margin-top: 8px; padding-left: 10px; border-left: 2px solid #1f4e78; font-size: 0.75rem; }
         .timeline-item { position: relative; margin-bottom: 8px; padding-left: 10px; }
         .timeline-item::before { content: ''; position: absolute; left: -15px; top: 4px; width: 8px; height: 8px; background: #1f4e78; border-radius: 50%; }
-        .timeline-time { color: #777; font-size: 0.68rem; }
+        .timeline-time { color: var(--text-sub); font-size: 0.68rem; }
 
         .manage-list { list-style: none; margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px; }
-        .manage-item { display: flex; align-items: center; gap: 8px; background: #f8f9fa; padding: 6px 10px; border-radius: 4px; border: 1px solid #ddd; }
+        .manage-item { display: flex; align-items: center; gap: 8px; background: var(--bg-color-sec); padding: 6px 10px; border-radius: 4px; border: 1px solid var(--border-color); }
     </style>
 </head>
 <body>
@@ -150,6 +199,7 @@
             <span class="author-tag">製作者：柏昇小歐</span>
         </div>
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button id="themeToggleBtn" class="btn-theme" onclick="toggleTheme()">🌙 深色模式</button>
             <div class="header-top-right">
                 <span id="liveClock" class="live-clock"></span>
             </div>
@@ -244,13 +294,13 @@
         <div class="table-scroll-container">
             <table id="busTable" style="width:100%; min-width:640px; border-collapse:collapse; font-size:0.78rem;">
                 <thead>
-                    <tr style="background:#e9ecef;">
-                        <th style="padding:6px 4px; border:1px solid #ccc; width:130px;">車號 / 備註</th>
-                        <th style="padding:6px 4px; border:1px solid #ccc; width:130px;">所屬區域</th>
-                        <th style="padding:6px 4px; border:1px solid #ccc; width:110px;">當前進度</th>
-                        <th style="padding:6px 4px; border:1px solid #ccc; width:130px;">進場 / 出廠日期</th>
-                        <th style="padding:6px 4px; border:1px solid #ccc; width:120px;">照片/歷史</th>
-                        <th style="padding:6px 4px; border:1px solid #ccc; width:60px;">操作</th>
+                    <tr style="background:var(--bg-table-header);">
+                        <th style="padding:6px 4px; border:1px solid var(--border-color); width:130px;">車號 / 備註</th>
+                        <th style="padding:6px 4px; border:1px solid var(--border-color); width:130px;">所屬區域</th>
+                        <th style="padding:6px 4px; border:1px solid var(--border-color); width:110px;">當前進度</th>
+                        <th style="padding:6px 4px; border:1px solid var(--border-color); width:130px;">進場 / 出廠日期</th>
+                        <th style="padding:6px 4px; border:1px solid var(--border-color); width:120px;">照片/歷史</th>
+                        <th style="padding:6px 4px; border:1px solid var(--border-color); width:60px;">操作</th>
                     </tr>
                 </thead>
                 <tbody id="busTableBody"></tbody>
@@ -262,7 +312,7 @@
 <div id="tab-logs" class="tab-content">
     <div class="card">
         <div class="card-title">📜 全廠作業履歷與異動紀錄 (Audit Trail)</div>
-        <div style="background:white; padding:10px; border-radius:6px; max-height:500px; overflow-y:auto;">
+        <div style="background:var(--bg-table); padding:10px; border-radius:6px; max-height:500px; overflow-y:auto; border: 1px solid var(--border-color);">
             <ul class="timeline-list" id="globalAuditLogList"></ul>
         </div>
     </div>
@@ -274,7 +324,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <span>編輯車輛詳細資訊與施工紀錄</span>
-            <button onclick="closeModal('busModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;">✕</button>
+            <button onclick="closeModal('busModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;color:var(--text-main);">✕</button>
         </div>
         
         <label style="font-size:0.8rem; font-weight:bold;">車輛編號 / 車號：</label>
@@ -295,16 +345,16 @@
         <textarea id="modalBusNote" rows="2" style="margin-top:2px; margin-bottom:8px; font-size:0.78rem;" placeholder="記錄現場注意事項、施工重點..."></textarea>
 
         <div class="color-section">
-            <label style="font-size:0.8rem; font-weight:bold; color:#1f4e78;">🎨 1. 底色選擇 (Background Color)：</label>
+            <label style="font-size:0.8rem; font-weight:bold; color:var(--title-color);">🎨 1. 底色選擇 (Background Color)：</label>
             <div class="color-palette" id="busBgPalette"></div>
         </div>
 
         <div class="color-section">
-            <label style="font-size:0.8rem; font-weight:bold; color:#1f4e78;">✏️ 2. 字體顏色選擇 (Text Color)：</label>
+            <label style="font-size:0.8rem; font-weight:bold; color:var(--title-color);">✏️ 2. 字體顏色選擇 (Text Color)：</label>
             <div class="color-palette" id="busTextColorPalette"></div>
         </div>
 
-        <div style="border-top:1px solid #eee; padding-top:8px; margin-top:4px;">
+        <div style="border-top:1px solid var(--border-color); padding-top:8px; margin-top:4px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <label style="font-size:0.8rem; font-weight:bold;">📷 施工瑕疵 / 現場照片：</label>
                 <button class="btn btn-zone" style="min-height:24px; padding:2px 8px; font-size:0.7rem;" onclick="triggerPhotoUpload()">📸 上傳照片</button>
@@ -313,7 +363,7 @@
             <div class="photo-grid" id="modalPhotoGrid"></div>
         </div>
 
-        <div style="border-top:1px solid #eee; padding-top:8px; margin-top:10px;">
+        <div style="border-top:1px solid var(--border-color); padding-top:8px; margin-top:10px;">
             <label style="font-size:0.8rem; font-weight:bold;">⏱️ 本車歷史履歷異動：</label>
             <div style="max-height:120px; overflow-y:auto; margin-top:4px;">
                 <ul class="timeline-list" id="modalBusTimeline"></ul>
@@ -331,7 +381,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <span id="galleryModalTitle">📷 車輛施工照片</span>
-            <button onclick="closeModal('photoGalleryModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;">✕</button>
+            <button onclick="closeModal('photoGalleryModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;color:var(--text-main);">✕</button>
         </div>
         <div class="photo-grid" id="galleryPhotoGrid"></div>
         <div class="modal-footer">
@@ -348,15 +398,15 @@
     <div class="modal-content">
         <div class="modal-header">
             <span>📦 歷史歸檔車輛庫</span>
-            <button onclick="closeModal('archiveModal')" style="border:none;background:none;cursor:pointer;">✕</button>
+            <button onclick="closeModal('archiveModal')" style="border:none;background:none;cursor:pointer;color:var(--text-main);">✕</button>
         </div>
         <div style="max-height:350px; overflow-y:auto;">
             <table style="width:100%; border-collapse:collapse; font-size:0.75rem;">
                 <thead>
-                    <tr style="background:#f1f1f1;">
-                        <th style="padding:4px; border:1px solid #ccc;">車號</th>
-                        <th style="padding:4px; border:1px solid #ccc;">最後區域</th>
-                        <th style="padding:4px; border:1px solid #ccc;">操作</th>
+                    <tr style="background:var(--bg-table-header);">
+                        <th style="padding:4px; border:1px solid var(--border-color);">車號</th>
+                        <th style="padding:4px; border:1px solid var(--border-color);">最後區域</th>
+                        <th style="padding:4px; border:1px solid var(--border-color);">操作</th>
                     </tr>
                 </thead>
                 <tbody id="archiveTableBody"></tbody>
@@ -369,7 +419,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <span>⚙️ 全廠區域管理</span>
-            <button onclick="closeModal('zoneManagerModal')" style="border:none;background:none;cursor:pointer;">✕</button>
+            <button onclick="closeModal('zoneManagerModal')" style="border:none;background:none;cursor:pointer;color:var(--text-main);">✕</button>
         </div>
         <div class="manage-list" id="zoneManageList"></div>
         <button class="btn btn-zone" style="width:100%;" onclick="addNewZone()">➕ 新增區域</button>
@@ -381,7 +431,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <span>🎨 全廠進度選項管理</span>
-            <button onclick="closeModal('statusManagerModal')" style="border:none;background:none;cursor:pointer;">✕</button>
+            <button onclick="closeModal('statusManagerModal')" style="border:none;background:none;cursor:pointer;color:var(--text-main);">✕</button>
         </div>
         <div class="manage-list" id="statusManageList"></div>
         <button class="btn btn-status" style="width:100%;" onclick="addNewStatus()">➕ 新增進度選項</button>
@@ -397,29 +447,52 @@
     if (window.supabase && typeof window.supabase.createClient === 'function') {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     }
-// 將 File/Blob 圖片直接上傳至 Supabase Storage
-async function uploadToSupabaseStorage(file) {
-    if (!supabaseClient) throw new Error("Supabase 未初始化");
 
-    const fileExt = file.type?.split('/')[1] || 'jpg';
-    const fileName = `bus_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+    // 主題切換相關邏輯
+    function initTheme() {
+        const savedTheme = localStorage.getItem('userTheme') || 'light';
+        applyTheme(savedTheme);
+    }
 
-    const { data, error } = await supabaseClient.storage
-        .from('bus-photos')
-        .upload(fileName, file, {
-            contentType: file.type || 'image/jpeg',
-            cacheControl: '3600',
-            upsert: false
-        });
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+        localStorage.setItem('userTheme', newTheme);
+    }
 
-    if (error) throw error;
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        const btn = document.getElementById('themeToggleBtn');
+        if (btn) {
+            btn.innerHTML = theme === 'dark' ? '☀️ 淺色模式' : '🌙 深色模式';
+        }
+    }
 
-    const { data: publicUrlData } = supabaseClient.storage
-        .from('bus-photos')
-        .getPublicUrl(fileName);
+    // 將 File/Blob 圖片直接上傳至 Supabase Storage
+    async function uploadToSupabaseStorage(file) {
+        if (!supabaseClient) throw new Error("Supabase 未初始化");
 
-    return publicUrlData.publicUrl;
-}
+        const fileExt = file.type?.split('/')[1] || 'jpg';
+        const fileName = `bus_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+        const { data, error } = await supabaseClient.storage
+            .from('bus-photos')
+            .upload(fileName, file, {
+                contentType: file.type || 'image/jpeg',
+                cacheControl: '3600',
+                upsert: false
+            });
+
+        if (error) throw error;
+
+        const { data: publicUrlData } = supabaseClient.storage
+            .from('bus-photos')
+            .getPublicUrl(fileName);
+
+        return publicUrlData.publicUrl;
+    }
+    
     const ADMIN_PASSWORD = "0857957";
 
     let appData = {
@@ -461,6 +534,7 @@ async function uploadToSupabaseStorage(file) {
     let isSaving = false;
 
     window.onload = async () => {
+        initTheme();
         setupTabSwitch();
         updateAuthUI();
         initLiveClock();
@@ -617,7 +691,6 @@ async function uploadToSupabaseStorage(file) {
         }
     }
 
-    /* 修正與備份優化：正確整理 Payload 結構並防禦超量儲存 */
     async function autoSaveCloud() {
         if (isSaving) return false;
         isSaving = true;
@@ -634,7 +707,6 @@ async function uploadToSupabaseStorage(file) {
         try {
             if (!supabaseClient) throw new Error("Supabase 未初始化");
 
-            // 限制 auditLogs 紀錄數量最大 50 筆，避免封包暴增
             const payloadContent = {
                 ...appData,
                 auditLogs: Array.isArray(appData.auditLogs) ? appData.auditLogs.slice(0, 50) : []
@@ -654,7 +726,6 @@ async function uploadToSupabaseStorage(file) {
             success = true;
         } catch (err) {
             console.error("Cloud Save Error:", err);
-            const errorMsg = err.message || err.error_description || JSON.stringify(err);
             setSyncStatus('error', `同步失敗`);
         } finally {
             isSaving = false;
@@ -663,51 +734,47 @@ async function uploadToSupabaseStorage(file) {
     }
 
     function setSyncStatus(type, text) {
-    // 1. 保持原本頁面上的文字/燈號更新
-    const textEl = document.getElementById('syncText');
-    const dotEl = document.getElementById('syncDot');
-    if (textEl) textEl.innerText = text;
-    if (dotEl) dotEl.className = `dot ${type}`;
+        const textEl = document.getElementById('syncText');
+        const dotEl = document.getElementById('syncDot');
+        if (textEl) textEl.innerText = text;
+        if (dotEl) dotEl.className = `dot ${type}`;
 
-    // 2. 建立或取得獨立懸浮 Toast
-    let toast = document.getElementById('floatingSyncToast');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'floatingSyncToast';
-        toast.style.position = 'fixed';
-        toast.style.top = '15px';
-        toast.style.right = '15px';
-        toast.style.zIndex = '999999';
-        toast.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
-        toast.style.color = '#ffffff';
-        toast.style.padding = '6px 14px';
-        toast.style.borderRadius = '20px';
-        toast.style.fontSize = '13px';
-        toast.style.boxShadow = '0px 4px 12px rgba(0, 0, 0, 0.3)';
-        toast.style.display = 'none';
-        toast.style.alignItems = 'center';
-        toast.style.gap = '8px';
-        toast.style.pointerEvents = 'none';
-        document.body.appendChild(toast);
-    }
-
-    // 3. 清除舊的定時器
-    if (window.toastTimer) clearTimeout(window.toastTimer);
-
-    // 4. 根據狀態顯示浮動提示
-    if (type === 'syncing') {
-        toast.innerHTML = '<span style="color:#ffc107;">●</span> ' + text;
-        toast.style.display = 'flex';
-    } else if (type === 'success') {
-        toast.innerHTML = '<span style="color:#28a745;">●</span> ' + text;
-        toast.style.display = 'flex';
-        window.toastTimer = setTimeout(function() {
+        let toast = document.getElementById('floatingSyncToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'floatingSyncToast';
+            toast.style.position = 'fixed';
+            toast.style.top = '15px';
+            toast.style.right = '15px';
+            toast.style.zIndex = '999999';
+            toast.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+            toast.style.color = '#ffffff';
+            toast.style.padding = '6px 14px';
+            toast.style.borderRadius = '20px';
+            toast.style.fontSize = '13px';
+            toast.style.boxShadow = '0px 4px 12px rgba(0, 0, 0, 0.3)';
             toast.style.display = 'none';
-        }, 2000);
-    } else {
-        toast.style.display = 'none';
+            toast.style.alignItems = 'center';
+            toast.style.gap = '8px';
+            toast.style.pointerEvents = 'none';
+            document.body.appendChild(toast);
+        }
+
+        if (window.toastTimer) clearTimeout(window.toastTimer);
+
+        if (type === 'syncing') {
+            toast.innerHTML = '<span style="color:#ffc107;">●</span> ' + text;
+            toast.style.display = 'flex';
+        } else if (type === 'success') {
+            toast.innerHTML = '<span style="color:#28a745;">●</span> ' + text;
+            toast.style.display = 'flex';
+            window.toastTimer = setTimeout(function() {
+                toast.style.display = 'none';
+            }, 2000);
+        } else {
+            toast.style.display = 'none';
+        }
     }
-}
     
     function addAuditLog(busPlate, action) {
         const timeStr = new Date().toLocaleString('zh-TW', { hour12: false });
@@ -941,28 +1008,28 @@ async function uploadToSupabaseStorage(file) {
             const logCount = (bus.logs || []).length;
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td style="padding:4px; border:1px solid #ccc; text-align:center;">
+                <td style="padding:4px; border:1px solid var(--border-color); text-align:center;">
                     <span style="background:${bus.bg || '#8c5d5d'}; color:${bus.color || '#ffffff'}; padding:2px 4px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="handleBusPlateClick('${bus.id}')">${bus.plate}</span>
                 </td>
-                <td style="padding:4px; border:1px solid #ccc;">
+                <td style="padding:4px; border:1px solid var(--border-color);">
                     <select ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'zoneId', this.value)">
                         ${appData.zones.map(z => `<option value="${z.id}" ${z.id === bus.zoneId ? 'selected' : ''}>${z.name}</option>`).join('')}
                     </select>
                 </td>
-                <td style="padding:4px; border:1px solid #ccc;">
+                <td style="padding:4px; border:1px solid var(--border-color);">
                     <select ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'statusId', this.value)">
                         ${appData.statuses.map(s => `<option value="${s.id}" ${s.id === bus.statusId ? 'selected' : ''}>${s.name}</option>`).join('')}
                     </select>
                 </td>
-                <td style="padding:4px; border:1px solid #ccc; font-size:0.7rem;">
+                <td style="padding:4px; border:1px solid var(--border-color); font-size:0.7rem;">
                     進:<input type="date" value="${bus.startDate || ''}" ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)">
                     出:<input type="date" value="${bus.endDate || ''}" ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)">
                 </td>
-                <td style="padding:4px; border:1px solid #ccc; text-align:center; font-size:0.75rem;">
+                <td style="padding:4px; border:1px solid var(--border-color); text-align:center; font-size:0.75rem;">
                     <span style="cursor:pointer;" onclick="openPhotoGallery('${bus.id}')">📷 ${photoCount}</span> / ⏱️ ${logCount}
                     ${authed ? `<button class="btn" style="min-height:20px; padding:1px 4px; font-size:0.65rem; background:#e83e8c; margin-left:2px;" onclick="triggerDirectPhotoUpload('${bus.id}')">+上傳</button>` : ''}
                 </td>
-                <td style="padding:4px; border:1px solid #ccc; text-align:center;">
+                <td style="padding:4px; border:1px solid var(--border-color); text-align:center;">
                     ${authed ? `<button class="btn" style="background:#dc3545; min-height:22px; padding:2px 4px; font-size:0.7rem;" onclick="deleteBus('${bus.id}')">✕</button>` : '-'}
                 </td>
             `;
@@ -1103,74 +1170,71 @@ async function uploadToSupabaseStorage(file) {
 
     function triggerPhotoUpload() { document.getElementById('busPhotoInput').click(); }
 
-// 輔助函式：Canvas 轉 Blob
-function canvasToBlob(canvas, quality = 0.5) {
-    return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
-}
+    function canvasToBlob(canvas, quality = 0.5) {
+        return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
+    }
 
-// 壓縮並上傳至 Supabase Storage
-async function processAndUploadFiles(files, bus) {
-    if (!files || !files.length || !bus) return;
-    if (!bus.photos) bus.photos = [];
+    async function processAndUploadFiles(files, bus) {
+        if (!files || !files.length || !bus) return;
+        if (!bus.photos) bus.photos = [];
 
-    setSyncStatus('syncing', '正在上傳照片至 Storage...');
+        setSyncStatus('syncing', '正在上傳照片至 Storage...');
 
-    for (let file of Array.from(files)) {
-        try {
-            const blob = await compressImageToBlob(file, 800, 0.6);
-            const imageUrl = await uploadToSupabaseStorage(blob);
-            bus.photos.push(imageUrl);
-            addAuditLog(bus.plate, '上傳了新的現場施工照片');
-        } catch (err) {
-            console.error("單張照片上傳失敗:", err);
-            alert(`照片 ${file.name} 上傳失敗：` + err.message);
+        for (let file of Array.from(files)) {
+            try {
+                const blob = await compressImageToBlob(file, 800, 0.6);
+                const imageUrl = await uploadToSupabaseStorage(blob);
+                bus.photos.push(imageUrl);
+                addAuditLog(bus.plate, '上傳了新的現場施工照片');
+            } catch (err) {
+                console.error("單張照片上傳失敗:", err);
+                alert(`照片 ${file.name} 上傳失敗：` + err.message);
+            }
         }
+
+        if (currentEditBusId === bus.id) {
+            renderPhotoGrid(bus);
+        }
+        await autoSaveCloud();
+        renderApp();
     }
 
-    if (currentEditBusId === bus.id) {
-        renderPhotoGrid(bus);
-    }
-    await autoSaveCloud();
-    renderApp();
-}
+    function compressImageToBlob(file, maxSize = 800, quality = 0.6) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = async () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
 
-// 圖片壓縮輔助函式
-function compressImageToBlob(file, maxSize = 800, quality = 0.6) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.onload = async () => {
-                const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
-
-                if (width > height) {
-                    if (width > maxSize) {
-                        height *= maxSize / width;
-                        width = maxSize;
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height *= maxSize / width;
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width *= maxSize / height;
+                            height = maxSize;
+                        }
                     }
-                } else {
-                    if (height > maxSize) {
-                        width *= maxSize / height;
-                        height = maxSize;
-                    }
-                }
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
 
-                const blob = await canvasToBlob(canvas, quality);
-                resolve(blob);
+                    const blob = await canvasToBlob(canvas, quality);
+                    resolve(blob);
+                };
+                img.onerror = reject;
+                img.src = e.target.result;
             };
-            img.onerror = reject;
-            img.src = e.target.result;
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
             
     function handlePhotoUpload(e) {
         const bus = appData.buses.find(b => b.id === currentEditBusId);
@@ -1356,9 +1420,9 @@ function compressImageToBlob(file, maxSize = 800, quality = 0.6) {
             const zName = appData.zones.find(z => z.id === b.zoneId)?.name || '';
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td style="padding:4px; border:1px solid #ccc;">${b.plate}</td>
-                <td style="padding:4px; border:1px solid #ccc;">${zName}</td>
-                <td style="padding:4px; border:1px solid #ccc; text-align:center;">
+                <td style="padding:4px; border:1px solid var(--border-color);">${b.plate}</td>
+                <td style="padding:4px; border:1px solid var(--border-color);">${zName}</td>
+                <td style="padding:4px; border:1px solid var(--border-color); text-align:center;">
                     <button class="btn" style="min-height:22px; padding:2px 6px; font-size:0.7rem;" onclick="restoreBus(${idx})">還原</button>
                 </td>
             `;
