@@ -94,7 +94,7 @@
         .btn-theme { background: #4a5568; color: white; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; transition: background 0.2s; }
         .btn-theme:hover { background: #718096; }
 
-        .btn { background: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: justify; min-height: 34px; touch-action: manipulation; }
+        .btn { background: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 34px; touch-action: manipulation; }
         .btn-zone { background: #17a2b8; } 
         .btn-status { background: #6f42c1; } 
         .btn-save { background: #fd7e14; } 
@@ -102,7 +102,7 @@
         .btn-import { background: #e83e8c; }
         .btn-archive { background: #6c757d; }
 
-        /* 修正 2：統計卡片再壓扁 (padding: 4px 8px，緊湊排列) */
+        /* KPI 統計卡片壓扁樣式 */
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; margin-bottom: 8px; }
         .kpi-card { background: var(--bg-kpi); padding: 4px 8px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #1f4e78; transition: background-color 0.3s ease, transform 0.15s; display: flex; flex-direction: column; justify-content: center; }
         .kpi-card.clickable { cursor: pointer; }
@@ -121,7 +121,7 @@
         .chat-body { margin-top: 1px; line-height: 1.3; word-break: break-all; }
         .chat-vehicles { background: rgba(255,255,255,0.4); padding: 3px 6px; border-radius: 4px; margin-top: 3px; font-weight: bold; display: inline-block; font-size: 0.7rem; }
 
-        /* 修正 3：驗交車公告再壓扁 (單行橫向緊湊排列、壓縮高度) */
+        /* 單行橫向驗交車公告區塊 */
         .announcement-box { background: var(--bg-announcement); border: 1px solid var(--border-announcement); color: var(--text-announcement); padding: 4px 8px; border-radius: 6px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-height: 32px; }
         .announcement-left { display: flex; align-items: center; gap: 6px; flex-shrink: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
         .announcement-title { font-weight: bold; font-size: 0.8rem; flex-shrink: 0; }
@@ -129,7 +129,7 @@
         .btn-announcement:hover { background: #0056b3; }
         .btn-announcement-del { background: #dc3545; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: bold; cursor: pointer; flex-shrink: 0; }
 
-        /* 修正 1：重構搜尋排序結構 (CSS Grid 兩欄式雙行佈局) */
+        /* CSS Grid 兩欄式雙行佈局 */
         .sort-bar { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -282,7 +282,7 @@
 <input type="file" id="globalDirectPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handleDirectPhotoUpload(event)">
 <input type="file" id="announcementFileInput" class="hidden-file-input" accept="image/*" onchange="handleAnnouncementPhotoUpload(event)">
 
-<!-- 修正 2：壓扁後的 KPI 看板 -->
+<!-- KPI 看板 -->
 <div class="dashboard-grid">
     <div class="kpi-card" style="border-left-color: #1f4e78;">
         <div class="kpi-title">總在廠數量</div>
@@ -318,7 +318,7 @@
     </div>
 </div>
 
-<!-- 修正 3：壓扁後的單行橫向驗交車公告區塊 -->
+<!-- 驗交車公告區塊 -->
 <div class="announcement-box" id="announcementBox">
     <div class="announcement-left">
         <span class="announcement-title">📢 <b>查核/驗車/交車日公告</b></span>
@@ -331,7 +331,7 @@
     </div>
 </div>
 
-<!-- 修正 1：CSS Grid 兩欄式雙行佈局搜尋與排序區塊 -->
+<!-- CSS Grid 兩欄式雙行佈局搜尋與排序區塊 -->
 <div class="sort-bar">
     <div class="sort-bar-label">🔍 搜尋車輛</div>
     <div class="sort-bar-label">↕️ 排序選項</div>
@@ -697,9 +697,21 @@
         setupTabSwitch();
         updateAuthUI();
         initLiveClock();
+        setupScrollToTop();
         await loadCloudData();
         setupRealtimeSubscription();
     };
+
+    function setupScrollToTop() {
+        const btnTop = document.getElementById('btnTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 200) {
+                btnTop.classList.add('show');
+            } else {
+                btnTop.classList.remove('show');
+            }
+        });
+    }
 
     function setupRealtimeSubscription() {
         if (!supabaseClient) return;
@@ -1218,7 +1230,6 @@
         const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
         let filteredBuses = appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword) || (b.note||'').toLowerCase().includes(searchKeyword));
 
-        // 排序邏輯
         const sortField = document.getElementById('sortField')?.value || 'plate';
         const sortOrder = document.getElementById('sortOrder')?.value || 'asc';
 
