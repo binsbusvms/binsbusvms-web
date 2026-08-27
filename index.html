@@ -638,6 +638,7 @@
         }
     }
 
+    /* 🛠️ 修復核心：重構雲端儲存與超時機制 */
     async function autoSaveCloud() {
         if (isSaving) return false;
         isSaving = true;
@@ -655,28 +656,35 @@
         try {
             if (!supabaseClient) throw new Error("Supabase 未初始化");
 
-            const savePromise = supabaseClient
-                .from('app_data')
-                .upsert({ 
-                    id: 'main_data', 
-                    content: appData, 
-                    updated_at: new Date().toISOString() 
-                });
+            // 將 Supabase SDK Promise 化，並調高 Timeout 至 15 秒以允許傳送照片檔
+            const savePromise = new Promise(async (resolve, reject) => {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('app_data')
+                        .upsert({ 
+                            id: 'main_data', 
+                            content: appData, 
+                            updated_at: new Date().toISOString() 
+                        });
+                    if (error) reject(error);
+                    else resolve(data);
+                } catch (e) {
+                    reject(e);
+                }
+            });
 
             const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Network timeout')), 8000)
+                setTimeout(() => reject(new Error('Network timeout')), 15000)
             );
 
-            const { error } = await Promise.race([savePromise, timeoutPromise]);
+            await Promise.race([savePromise, timeoutPromise]);
             
-            if (error) throw error;
             setSyncStatus('success', '已同步雲端');
             success = true;
         } catch (err) {
             console.error("Cloud Save Error:", err);
             setSyncStatus('error', '僅儲存於本地');
         } finally {
-            // 確保無論成功或失敗皆能釋放鎖定
             isSaving = false;
         }
         return success;
@@ -755,7 +763,7 @@
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
-                const max_size = 1200;
+                const max_size = 1000;
 
                 if (width > height) {
                     if (width > max_size) { height *= max_size / width; width = max_size; }
@@ -768,7 +776,8 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                appData.announcementImg = canvas.toDataURL('image/jpeg', 0.85);
+                // 降低品質至 0.65 以確保小於 Payload 上限
+                appData.announcementImg = canvas.toDataURL('image/jpeg', 0.65);
                 addAuditLog('系統公告', '更新了驗交車公告圖片');
                 autoSaveCloud();
                 renderApp();
@@ -1103,7 +1112,7 @@
                     const canvas = document.createElement('canvas');
                     let width = img.width;
                     let height = img.height;
-                    const max_size = 1024;
+                    const max_size = 800; // 降低長寬防止 Body 超過 HTTP 限制
 
                     if (width > height) {
                         if (width > max_size) { height *= max_size / width; width = max_size; }
@@ -1116,7 +1125,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.65);
 
                     if (!bus.photos) bus.photos = [];
                     bus.photos.push(compressedBase64);
@@ -1423,7 +1432,7 @@
     function exportData() {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
         const anchor = document.createElement('a');
-        anchor.setAttribute("href", dataStr);
+        anchor.setAttribute("href", anchor.getAttribute ? dataStr : "");
         anchor.setAttribute("download", `柏昇車輛備份_${new Date().toISOString().slice(0,10)}.json`);
         anchor.click();
     }
