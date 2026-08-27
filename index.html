@@ -138,7 +138,7 @@
         .photo-del-btn { position: absolute; top: 3px; right: 3px; background: rgba(220,53,69,0.9); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.4); z-index: 2; }
         .photo-del-btn:hover { background: #dc3545; }
 
-        /* 全螢幕大圖 Modal - 提高 z-index 至 3000 */
+        /* 全螢幕大圖 Modal */
         .lightbox-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:3000; justify-content:center; align-items:center; }
         .lightbox-modal.active { display: flex; }
         .lightbox-img { max-width: 92%; max-height: 85vh; border-radius: 4px; box-shadow: 0 0 20px rgba(0,0,0,0.5); object-fit: contain; }
@@ -372,7 +372,7 @@
     </div>
 </div>
 
-<!-- 大圖查看 Lightbox Modal (修復：已獨立至最外層) -->
+<!-- 大圖查看 Lightbox Modal -->
 <div class="lightbox-modal" id="lightboxModal" onclick="closeModal('lightboxModal')">
     <img id="lightboxImg" class="lightbox-img" src="" alt="大圖">
 </div>
@@ -428,7 +428,12 @@
 <script>
     const SUPABASE_URL = 'https://dkyuxneazojqohcuvjsp.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_twR6l-aVWBSFei-FZUd1JQ_XEBEpwga';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    // 安全地取得全域 window.supabase 物件建立 Client
+    let supabaseClient = null;
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
 
     const ADMIN_PASSWORD = "0857957";
 
@@ -479,6 +484,7 @@
     };
 
     function setupRealtimeSubscription() {
+        if (!supabaseClient) return;
         supabaseClient
             .channel('app_data_changes')
             .on(
@@ -580,12 +586,19 @@
     async function loadCloudData() {
         setSyncStatus('syncing', '同步雲端中...');
         try {
+            if (!supabaseClient) throw new Error("Supabase 未能初始化");
             const { data, error } = await supabaseClient.from('app_data').select('content').eq('id', 'main_data').single();
+            if (error) throw error;
             if (data && data.content) {
                 appData = data.content;
                 setSyncStatus('success', '已連線');
             }
         } catch(err) {
+            console.warn("載入雲端失敗，嘗試讀取本機數據：", err);
+            const local = localStorage.getItem('bus_manage_data_v2');
+            if (local) {
+                try { appData = JSON.parse(local); } catch(e){}
+            }
             setSyncStatus('error', '離線模式');
         }
         sanitizeData();
@@ -596,6 +609,7 @@
         if (!appData.archivedBuses) appData.archivedBuses = [];
         if (!appData.auditLogs) appData.auditLogs = [];
         if (!appData.announcementImg) appData.announcementImg = "";
+        if (!appData.buses) appData.buses = [];
         appData.buses.forEach(b => {
             if (!b.photos) b.photos = [];
             if (!b.logs) b.logs = [];
@@ -620,7 +634,7 @@
         if (success) {
             alert("💾 資料已成功儲存並同步至雲端！");
         } else {
-            alert("⚠️ 儲存失敗或僅存於本機，請檢查網路連線。");
+            alert("⚠️ 雲端同步失敗或網路延遲，已備份儲存於本機。");
         }
     }
 
@@ -628,6 +642,7 @@
         if (isSaving) return false;
         isSaving = true;
 
+        // 本地優先備份
         try {
             localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData));
         } catch (e) {
@@ -638,6 +653,8 @@
         let success = false;
 
         try {
+            if (!supabaseClient) throw new Error("Supabase 未初始化");
+
             const savePromise = supabaseClient
                 .from('app_data')
                 .upsert({ 
@@ -659,14 +676,17 @@
             console.error("Cloud Save Error:", err);
             setSyncStatus('error', '僅儲存於本地');
         } finally {
+            // 確保無論成功或失敗皆能釋放鎖定
             isSaving = false;
         }
         return success;
     }
 
     function setSyncStatus(type, text) {
-        document.getElementById('syncText').innerText = text;
-        document.getElementById('syncDot').className = `dot ${type}`;
+        const textEl = document.getElementById('syncText');
+        const dotEl = document.getElementById('syncDot');
+        if (textEl) textEl.innerText = text;
+        if (dotEl) dotEl.className = `dot ${type}`;
     }
 
     function addAuditLog(busPlate, action) {
