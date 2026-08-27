@@ -72,7 +72,8 @@
         .controls.admin-only.show { display: flex !important; }
         
         .header-top-right { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.2); padding: 4px 10px; border-radius: 6px; }
-        .live-clock { font-size: 0.8rem; font-weight: 500; color: #fff; white-space: nowrap; }
+        /* 修正時間跳動問題：加入 font-variant-numeric: tabular-nums 與固定寬度 */
+        .live-clock { font-size: 0.8rem; font-weight: 500; color: #fff; white-space: nowrap; font-variant-numeric: tabular-nums; display: inline-block; min-width: 155px; text-align: center; }
         .auth-bar { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 6px; }
         .btn-auth { background: #ffc107; color: #212529; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; }
         .btn-logout { background: #dc3545; color: white; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; }
@@ -90,7 +91,7 @@
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 8px; }
         .kpi-card { background: var(--bg-kpi); padding: 8px 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #1f4e78; transition: background-color 0.3s ease; }
         .kpi-card .kpi-title { font-size: 0.7rem; color: var(--text-sub); font-weight: bold; }
-        .kpi-card .kpi-num { font-size: 1.2rem; font-weight: bold; color: var(--title-color); margin-top: 2px; }
+        .kpi-card .kpi-num { font-size: 1.2rem; font-weight: bold; color: var(--title-color); margin-top: 2px; font-variant-numeric: tabular-nums; }
 
         .announcement-box { background: var(--bg-announcement); border: 1px solid var(--border-announcement); color: var(--text-announcement); padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .announcement-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -126,7 +127,7 @@
         .bus-card { background: var(--bg-bus-card); border: 1px solid var(--border-color); border-radius: 5px; padding: 6px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: grab; transition: background-color 0.3s ease; }
         .bus-card:active { cursor: grabbing; }
         .bus-header { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
-        .bus-plate-input { font-weight: bold; font-size: 0.8rem; padding: 4px 6px; border-radius: 4px; text-align: center; flex-grow: 1; min-height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.2s; word-break: break-all; }
+        .bus-plate-input { font-weight: bold; font-size: 0.8rem; padding: 4px 6px; border-radius: 4px; text-align: center; flex-grow: 1; min-height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.2s; word-break: break-all; font-variant-numeric: tabular-nums; }
         .bus-plate-input:hover { opacity: 0.85; }
 
         .bus-badge-container { display: flex; gap: 4px; font-size: 0.68rem; flex-wrap: wrap; margin-top: 2px; }
@@ -135,8 +136,8 @@
 
         .bus-date-row { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-sub); }
         .bus-date-group { display: flex; align-items: center; gap: 2px; flex: 1; }
-        .bus-date-input { font-size: 0.68rem; padding: 1px 2px; border: 1px solid var(--border-color); border-radius: 3px; width: 100%; height: 26px; background-color: var(--bg-input); color: var(--text-main); }
-        .bus-date-text { font-size: 0.7rem; color: var(--text-main); font-weight: 500; background: var(--bg-input); padding: 3px 4px; border-radius: 3px; border: 1px solid var(--border-color); width: 100%; text-align: center; }
+        .bus-date-input { font-size: 0.68rem; padding: 1px 2px; border: 1px solid var(--border-color); border-radius: 3px; width: 100%; height: 26px; background-color: var(--bg-input); color: var(--text-main); font-variant-numeric: tabular-nums; }
+        .bus-date-text { font-size: 0.7rem; color: var(--text-main); font-weight: 500; background: var(--bg-input); padding: 3px 4px; border-radius: 3px; border: 1px solid var(--border-color); width: 100%; text-align: center; font-variant-numeric: tabular-nums; }
 
         .table-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-table); }
         .table-scroll-tip { font-size: 0.75rem; color: #17a2b8; background: rgba(23, 162, 184, 0.15); padding: 4px 8px; border-radius: 4px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
@@ -176,7 +177,7 @@
         .lightbox-modal.active { display: flex; }
         .lightbox-img { max-width: 92%; max-height: 85vh; border-radius: 4px; box-shadow: 0 0 20px rgba(0,0,0,0.5); object-fit: contain; }
 
-        .timeline-list { list-style: none; margin-top: 8px; padding-left: 10px; border-left: 2px solid #1f4e78; font-size: 0.75rem; }
+        .timeline-list { list-style: none; margin-top: 8px; padding-left: 10px; border-left: 2px solid #1f4e78; font-size: 0.75rem; font-variant-numeric: tabular-nums; }
         .timeline-item { position: relative; margin-bottom: 8px; padding-left: 10px; }
         .timeline-item::before { content: ''; position: absolute; left: -15px; top: 4px; width: 8px; height: 8px; background: #1f4e78; border-radius: 50%; }
         .timeline-time { color: var(--text-sub); font-size: 0.68rem; }
