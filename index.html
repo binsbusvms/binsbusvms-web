@@ -33,6 +33,9 @@
             --border-color: #ced4da;
             --bg-modal: #ffffff;
             --bg-color-sec: #f8f9fa;
+            --bg-chat-bubble: #e2f0d9;
+            --border-chat-bubble: #c5e0b4;
+            --text-chat-bubble: #2d572c;
         }
 
         [data-theme="dark"] {
@@ -56,6 +59,9 @@
             --border-color: #444444;
             --bg-modal: #252525;
             --bg-color-sec: #1a1a1a;
+            --bg-chat-bubble: #1b382b;
+            --border-chat-bubble: #27523f;
+            --text-chat-bubble: #a3e0b5;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -67,7 +73,6 @@
         .header-logo-icon { height: 26px; width: 26px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
         .author-tag { font-size: 0.65rem; font-weight: normal; opacity: 0.85; margin-left: 2px; }
 
-        /* 新增：公司地址與官方連結區塊樣式 */
         .company-info-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.75rem; background: rgba(0, 0, 0, 0.2); padding: 6px 12px; border-radius: 6px; margin-bottom: 8px; }
         .company-contact { display: flex; flex-wrap: wrap; gap: 12px; color: #e0e0e0; align-items: center; }
         .company-links { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -98,9 +103,22 @@
         .btn-archive { background: #6c757d; }
 
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 8px; }
-        .kpi-card { background: var(--bg-kpi); padding: 8px 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #1f4e78; transition: background-color 0.3s ease; }
-        .kpi-card .kpi-title { font-size: 0.7rem; color: var(--text-sub); font-weight: bold; }
+        .kpi-card { background: var(--bg-kpi); padding: 8px 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #1f4e78; transition: background-color 0.3s ease, transform 0.15s; }
+        .kpi-card.clickable { cursor: pointer; }
+        .kpi-card.clickable:hover { transform: translateY(-2px); box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
+        .kpi-card .kpi-title { font-size: 0.7rem; color: var(--text-sub); font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
         .kpi-card .kpi-num { font-size: 1.2rem; font-weight: bold; color: var(--title-color); margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+        /* LINE 排程公告區塊樣式 */
+        .line-schedule-box { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .line-schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid var(--border-card); padding-bottom: 4px; }
+        .line-schedule-title { font-weight: bold; font-size: 0.88rem; color: var(--title-color); display: flex; align-items: center; gap: 6px; }
+        .chat-container { display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto; padding-right: 4px; }
+        .chat-card { display: flex; flex-direction: column; background: var(--bg-chat-bubble); border: 1px solid var(--border-chat-bubble); color: var(--text-chat-bubble); border-radius: 8px; padding: 8px 10px; font-size: 0.78rem; position: relative; }
+        .chat-sender { font-weight: bold; font-size: 0.72rem; color: var(--title-color); margin-bottom: 2px; display: flex; justify-content: space-between; align-items: center; }
+        .chat-meta { font-size: 0.68rem; color: var(--text-sub); font-weight: normal; }
+        .chat-body { margin-top: 2px; line-height: 1.4; word-break: break-all; }
+        .chat-vehicles { background: rgba(255,255,255,0.4); padding: 4px 6px; border-radius: 4px; margin-top: 4px; font-weight: bold; display: inline-block; }
 
         .announcement-box { background: var(--bg-announcement); border: 1px solid var(--border-announcement); color: var(--text-announcement); padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .announcement-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -166,7 +184,7 @@
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
-        .modal-content { background: var(--bg-modal); color: var(--text-main); border-radius: 8px; width: 92%; max-width: 520px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-height: 88vh; overflow-y: auto; }
+        .modal-content { background: var(--bg-modal); color: var(--text-main); border-radius: 8px; width: 92%; max-width: 550px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-height: 88vh; overflow-y: auto; }
         .modal-header { font-weight: bold; margin-bottom: 12px; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; }
         
         .color-section { margin-bottom: 10px; background: var(--bg-color-sec); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); }
@@ -221,7 +239,6 @@
         </div>
     </h1>
 
-    <!-- 新增：公司地址與官方帳號/官網連結列 -->
     <div class="company-info-bar">
         <div class="company-contact">
             <span>📍 桃園市新屋區東福路908巷50號</span>
@@ -258,13 +275,30 @@
         <div class="kpi-title">施工中</div>
         <div class="kpi-num" id="kpiWorking">0 台</div>
     </div>
-    <div class="kpi-card" style="border-left-color: #4CAF50;">
-        <div class="kpi-title">待交車</div>
+    <!-- 待交車 KPI 卡片，新增點擊觸發 Modal 明細 -->
+    <div class="kpi-card clickable" style="border-left-color: #4CAF50;" onclick="openPendingDeliveryModal()" title="點擊查看待交車詳細清單">
+        <div class="kpi-title">
+            <span>待交車</span>
+            <span style="font-size:0.65rem; color:#4CAF50; font-weight:normal;">🔍 點擊展開</span>
+        </div>
         <div class="kpi-num" id="kpiDone">0 台</div>
     </div>
     <div class="kpi-card" style="border-left-color: #E53935;">
         <div class="kpi-title">暫停施工</div>
         <div class="kpi-num" id="kpiPause">0 台</div>
+    </div>
+</div>
+
+<!-- 新增：廠內即時車輛排程公告（LINE 對話風格） -->
+<div class="line-schedule-box">
+    <div class="line-schedule-header">
+        <span class="line-schedule-title">💬 廠內即時車輛排程公告 (LINE 風格)</span>
+        <div class="controls admin-only" id="adminScheduleControls" style="display:inline-flex; gap:4px;">
+            <button class="btn" style="padding:2px 8px; font-size:0.75rem;" onclick="openAddScheduleModal()">➕ 新增排程公告</button>
+        </div>
+    </div>
+    <div class="chat-container" id="chatContainer">
+        <!-- 即時動態生成卡片 -->
     </div>
 </div>
 
@@ -341,6 +375,68 @@
 </div>
 
 <button class="back-to-top" id="btnTop" onclick="scrollToTop()">⬆</button>
+
+<!-- 待交車明細 Modal 彈窗 -->
+<div class="modal" id="pendingDeliveryModal">
+    <div class="modal-content" style="max-width: 680px;">
+        <div class="modal-header">
+            <span>📋 待交車車輛明細列表</span>
+            <button onclick="closeModal('pendingDeliveryModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;color:var(--text-main);">✕</button>
+        </div>
+        <div class="table-scroll-container" style="max-height: 420px; overflow-y: auto;">
+            <table style="width:100%; border-collapse:collapse; font-size:0.78rem;">
+                <thead>
+                    <tr style="background:var(--bg-table-header); position:sticky; top:0; z-index:2;">
+                        <th style="padding:6px 4px; border:1px solid var(--border-color);">車號 / 名稱</th>
+                        <th style="padding:6px 4px; border:1px solid var(--border-color);">當前區域</th>
+                        <th style="padding:6px 4px; border:1px solid var(--border-color);">預計交車/出廠日</th>
+                        <th style="padding:6px 4px; border:1px solid var(--border-color);">施工備註</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingDeliveryTableBody"></tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="closeModal('pendingDeliveryModal')">關閉</button>
+        </div>
+    </div>
+</div>
+
+<!-- 新增即時排程公告 Modal 彈窗 -->
+<div class="modal" id="addScheduleModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>💬 發布即時排程公告</span>
+            <button onclick="closeModal('addScheduleModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;color:var(--text-main);">✕</button>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            <div>
+                <label style="font-size:0.8rem; font-weight:bold;">發布者 / 單位：</label>
+                <input type="text" id="schedSender" placeholder="例如：同事 小游" value="同事 小游">
+            </div>
+            <div>
+                <label style="font-size:0.8rem; font-weight:bold;">對話日期標籤：</label>
+                <input type="text" id="schedDateGroup" placeholder="例如：8月24日(一) 或 今天">
+            </div>
+            <div>
+                <label style="font-size:0.8rem; font-weight:bold;">作業項目 / 項目說明：</label>
+                <input type="text" id="schedTaskType" placeholder="例如：汽車美容、滅火系統安裝">
+            </div>
+            <div>
+                <label style="font-size:0.8rem; font-weight:bold;">預定時間：</label>
+                <input type="text" id="schedTime" placeholder="例如：8/25 星期二下午四點">
+            </div>
+            <div>
+                <label style="font-size:0.8rem; font-weight:bold;">相關車輛 / 車主清單 (用逗號隔開)：</label>
+                <input type="text" id="schedVehicles" placeholder="例如：曹圓圓(F)7465145, F簡伯瑞7464222">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-archive" onclick="closeModal('addScheduleModal')">取消</button>
+            <button class="btn" onclick="saveNewSchedule()">💬 發布公告</button>
+        </div>
+    </div>
+</div>
 
 <div class="modal" id="busModal">
     <div class="modal-content">
@@ -470,7 +566,6 @@
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     }
 
-    // 主題切換相關邏輯
     function initTheme() {
         const savedTheme = localStorage.getItem('userTheme') || 'light';
         applyTheme(savedTheme);
@@ -491,7 +586,6 @@
         }
     }
 
-    // 將 File/Blob 圖片直接上傳至 Supabase Storage
     async function uploadToSupabaseStorage(file) {
         if (!supabaseClient) throw new Error("Supabase 未初始化");
 
@@ -519,6 +613,26 @@
 
     let appData = {
         announcementImg: "", 
+        schedules: [
+            {
+                "id": "sched_1",
+                "sender": "同事 小游",
+                "dateGroup": "8月24日(一)",
+                "taskType": "汽車美容",
+                "scheduleTime": "8/25星期二下午四點",
+                "vehicles": "曹圓圓(F)7465145",
+                "sentTime": "下午 4:57"
+            },
+            {
+                "id": "sched_2",
+                "sender": "同事 小游",
+                "dateGroup": "昨天",
+                "taskType": "滅火系統",
+                "scheduleTime": "8/27星期四",
+                "vehicles": "F簡伯瑞7464222, F蔡志興7465141",
+                "sentTime": "上午 9:59"
+            }
+        ],
         zones: [
             {"id":"B1_1","name":"【B1】麥克內裝區","color":"#2c3e50"},
             {"id":"B2","name":"【B2】麥克板金區","color":"#2c3e50"},
@@ -651,6 +765,12 @@
             else adminAnnouncementControls.classList.remove("show");
         }
 
+        const adminScheduleControls = document.getElementById("adminScheduleControls");
+        if (adminScheduleControls) {
+            if (authed) adminScheduleControls.classList.add("show");
+            else adminScheduleControls.classList.remove("show");
+        }
+
         const logsBtn = document.getElementById("tabLogsBtn");
         if (logsBtn) {
             if (authed) logsBtn.classList.add("show");
@@ -684,6 +804,7 @@
         if (!appData.archivedBuses) appData.archivedBuses = [];
         if (!appData.auditLogs) appData.auditLogs = [];
         if (!appData.announcementImg) appData.announcementImg = "";
+        if (!appData.schedules) appData.schedules = [];
         if (!appData.buses) appData.buses = [];
         appData.buses.forEach(b => {
             if (!b.photos) b.photos = [];
@@ -814,11 +935,120 @@
     function renderApp() {
         const scrollY = window.scrollY;
         updateDashboard();
+        renderSchedules();
         renderAnnouncementBox();
         renderMap();
         renderTable();
         renderAuditTrail();
         window.scrollTo(0, scrollY);
+    }
+
+    function renderSchedules() {
+        const container = document.getElementById('chatContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        const authed = isAuthed();
+
+        if (!appData.schedules || appData.schedules.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:10px; color:#888; font-size:0.78rem;">目前尚無排程公告</div>`;
+            return;
+        }
+
+        appData.schedules.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'chat-card';
+            card.innerHTML = `
+                <div class="chat-sender">
+                    <span>👤 ${item.sender || '同事'} <span class="chat-meta">(${item.dateGroup || '近期'})</span></span>
+                    <div>
+                        <span class="chat-meta">${item.sentTime || ''}</span>
+                        ${authed ? `<button style="background:#dc3545; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:6px;" onclick="deleteSchedule(${index})">✕ 刪除</button>` : ''}
+                    </div>
+                </div>
+                <div class="chat-body">
+                    📌 <b>${item.taskType || '排程作業'}</b>：${item.scheduleTime || '無時間備註'}
+                </div>
+                ${item.vehicles ? `<div class="chat-vehicles">🚌 相關車輛：${item.vehicles}</div>` : ''}
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function openAddScheduleModal() {
+        requireAuth(() => {
+            document.getElementById('addScheduleModal').classList.add('active');
+        });
+    }
+
+    function saveNewSchedule() {
+        const sender = document.getElementById('schedSender').value.trim() || '同事 小游';
+        const dateGroup = document.getElementById('schedDateGroup').value.trim() || '今天';
+        const taskType = document.getElementById('schedTaskType').value.trim() || '一般作業';
+        const scheduleTime = document.getElementById('schedTime').value.trim() || '時間另行通知';
+        const vehicles = document.getElementById('schedVehicles').value.trim();
+
+        const now = new Date();
+        const timeStr = `${now.getHours() > 12 ? '下午' : '上午'} ${now.getHours() % 12 || 12}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+        const newSched = {
+            id: 'sched_' + Date.now(),
+            sender,
+            dateGroup,
+            taskType,
+            scheduleTime,
+            vehicles,
+            sentTime: timeStr
+        };
+
+        if (!appData.schedules) appData.schedules = [];
+        appData.schedules.unshift(newSched);
+
+        addAuditLog('即時排程', `新增公告：${taskType} (${vehicles})`);
+        autoSaveCloud();
+        renderApp();
+        closeModal('addScheduleModal');
+    }
+
+    function deleteSchedule(index) {
+        requireAuth(() => {
+            if (confirm("確定刪除此排程公告？")) {
+                appData.schedules.splice(index, 1);
+                addAuditLog('即時排程', '刪除了一筆公告');
+                autoSaveCloud();
+                renderApp();
+            }
+        });
+    }
+
+    function openPendingDeliveryModal() {
+        const tbody = document.getElementById('pendingDeliveryTableBody');
+        tbody.innerHTML = '';
+
+        const doneDeliveryIds = appData.statuses
+            .filter(s => s.name.includes('待交車') || s.name.includes('待美容') || s.name.includes('已完成') || s.id === 'done' || s.id === 'S_1787581268044')
+            .map(s => s.id);
+
+        const pendingBuses = appData.buses.filter(b => doneDeliveryIds.includes(b.statusId));
+
+        if (pendingBuses.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:15px; color:#888;">目前全廠無待交車車輛</td></tr>`;
+        } else {
+            pendingBuses.forEach(b => {
+                const zName = appData.zones.find(z => z.id === b.zoneId)?.name || '未指定區域';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding:6px; border:1px solid var(--border-color); font-weight:bold;">
+                        <span style="background:${b.bg || '#8c5d5d'}; color:${b.color || '#ffffff'}; padding:2px 6px; border-radius:4px;">${b.plate}</span>
+                    </td>
+                    <td style="padding:6px; border:1px solid var(--border-color);">${zName}</td>
+                    <td style="padding:6px; border:1px solid var(--border-color); text-align:center;">${b.endDate || '未定'}</td>
+                    <td style="padding:6px; border:1px solid var(--border-color);">${b.note || '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('pendingDeliveryModal').classList.add('active');
     }
 
     function renderAnnouncementBox() {
