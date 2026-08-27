@@ -663,53 +663,51 @@ async function uploadToSupabaseStorage(file) {
     }
 
     function setSyncStatus(type, text) {
-    // 1. 保持原本頁面上的文字/燈號更新 (供不滑動時查看)
+    // 1. 保持原本頁面上的文字/燈號更新
     const textEl = document.getElementById('syncText');
     const dotEl = document.getElementById('syncDot');
     if (textEl) textEl.innerText = text;
     if (dotEl) dotEl.className = `dot ${type}`;
 
-    // 2. 獨立懸浮 Toast 提示 (不影響原本的控制列與登出鍵)
+    // 2. 建立或取得獨立懸浮 Toast
     let toast = document.getElementById('floatingSyncToast');
     if (!toast) {
         toast = document.createElement('div');
         toast.id = 'floatingSyncToast';
-        toast.style.cssText = `
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            z-index: 999999;
-            background: rgba(0, 0, 0, 0.85);
-            color: #ffffff;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: none;
-            align-items: center;
-            gap: 8px;
-            pointer-events: none;
-        `;
+        toast.style.position = 'fixed';
+        toast.style.top = '15px';
+        toast.style.right = '15px';
+        toast.style.zIndex = '999999';
+        toast.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+        toast.style.color = '#ffffff';
+        toast.style.padding = '6px 14px';
+        toast.style.borderRadius = '20px';
+        toast.style.fontSize = '13px';
+        toast.style.boxShadow = '0px 4px 12px rgba(0, 0, 0, 0.3)';
+        toast.style.display = 'none';
+        toast.style.alignItems = 'center';
+        toast.style.gap = '8px';
+        toast.style.pointerEvents = 'none';
         document.body.appendChild(toast);
     }
 
-    // 清除舊的定時器
+    // 3. 清除舊的定時器
     if (window.toastTimer) clearTimeout(window.toastTimer);
 
-    // 3. 只有在「儲存同步中」或「剛同步成功」時跳出小提示
+    // 4. 根據狀態顯示浮動提示
     if (type === 'syncing') {
-        toast.innerHTML = `<span style="color:#ffc107;">●</span> ${text}`;
+        toast.innerHTML = '<span style="color:#ffc107;">●</span> ' + text;
         toast.style.display = 'flex';
     } else if (type === 'success') {
-        toast.innerHTML = `<span style="color:#28a745;">●</span> ${text}`;
+        toast.innerHTML = '<span style="color:#28a745;">●</span> ' + text;
         toast.style.display = 'flex';
-        // 成功後 2 秒自動隱藏
-        window.toastTimer = setTimeout(() => {
+        window.toastTimer = setTimeout(function() {
             toast.style.display = 'none';
         }, 2000);
     } else {
         toast.style.display = 'none';
     }
+}
     
     function addAuditLog(busPlate, action) {
         const timeStr = new Date().toLocaleString('zh-TW', { hour12: false });
