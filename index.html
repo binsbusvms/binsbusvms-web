@@ -662,21 +662,27 @@ async function uploadToSupabaseStorage(file) {
         return success;
     }
 
-    function setSyncStatus(type, message) {
-    const el = document.getElementById('syncStatus'); // 或你的狀態欄 ID
-    if (!el) return;
+    function setSyncStatus(type, text) {
+    const textEl = document.getElementById('syncText');
+    const dotEl = document.getElementById('syncDot');
+    if (textEl) textEl.innerText = text;
+    if (dotEl) dotEl.className = `dot ${type}`;
 
-    // 🌟 關鍵修復：強制讓狀態欄固定在螢幕右上角
-    el.style.position = 'fixed';
-    el.style.top = '15px';
-    el.style.right = '20px';
-    el.style.zIndex = '9999';
-    el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-    el.style.borderRadius = '8px';
-    el.style.padding = '6px 12px';
-
-    // 以下保持你原本 setSyncStatus 的內容...
-    // (例如設定文字內容 textContent 與背景顏色等)
+    // 自動找到狀態列的最外層容器並強制懸浮在右上角
+    const targetEl = (textEl || dotEl)?.closest('div') || (textEl || dotEl)?.parentElement;
+    if (targetEl) {
+        targetEl.style.setProperty('position', 'fixed', 'important');
+        targetEl.style.setProperty('top', '15px', 'important');
+        targetEl.style.setProperty('right', '20px', 'important');
+        targetEl.style.setProperty('z-index', '999999', 'important');
+        targetEl.style.setProperty('background', '#ffffff', 'important');
+        targetEl.style.setProperty('padding', '6px 14px', 'important');
+        targetEl.style.setProperty('border-radius', '20px', 'important');
+        targetEl.style.setProperty('box-shadow', '0 4px 12px rgba(0,0,0,0.15)', 'important');
+        targetEl.style.setProperty('display', 'inline-flex', 'important');
+        targetEl.style.setProperty('align-items', 'center', 'important');
+        targetEl.style.setProperty('gap', '8px', 'important');
+    }
 }
 
     function addAuditLog(busPlate, action) {
