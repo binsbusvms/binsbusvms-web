@@ -694,12 +694,11 @@ async function uploadToSupabaseStorage(file) {
                 targetEl.style.setProperty('display', 'none', 'important');
             }, 2500);
         }
-    } else {
-        // 平常沒事時保持隱藏或恢復預設
+   } else {
+        // 平常沒事時保持隱藏
         targetEl.style.setProperty('display', 'none', 'important');
     }
-
-    function addAuditLog(busPlate, action) {
+}    function addAuditLog(busPlate, action) {
         const timeStr = new Date().toLocaleString('zh-TW', { hour12: false });
         const logEntry = { time: timeStr, plate: busPlate, action: action };
         if (!appData.auditLogs) appData.auditLogs = [];
