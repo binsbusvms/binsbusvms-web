@@ -710,8 +710,8 @@ async function uploadToSupabaseStorage(file) {
     } else {
         toast.style.display = 'none';
     }
-}
-}    function addAuditLog(busPlate, action) {
+    
+    function addAuditLog(busPlate, action) {
         const timeStr = new Date().toLocaleString('zh-TW', { hour12: false });
         const logEntry = { time: timeStr, plate: busPlate, action: action };
         if (!appData.auditLogs) appData.auditLogs = [];
