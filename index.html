@@ -4,13 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>柏昇開發工業 - 車輛動態管理系統製作者：柏昇小歐</title>
-    
-    <!-- PWA Web App Manifest (Data URL 動態引入) -->
-    <link rel="manifest" href="data:application/manifest+json;utf8,%7B%22name%22%3A%22%E6%9F%8F%E6%98%87%E8%BB%8A%E5%8F%9B%E5%8B%95%E6%85%8B%E7%AE%A1%E7%90%86%E7%B3%BB%E7%B5%B1%22%2C%22short_name%22%3A%22%E6%9F%8F%E6%98%87%E8%BB%8A%E5%8F%9B%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f4f6f9%22%2C%22theme_color%22%3A%22%231f4e78%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Butf8%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%201000%201000'%3E%3Cpath%20d%3D'M%20500%2C70%20L%20270%2C70%20L%2090%2C270%20L%20440%2C930%20L%20500%2C930%20Z'%20fill%3D'none'%20stroke%3D'%231D2088'%20stroke-width%3D'65'%20stroke-linejoin%3D'miter'%20stroke-miterlimit%3D'10'%2F%3E%3Cpath%20d%3D'M%20500%2C70%20L%20730%2C70%20L%20910%2C270%20L%20560%2C930%20L%20500%2C930%20Z'%20fill%3D'none'%20stroke%3D'%23E60012'%20stroke-width%3D'65'%20stroke-linejoin%3D'miter'%20stroke-miterlimit%3D'10'%2F%3E%3Cpath%20d%3D'M%20500%2C270%20L%20820%2C270'%20fill%3D'none'%20stroke%3D'%23E60012'%20stroke-width%3D'65'%20stroke-linecap%3D'square'%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
-    <meta name="theme-color" content="#1f4e78">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
     <!-- 引入 Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -48,7 +41,6 @@
         .btn-export { background: #20c997; }
         .btn-import { background: #e83e8c; }
         .btn-archive { background: #6c757d; }
-        .btn-sm { min-height: 24px; padding: 2px 6px; font-size: 0.7rem; }
 
         /* Dashboard 儀表板區域 */
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 8px; }
@@ -128,7 +120,7 @@
         /* Modal 彈窗與相片牆 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: 8px; width: 92%; max-width: 550px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-height: 88vh; overflow-y: auto; }
+        .modal-content { background: white; border-radius: 8px; width: 92%; max-width: 520px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-height: 88vh; overflow-y: auto; }
         .modal-header { font-weight: bold; margin-bottom: 12px; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; }
         
         /* 獨立色盤區塊 */
@@ -153,11 +145,9 @@
 
         /* 時間軸 / 履歷清單 */
         .timeline-list { list-style: none; margin-top: 8px; padding-left: 10px; border-left: 2px solid #1f4e78; font-size: 0.75rem; }
-        .timeline-item { position: relative; margin-bottom: 8px; padding-left: 10px; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
-        .timeline-item::before { content: ''; position: absolute; left: -15px; top: 8px; width: 8px; height: 8px; background: #1f4e78; border-radius: 50%; }
-        .timeline-content { flex: 1; }
+        .timeline-item { position: relative; margin-bottom: 8px; padding-left: 10px; }
+        .timeline-item::before { content: ''; position: absolute; left: -15px; top: 4px; width: 8px; height: 8px; background: #1f4e78; border-radius: 50%; }
         .timeline-time { color: #777; font-size: 0.68rem; }
-        .timeline-actions { display: flex; gap: 4px; flex-shrink: 0; }
 
         /* 管理清單列表 */
         .manage-list { list-style: none; margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px; }
@@ -197,7 +187,7 @@
         <button class="btn btn-export" onclick="exportDispatchSheet()">📄 匯出派工單</button>
         <button class="btn btn-export" onclick="exportData()">📥 備份 JSON</button>
         <button class="btn btn-import" onclick="triggerImport()">📤 匯入 JSON</button>
-        <button class="btn btn-archive" onclick="openArchiveModal()">📦 歷史交車檔案庫</button>
+        <button class="btn btn-archive" onclick="openArchiveModal()">📦 歸檔庫</button>
         <input type="file" id="importFileInput" class="hidden-file-input" accept=".json" onchange="importData(event)">
     </div>
 </div>
@@ -261,7 +251,6 @@
     <button class="tab-btn active" data-tab="tab-map">📍 廠區動態圖</button>
     <button class="tab-btn" data-tab="tab-table">📋 全廠車輛總表</button>
     <button class="tab-btn admin-only" id="tabLogsBtn" data-tab="tab-logs">📜 全廠歷史履歷日誌</button>
-    <button class="tab-btn admin-only" id="tabArchiveBtn" data-tab="tab-archive-view">📦 歷史交車檔案庫</button>
 </div>
 
 <!-- 分頁 1：動態圖 -->
@@ -295,36 +284,12 @@
     </div>
 </div>
 
-<!-- 分頁 3：全廠異動日誌 (可編輯/刪除) -->
+<!-- 分頁 3：全廠異動日誌 -->
 <div id="tab-logs" class="tab-content">
     <div class="card">
-        <div class="card-title">
-            <span>📜 全廠作業履歷與異動紀錄 (Audit Trail)</span>
-            <button class="btn btn-sm btn-archive" onclick="clearAllAuditLogs()">🗑️ 清空歷史日誌</button>
-        </div>
-        <div style="background:white; padding:10px; border-radius:6px; max-height:550px; overflow-y:auto;">
+        <div class="card-title">📜 全廠作業履歷與異動紀錄 (Audit Trail)</div>
+        <div style="background:white; padding:10px; border-radius:6px; max-height:500px; overflow-y:auto;">
             <ul class="timeline-list" id="globalAuditLogList"></ul>
-        </div>
-    </div>
-</div>
-
-<!-- 分頁 4：歷史交車檔案庫獨立檢視 -->
-<div id="tab-archive-view" class="tab-content">
-    <div class="card">
-        <div class="card-title">📦 歷史交車檔案庫 (完整紀錄)</div>
-        <div style="background:white; padding:8px; border-radius:6px; max-height:550px; overflow-y:auto;">
-            <table style="width:100%; border-collapse:collapse; font-size:0.78rem;">
-                <thead>
-                    <tr style="background:#e9ecef;">
-                        <th style="padding:6px 4px; border:1px solid #ccc;">車號 / 名稱</th>
-                        <th style="padding:6px 4px; border:1px solid #ccc;">最後區域</th>
-                        <th style="padding:6px 4px; border:1px solid #ccc;">進場/出廠</th>
-                        <th style="padding:6px 4px; border:1px solid #ccc;">照片數</th>
-                        <th style="padding:6px 4px; border:1px solid #ccc;">操作</th>
-                    </tr>
-                </thead>
-                <tbody id="tabArchiveTableBody"></tbody>
-            </table>
         </div>
     </div>
 </div>
@@ -378,16 +343,16 @@
             <div class="photo-grid" id="modalPhotoGrid"></div>
         </div>
 
-        <!-- 履歷時間軸 (可編輯) -->
+        <!-- 履歷時間軸 -->
         <div style="border-top:1px solid #eee; padding-top:8px; margin-top:10px;">
-            <label style="font-size:0.8rem; font-weight:bold;">⏱️ 本車歷史履歷異動 (點擊按鈕可編輯紀錄)：</label>
-            <div style="max-height:140px; overflow-y:auto; margin-top:4px;">
+            <label style="font-size:0.8rem; font-weight:bold;">⏱️ 本車歷史履歷異動：</label>
+            <div style="max-height:120px; overflow-y:auto; margin-top:4px;">
                 <ul class="timeline-list" id="modalBusTimeline"></ul>
             </div>
         </div>
 
         <div class="modal-footer">
-            <button class="btn btn-archive" onclick="archiveCurrentBus()">📦 歸檔移至歷史交車庫</button>
+            <button class="btn btn-archive" onclick="archiveCurrentBus()">📦 歸檔此車輛</button>
             <button class="btn" onclick="saveBusModal()">💾 儲存並更新</button>
         </div>
     </div>
@@ -412,28 +377,24 @@
     <img id="lightboxImg" class="lightbox-img" src="" alt="大圖">
 </div>
 
-<!-- 歷史交車檔案庫 Modal -->
+<!-- 歸檔庫 Modal -->
 <div class="modal" id="archiveModal">
-    <div class="modal-content" style="max-width:600px;">
+    <div class="modal-content">
         <div class="modal-header">
-            <span>📦 歷史交車檔案庫 (已完成交車)</span>
-            <button onclick="closeModal('archiveModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;">✕</button>
+            <span>📦 歷史歸檔車輛庫</span>
+            <button onclick="closeModal('archiveModal')" style="border:none;background:none;cursor:pointer;">✕</button>
         </div>
-        <div style="max-height:380px; overflow-y:auto;">
+        <div style="max-height:350px; overflow-y:auto;">
             <table style="width:100%; border-collapse:collapse; font-size:0.75rem;">
                 <thead>
                     <tr style="background:#f1f1f1;">
-                        <th style="padding:6px 4px; border:1px solid #ccc;">車號 / 名稱</th>
-                        <th style="padding:6px 4px; border:1px solid #ccc;">最後區域</th>
-                        <th style="padding:6px 4px; border:1px solid #ccc;">日期區間</th>
-                        <th style="padding:6px 4px; border:1px solid #ccc;">操作</th>
+                        <th style="padding:4px; border:1px solid #ccc;">車號</th>
+                        <th style="padding:4px; border:1px solid #ccc;">最後區域</th>
+                        <th style="padding:4px; border:1px solid #ccc;">操作</th>
                     </tr>
                 </thead>
                 <tbody id="archiveTableBody"></tbody>
             </table>
-        </div>
-        <div class="modal-footer">
-            <button class="btn" onclick="closeModal('archiveModal')">關閉</button>
         </div>
     </div>
 </div>
@@ -465,23 +426,6 @@
 </div>
 
 <script>
-    // PWA Service Worker 註冊 (支援離線快取與安裝)
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            const swCode = `
-                const CACHE_NAME = 'bus-manage-v1';
-                self.addEventListener('install', e => {
-                    e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
-                });
-                self.addEventListener('fetch', e => {
-                    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-                });
-            `;
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('SW register failed:', err));
-        });
-    }
-
     const SUPABASE_URL = 'https://dkyuxneazojqohcuvjsp.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_twR6l-aVWBSFei-FZUd1JQ_XEBEpwga';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -532,6 +476,15 @@
         initLiveClock();
         await loadCloudData();
         setupRealtimeSubscription();
+
+        window.addEventListener('scroll', () => {
+            const btnTop = document.getElementById('btnTop');
+            if (window.scrollY > 300) {
+                btnTop.classList.add('show');
+            } else {
+                btnTop.classList.remove('show');
+            }
+        });
     };
 
     function setupRealtimeSubscription() {
@@ -587,8 +540,8 @@
             if (confirm("確定要登出嗎？將會隱藏管理按鈕並切換為唯讀模式。")) {
                 sessionStorage.removeItem("isAdminLoggedIn");
                 updateAuthUI();
-                const activeTab = document.querySelector('.tab-btn.active');
-                if (activeTab && activeTab.classList.contains('admin-only')) {
+                const logTabBtn = document.getElementById('tabLogsBtn');
+                if (logTabBtn && logTabBtn.classList.contains('active')) {
                     document.querySelector('.tab-btn[data-tab="tab-map"]').click();
                 }
                 renderApp();
@@ -607,20 +560,30 @@
 
         const controls = document.getElementById("adminControls");
         if (controls) {
-            if (authed) controls.classList.add("show");
-            else controls.classList.remove("show");
+            if (authed) {
+                controls.classList.add("show");
+            } else {
+                controls.classList.remove("show");
+            }
         }
 
         const adminAnnouncementControls = document.getElementById("adminAnnouncementControls");
         if (adminAnnouncementControls) {
-            if (authed) adminAnnouncementControls.classList.add("show");
-            else adminAnnouncementControls.classList.remove("show");
+            if (authed) {
+                adminAnnouncementControls.classList.add("show");
+            } else {
+                adminAnnouncementControls.classList.remove("show");
+            }
         }
 
-        document.querySelectorAll('.tab-btn.admin-only').forEach(btn => {
-            if (authed) btn.classList.add("show");
-            else btn.classList.remove("show");
-        });
+        const logsBtn = document.getElementById("tabLogsBtn");
+        if (logsBtn) {
+            if (authed) {
+                logsBtn.classList.add("show");
+            } else {
+                logsBtn.classList.remove("show");
+            }
+        }
     }
 
     async function loadCloudData() {
@@ -642,14 +605,13 @@
         if (!appData.archivedBuses) appData.archivedBuses = [];
         if (!appData.auditLogs) appData.auditLogs = [];
         if (!appData.announcementImg) appData.announcementImg = "";
+        if (!appData.buses) appData.buses = [];
         appData.buses.forEach(b => {
             if (!b.photos) b.photos = [];
             if (!b.logs) b.logs = [];
             if (!b.bg) b.bg = '#8c5d5d';
             if (!b.color) b.color = '#ffffff';
-            b.logs.forEach(l => { if (!l.id) l.id = 'log_' + Math.random().toString(36).substr(2,9); });
         });
-        appData.auditLogs.forEach(l => { if (!l.id) l.id = 'glog_' + Math.random().toString(36).substr(2,9); });
     }
 
     async function manualSaveCloud() {
@@ -719,16 +681,14 @@
 
     function addAuditLog(busPlate, action) {
         const timeStr = new Date().toLocaleString('zh-TW', { hour12: false });
-        const logId = 'glog_' + Date.now() + '_' + Math.random().toString(36).substr(2,4);
-        const logEntry = { id: logId, time: timeStr, plate: busPlate, action: action };
-        
+        const logEntry = { time: timeStr, plate: busPlate, action: action };
         if (!appData.auditLogs) appData.auditLogs = [];
         appData.auditLogs.unshift(logEntry);
 
         const bus = appData.buses.find(b => b.plate === busPlate);
         if (bus) {
             if (!bus.logs) bus.logs = [];
-            bus.logs.unshift({ id: 'log_' + Date.now(), time: timeStr, action: action });
+            bus.logs.unshift(logEntry);
         }
     }
 
@@ -740,7 +700,6 @@
         renderMap();
         renderTable();
         renderAuditTrail();
-        renderArchiveViewTab();
 
         window.scrollTo(0, scrollY);
     }
@@ -856,7 +815,25 @@
 
         const authed = isAuthed();
         const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
+        const sortField = document.getElementById('sortField')?.value || 'plate';
+        const sortOrder = document.getElementById('sortOrder')?.value || 'asc';
+
         let filteredBuses = appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword) || (b.note||'').toLowerCase().includes(searchKeyword));
+
+        filteredBuses.sort((a, b) => {
+            let valA = a[sortField] || '';
+            let valB = b[sortField] || '';
+
+            if (sortField === 'zone') {
+                const zA = appData.zones.find(z => z.id === a.zoneId)?.name || '';
+                const zB = appData.zones.find(z => z.id === b.zoneId)?.name || '';
+                valA = zA;
+                valB = zB;
+            }
+
+            let comp = valA.localeCompare(valB, 'zh-Hant');
+            return sortOrder === 'desc' ? -comp : comp;
+        });
 
         appData.zones.forEach(zone => {
             const zoneEl = document.createElement('div');
@@ -992,113 +969,15 @@
         });
     }
 
-    /* 📜 異動日誌管理 (包含可編輯與刪除功能) */
     function renderAuditTrail() {
         const list = document.getElementById('globalAuditLogList');
         if (!list) return;
         list.innerHTML = '';
-        const authed = isAuthed();
-
-        if (!appData.auditLogs || appData.auditLogs.length === 0) {
-            list.innerHTML = `<li style="text-align:center; color:#888; padding:10px;">尚無任何歷史履歷異動記錄</li>`;
-            return;
-        }
-
-        appData.auditLogs.forEach((log, index) => {
+        (appData.auditLogs || []).forEach(log => {
             const item = document.createElement('li');
             item.className = 'timeline-item';
-            
-            item.innerHTML = `
-                <div class="timeline-content">
-                    <span class="timeline-time">${log.time}</span> - <b>${log.plate}</b>：<span id="glog_text_${index}">${log.action}</span>
-                </div>
-                ${authed ? `
-                <div class="timeline-actions">
-                    <button class="btn btn-sm btn-zone" onclick="editGlobalLog(${index})">✏️</button>
-                    <button class="btn btn-sm" style="background:#dc3545;" onclick="deleteGlobalLog(${index})">✕</button>
-                </div>
-                ` : ''}
-            `;
+            item.innerHTML = `<span class="timeline-time">${log.time}</span> - <b>${log.plate}</b>：${log.action}`;
             list.appendChild(item);
-        });
-    }
-
-    function editGlobalLog(index) {
-        requireAuth(() => {
-            const log = appData.auditLogs[index];
-            if (!log) return;
-            const newAction = prompt("編輯此條履歷紀錄內容：", log.action);
-            if (newAction !== null && newAction.trim() !== "") {
-                log.action = newAction.trim();
-                autoSaveCloud();
-                renderAuditTrail();
-            }
-        });
-    }
-
-    function deleteGlobalLog(index) {
-        requireAuth(() => {
-            if (confirm("確定要刪除這條履歷紀錄嗎？")) {
-                appData.auditLogs.splice(index, 1);
-                autoSaveCloud();
-                renderAuditTrail();
-            }
-        });
-    }
-
-    function clearAllAuditLogs() {
-        requireAuth(() => {
-            if (confirm("⚠️ 警告：確定要清空所有全廠歷史異動日誌嗎？此操作無法撤銷！")) {
-                appData.auditLogs = [];
-                autoSaveCloud();
-                renderAuditTrail();
-            }
-        });
-    }
-
-    /* 📦 歷史交車檔案庫 (後台管理與分頁檢視) */
-    function renderArchiveViewTab() {
-        const tbody = document.getElementById('tabArchiveTableBody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        const authed = isAuthed();
-
-        if (!appData.archivedBuses || appData.archivedBuses.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#888; padding:12px;">目前歷史歸檔檔案庫為空</td></tr>`;
-            return;
-        }
-
-        appData.archivedBuses.forEach((b, idx) => {
-            const zName = appData.zones.find(z => z.id === b.zoneId)?.name || '未指定';
-            const photoCount = (b.photos || []).length;
-            const dateRange = `${b.startDate || '未定'} ~ ${b.endDate || '未定'}`;
-            
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td style="padding:6px 4px; border:1px solid #ccc; font-weight:bold; text-align:center;">${b.plate}</td>
-                <td style="padding:6px 4px; border:1px solid #ccc; text-align:center;">${zName}</td>
-                <td style="padding:6px 4px; border:1px solid #ccc; text-align:center; font-size:0.7rem;">${dateRange}</td>
-                <td style="padding:6px 4px; border:1px solid #ccc; text-align:center;">📷 ${photoCount}</td>
-                <td style="padding:6px 4px; border:1px solid #ccc; text-align:center;">
-                    ${authed ? `
-                        <button class="btn btn-sm btn-zone" onclick="restoreBus(${idx})">↩️ 還原至廠區</button>
-                        <button class="btn btn-sm" style="background:#dc3545;" onclick="deleteArchivedBus(${idx})">🗑️ 刪除</button>
-                    ` : '唯讀'}
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    function deleteArchivedBus(idx) {
-        requireAuth(() => {
-            if (confirm("確定要從歷史交車庫中徹底刪除此車輛檔案嗎？資料將無法復原。")) {
-                const [removed] = appData.archivedBuses.splice(idx, 1);
-                addAuditLog('檔案庫管理', `徹底刪除了歷史車輛紀錄：${removed.plate}`);
-                autoSaveCloud();
-                renderApp();
-                openArchiveModal();
-            }
         });
     }
 
@@ -1211,54 +1090,11 @@
     function renderModalTimeline(bus) {
         const timeline = document.getElementById('modalBusTimeline');
         timeline.innerHTML = '';
-        const authed = isAuthed();
-
-        if (!bus.logs || bus.logs.length === 0) {
-            timeline.innerHTML = `<li style="color:#888;">尚無此車履歷紀錄</li>`;
-            return;
-        }
-
-        bus.logs.forEach((log, index) => {
+        (bus.logs || []).forEach(log => {
             const li = document.createElement('li');
             li.className = 'timeline-item';
-            li.innerHTML = `
-                <div class="timeline-content">
-                    <span class="timeline-time">${log.time}</span>：<span>${log.action}</span>
-                </div>
-                ${authed ? `
-                <div class="timeline-actions">
-                    <button class="btn btn-sm btn-zone" onclick="editBusLog('${bus.id}', ${index})">✏️</button>
-                    <button class="btn btn-sm" style="background:#dc3545;" onclick="deleteBusLog('${bus.id}', ${index})">✕</button>
-                </div>
-                ` : ''}
-            `;
+            li.innerHTML = `<span class="timeline-time">${log.time}</span>：${log.action}`;
             timeline.appendChild(li);
-        });
-    }
-
-    function editBusLog(busId, index) {
-        requireAuth(() => {
-            const bus = appData.buses.find(b => b.id === busId);
-            if (!bus || !bus.logs[index]) return;
-            const newAction = prompt("編輯本車履歷紀錄：", bus.logs[index].action);
-            if (newAction !== null && newAction.trim() !== "") {
-                bus.logs[index].action = newAction.trim();
-                autoSaveCloud();
-                renderModalTimeline(bus);
-            }
-        });
-    }
-
-    function deleteBusLog(busId, index) {
-        requireAuth(() => {
-            if (confirm("確定刪除此條本車履歷紀錄？")) {
-                const bus = appData.buses.find(b => b.id === busId);
-                if (bus && bus.logs) {
-                    bus.logs.splice(index, 1);
-                    autoSaveCloud();
-                    renderModalTimeline(bus);
-                }
-            }
         });
     }
 
@@ -1470,13 +1306,13 @@
     }
 
     function archiveCurrentBus() {
-        if (!confirm("確定將此車輛移至歷史交車檔案庫嗎？")) return;
+        if (!confirm("確定將此車輛移至歷史歸檔庫嗎？")) return;
         const index = appData.buses.findIndex(b => b.id === currentEditBusId);
         if (index !== -1) {
             const [bus] = appData.buses.splice(index, 1);
             if (!appData.archivedBuses) appData.archivedBuses = [];
             appData.archivedBuses.push(bus);
-            addAuditLog(bus.plate, '已完成並移至歷史交車檔案庫');
+            addAuditLog(bus.plate, '已完成並移至歷史歸檔庫');
             closeModal('busModal');
             autoSaveCloud();
             renderApp();
@@ -1486,36 +1322,25 @@
     function openArchiveModal() {
         const tbody = document.getElementById('archiveTableBody');
         tbody.innerHTML = '';
-        const authed = isAuthed();
-
-        if (!appData.archivedBuses || appData.archivedBuses.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#888; padding:12px;">無歷史交車紀錄</td></tr>`;
-        } else {
-            (appData.archivedBuses || []).forEach((b, idx) => {
-                const zName = appData.zones.find(z => z.id === b.zoneId)?.name || '';
-                const dateStr = `${b.startDate||'未定'} ~ ${b.endDate||'未定'}`;
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="padding:4px; border:1px solid #ccc; font-weight:bold;">${b.plate}</td>
-                    <td style="padding:4px; border:1px solid #ccc;">${zName}</td>
-                    <td style="padding:4px; border:1px solid #ccc; font-size:0.7rem;">${dateStr}</td>
-                    <td style="padding:4px; border:1px solid #ccc; text-align:center;">
-                        ${authed ? `
-                            <button class="btn btn-sm btn-zone" onclick="restoreBus(${idx})">還原</button>
-                            <button class="btn btn-sm" style="background:#dc3545;" onclick="deleteArchivedBus(${idx})">刪除</button>
-                        ` : '唯讀'}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+        (appData.archivedBuses || []).forEach((b, idx) => {
+            const zName = appData.zones.find(z => z.id === b.zoneId)?.name || '';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="padding:4px; border:1px solid #ccc;">${b.plate}</td>
+                <td style="padding:4px; border:1px solid #ccc;">${zName}</td>
+                <td style="padding:4px; border:1px solid #ccc; text-align:center;">
+                    <button class="btn" style="min-height:22px; padding:2px 6px; font-size:0.7rem;" onclick="restoreBus(${idx})">還原</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
         document.getElementById('archiveModal').classList.add('active');
     }
 
     function restoreBus(idx) {
         const [bus] = appData.archivedBuses.splice(idx, 1);
         appData.buses.push(bus);
-        addAuditLog(bus.plate, '從歷史交車檔案庫還原至現場');
+        addAuditLog(bus.plate, '從歷史歸檔庫還原');
         autoSaveCloud();
         openArchiveModal();
         renderApp();
