@@ -623,8 +623,10 @@
             setSyncStatus('success', '已同步雲端');
             success = true;
         } catch (err) {
-            console.error("Cloud Save Error:", err);
-            setSyncStatus('error', '同步失敗');
+    console.error("Cloud Save Error:", err);
+    const errorMsg = err.message || err.error_description || JSON.stringify(err);
+    setSyncStatus('error', `同步失敗: ${errorMsg}`);
+    alert(`手機同步失敗！\n錯誤原因：${errorMsg}`);
         } finally {
             isSaving = false;
         }
