@@ -662,12 +662,22 @@ async function uploadToSupabaseStorage(file) {
         return success;
     }
 
-    function setSyncStatus(type, text) {
-        const textEl = document.getElementById('syncText');
-        const dotEl = document.getElementById('syncDot');
-        if (textEl) textEl.innerText = text;
-        if (dotEl) dotEl.className = `dot ${type}`;
-    }
+    function setSyncStatus(type, message) {
+    const el = document.getElementById('syncStatus'); // 或你的狀態欄 ID
+    if (!el) return;
+
+    // 🌟 關鍵修復：強制讓狀態欄固定在螢幕右上角
+    el.style.position = 'fixed';
+    el.style.top = '15px';
+    el.style.right = '20px';
+    el.style.zIndex = '9999';
+    el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+    el.style.borderRadius = '8px';
+    el.style.padding = '6px 12px';
+
+    // 以下保持你原本 setSyncStatus 的內容...
+    // (例如設定文字內容 textContent 與背景顏色等)
+}
 
     function addAuditLog(busPlate, action) {
         const timeStr = new Date().toLocaleString('zh-TW', { hour12: false });
