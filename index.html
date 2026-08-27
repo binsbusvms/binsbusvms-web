@@ -14,26 +14,22 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: #f4f6f9; color: #333; padding: 8px; padding-bottom: 60px; position: relative; min-height: 100vh; }
 
-        /* 標題與工具列 */
         .header { background: #1f4e78; color: white; padding: 10px; border-radius: 8px; margin-bottom: 8px; }
         .header h1 { font-size: 1rem; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
         .header-title-box { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .header-logo-icon { height: 26px; width: 26px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
         .author-tag { font-size: 0.65rem; font-weight: normal; opacity: 0.85; margin-left: 2px; }
 
-        /* 控制按鈕列 */
         .controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; transition: all 0.3s ease; }
         .controls.admin-only { display: none !important; }
         .controls.admin-only.show { display: flex !important; }
         
-        /* 時間與權限列 */
         .header-top-right { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.2); padding: 4px 10px; border-radius: 6px; }
         .live-clock { font-size: 0.8rem; font-weight: 500; color: #fff; white-space: nowrap; }
         .auth-bar { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 6px; }
         .btn-auth { background: #ffc107; color: #212529; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; }
         .btn-logout { background: #dc3545; color: white; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; }
 
-        /* 按鈕基本樣式 */
         .btn { background: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 34px; touch-action: manipulation; }
         .btn-zone { background: #17a2b8; } 
         .btn-status { background: #6f42c1; } 
@@ -42,13 +38,11 @@
         .btn-import { background: #e83e8c; }
         .btn-archive { background: #6c757d; }
 
-        /* Dashboard 儀表板區域 */
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 8px; }
         .kpi-card { background: white; padding: 8px 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #1f4e78; }
         .kpi-card .kpi-title { font-size: 0.7rem; color: #666; font-weight: bold; }
         .kpi-card .kpi-num { font-size: 1.2rem; font-weight: bold; color: #1f4e78; margin-top: 2px; }
 
-        /* 驗交車公告卡片 */
         .announcement-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .announcement-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .announcement-title { font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
@@ -56,12 +50,10 @@
         .btn-announcement:hover { background: #0056b3; }
         .btn-announcement-del { background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; cursor: pointer; }
 
-        /* 搜尋與排序條 */
         .sort-bar { display: flex; align-items: center; gap: 6px; background: #e4dfc3; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.8rem; flex-wrap: wrap; }
         .sort-bar select { width: auto; height: 30px; padding: 2px 6px; }
         .search-input { height: 30px; padding: 2px 8px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.8rem; width: 180px; background-color: #fff; }
 
-        /* 頁籤 */
         .nav-tabs { display: flex; gap: 4px; margin-bottom: 8px; border-bottom: 2px solid #1f4e78; }
         .tab-btn { flex: 1; padding: 8px 4px; background: #e9ecef; border: none; border-radius: 6px 6px 0 0; font-weight: bold; cursor: pointer; color: #495057; font-size: 0.85rem; text-align: center; min-height: 38px; }
         .tab-btn.active { background: #1f4e78; color: white; }
@@ -71,7 +63,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* 卡片與廠區配置圖 */
         .card { background: #e4dfc3; border-radius: 8px; padding: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-bottom: 10px; border: 1px solid #d4ceb0; }
         .card-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: #1f4e78; border-bottom: 2px solid #c8c2a3; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
 
@@ -83,7 +74,6 @@
         .zone-body::-webkit-scrollbar { width: 5px; }
         .zone-body::-webkit-scrollbar-thumb { background: #bbb; border-radius: 4px; }
 
-        /* 車輛卡片與標籤 */
         .bus-card { background: white; border: 1px solid #ccc; border-radius: 5px; padding: 6px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: grab; }
         .bus-card:active { cursor: grabbing; }
         .bus-header { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
@@ -94,13 +84,11 @@
         .photo-badge { background: #e83e8c; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 2px; transition: background 0.2s; }
         .photo-badge:hover { background: #d63384; }
 
-        /* 車輛方塊內的日期選擇列 */
         .bus-date-row { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: #495057; }
         .bus-date-group { display: flex; align-items: center; gap: 2px; flex: 1; }
         .bus-date-input { font-size: 0.68rem; padding: 1px 2px; border: 1px solid #ced4da; border-radius: 3px; width: 100%; height: 26px; }
         .bus-date-text { font-size: 0.7rem; color: #212529; font-weight: 500; background: #ffffff; padding: 3px 4px; border-radius: 3px; border: 1px solid #ced4da; width: 100%; text-align: center; }
 
-        /* 表格與滾動 */
         .table-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #ddd; border-radius: 6px; background: #ffffff; }
         .table-scroll-tip { font-size: 0.75rem; color: #17a2b8; background: #e8f7f9; padding: 4px 8px; border-radius: 4px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
 
@@ -117,13 +105,11 @@
         .back-to-top { position: fixed; bottom: 20px; right: 20px; background: #1f4e78; color: white; width: 42px; height: 42px; border-radius: 50%; border: none; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; z-index: 99; }
         .back-to-top.show { display: flex; }
 
-        /* Modal 彈窗與相片牆 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
         .modal-content { background: white; border-radius: 8px; width: 92%; max-width: 520px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-height: 88vh; overflow-y: auto; }
         .modal-header { font-weight: bold; margin-bottom: 12px; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; }
         
-        /* 獨立色盤區塊 */
         .color-section { margin-bottom: 10px; background: #f8f9fa; padding: 8px; border-radius: 6px; border: 1px solid #e9ecef; }
         .color-palette { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; align-items: center; }
         .color-swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 3px rgba(0,0,0,0.3); }
@@ -131,25 +117,21 @@
         
         .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
 
-        /* 相片牆樣式 */
         .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 6px; }
         .photo-item { position: relative; width: 100%; height: 90px; border-radius: 6px; overflow: hidden; border: 1px solid #ddd; background: #000; }
         .photo-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
         .photo-del-btn { position: absolute; top: 3px; right: 3px; background: rgba(220,53,69,0.9); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.4); z-index: 2; }
         .photo-del-btn:hover { background: #dc3545; }
 
-        /* 全螢幕大圖 Modal */
         .lightbox-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:3000; justify-content:center; align-items:center; }
         .lightbox-modal.active { display: flex; }
         .lightbox-img { max-width: 92%; max-height: 85vh; border-radius: 4px; box-shadow: 0 0 20px rgba(0,0,0,0.5); object-fit: contain; }
 
-        /* 時間軸 / 履歷清單 */
         .timeline-list { list-style: none; margin-top: 8px; padding-left: 10px; border-left: 2px solid #1f4e78; font-size: 0.75rem; }
         .timeline-item { position: relative; margin-bottom: 8px; padding-left: 10px; }
         .timeline-item::before { content: ''; position: absolute; left: -15px; top: 4px; width: 8px; height: 8px; background: #1f4e78; border-radius: 50%; }
         .timeline-time { color: #777; font-size: 0.68rem; }
 
-        /* 管理清單列表 */
         .manage-list { list-style: none; margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px; }
         .manage-item { display: flex; align-items: center; gap: 8px; background: #f8f9fa; padding: 6px 10px; border-radius: 4px; border: 1px solid #ddd; }
     </style>
@@ -192,11 +174,9 @@
     </div>
 </div>
 
-<!-- 隱藏式上傳 input -->
 <input type="file" id="globalDirectPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handleDirectPhotoUpload(event)">
 <input type="file" id="announcementFileInput" class="hidden-file-input" accept="image/*" onchange="handleAnnouncementPhotoUpload(event)">
 
-<!-- Dashboard 儀表板區域 -->
 <div class="dashboard-grid">
     <div class="kpi-card" style="border-left-color: #1f4e78;">
         <div class="kpi-title">總在場數量</div>
@@ -216,7 +196,6 @@
     </div>
 </div>
 
-<!-- 驗交車公告卡片 -->
 <div class="announcement-box" id="announcementBox">
     <div class="announcement-left">
         <span class="announcement-title">📢 <b>查核 / 驗車 / 交車日公告</b></span>
@@ -229,7 +208,6 @@
     </div>
 </div>
 
-<!-- 搜尋與排序條 -->
 <div class="sort-bar">
     <span><b>🔍 搜尋：</b></span>
     <input type="text" id="searchInput" class="search-input" placeholder="搜尋車號或備註..." oninput="renderApp()">
@@ -246,14 +224,12 @@
     </select>
 </div>
 
-<!-- 頁籤條 -->
 <div class="nav-tabs">
     <button class="tab-btn active" data-tab="tab-map">📍 廠區動態圖</button>
     <button class="tab-btn" data-tab="tab-table">📋 全廠車輛總表</button>
     <button class="tab-btn admin-only" id="tabLogsBtn" data-tab="tab-logs">📜 全廠歷史履歷日誌</button>
 </div>
 
-<!-- 分頁 1：動態圖 -->
 <div id="tab-map" class="tab-content active">
     <div class="card">
         <div class="card-title">📍 廠區分區配置圖</div>
@@ -261,7 +237,6 @@
     </div>
 </div>
 
-<!-- 分頁 2：表格 -->
 <div id="tab-table" class="tab-content">
     <div class="card">
         <div class="card-title">📋 車輛詳細總表</div>
@@ -284,7 +259,6 @@
     </div>
 </div>
 
-<!-- 分頁 3：全廠異動日誌 -->
 <div id="tab-logs" class="tab-content">
     <div class="card">
         <div class="card-title">📜 全廠作業履歷與異動紀錄 (Audit Trail)</div>
@@ -294,10 +268,8 @@
     </div>
 </div>
 
-<!-- 置頂按鈕 -->
 <button class="back-to-top" id="btnTop" onclick="scrollToTop()">⬆</button>
 
-<!-- 編輯車輛 + 照片上傳 Modal -->
 <div class="modal" id="busModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -322,7 +294,6 @@
         <label style="font-size:0.8rem; font-weight:bold;">施工細節備註：</label>
         <textarea id="modalBusNote" rows="2" style="margin-top:2px; margin-bottom:8px; font-size:0.78rem;" placeholder="記錄現場注意事項、施工重點..."></textarea>
 
-        <!-- 分開設定底色與字體色彩 -->
         <div class="color-section">
             <label style="font-size:0.8rem; font-weight:bold; color:#1f4e78;">🎨 1. 底色選擇 (Background Color)：</label>
             <div class="color-palette" id="busBgPalette"></div>
@@ -333,7 +304,6 @@
             <div class="color-palette" id="busTextColorPalette"></div>
         </div>
 
-        <!-- 照片上傳區 -->
         <div style="border-top:1px solid #eee; padding-top:8px; margin-top:4px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <label style="font-size:0.8rem; font-weight:bold;">📷 施工瑕疵 / 現場照片：</label>
@@ -343,7 +313,6 @@
             <div class="photo-grid" id="modalPhotoGrid"></div>
         </div>
 
-        <!-- 履歷時間軸 -->
         <div style="border-top:1px solid #eee; padding-top:8px; margin-top:10px;">
             <label style="font-size:0.8rem; font-weight:bold;">⏱️ 本車歷史履歷異動：</label>
             <div style="max-height:120px; overflow-y:auto; margin-top:4px;">
@@ -358,7 +327,6 @@
     </div>
 </div>
 
-<!-- 照片檢視與管理彈窗 (Photo Gallery) -->
 <div class="modal" id="photoGalleryModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -372,12 +340,10 @@
     </div>
 </div>
 
-<!-- 大圖查看 Lightbox Modal -->
 <div class="lightbox-modal" id="lightboxModal" onclick="closeModal('lightboxModal')">
     <img id="lightboxImg" class="lightbox-img" src="" alt="大圖">
 </div>
 
-<!-- 歸檔庫 Modal -->
 <div class="modal" id="archiveModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -399,7 +365,6 @@
     </div>
 </div>
 
-<!-- 區域管理 Modal -->
 <div class="modal" id="zoneManagerModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -412,7 +377,6 @@
     </div>
 </div>
 
-<!-- 進度管理 Modal -->
 <div class="modal" id="statusManagerModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -429,7 +393,6 @@
     const SUPABASE_URL = 'https://dkyuxneazojqohcuvjsp.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_twR6l-aVWBSFei-FZUd1JQ_XEBEpwga';
     
-    // 安全地取得全域 window.supabase 物件建立 Client
     let supabaseClient = null;
     if (window.supabase && typeof window.supabase.createClient === 'function') {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -557,29 +520,20 @@
 
         const controls = document.getElementById("adminControls");
         if (controls) {
-            if (authed) {
-                controls.classList.add("show");
-            } else {
-                controls.classList.remove("show");
-            }
+            if (authed) controls.classList.add("show");
+            else controls.classList.remove("show");
         }
 
         const adminAnnouncementControls = document.getElementById("adminAnnouncementControls");
         if (adminAnnouncementControls) {
-            if (authed) {
-                adminAnnouncementControls.classList.add("show");
-            } else {
-                adminAnnouncementControls.classList.remove("show");
-            }
+            if (authed) adminAnnouncementControls.classList.add("show");
+            else adminAnnouncementControls.classList.remove("show");
         }
 
         const logsBtn = document.getElementById("tabLogsBtn");
         if (logsBtn) {
-            if (authed) {
-                logsBtn.classList.add("show");
-            } else {
-                logsBtn.classList.remove("show");
-            }
+            if (authed) logsBtn.classList.add("show");
+            else logsBtn.classList.remove("show");
         }
     }
 
@@ -634,20 +588,20 @@
         if (success) {
             alert("💾 資料已成功儲存並同步至雲端！");
         } else {
-            alert("⚠️ 雲端同步失敗或網路延遲，已備份儲存於本機。");
+            alert("⚠️ 雲端同步失敗，請檢查連線狀態。");
         }
     }
 
-    /* 🛠️ 修復核心：重構雲端儲存與超時機制 */
+    /* 核心修復：高係數圖檔極致壓縮與容錯 Try-Catch */
     async function autoSaveCloud() {
         if (isSaving) return false;
         isSaving = true;
 
-        // 本地優先備份
+        // 本地暫存包覆 try-catch，避免 QuotaExceededError 直接中斷程式
         try {
             localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData));
         } catch (e) {
-            console.error("Local storage error:", e);
+            console.warn("localStorage 容量上限，已跳過本地備份，繼續同步至雲端。", e);
         }
 
         setSyncStatus('syncing', '儲存同步中...');
@@ -656,34 +610,21 @@
         try {
             if (!supabaseClient) throw new Error("Supabase 未初始化");
 
-            // 將 Supabase SDK Promise 化，並調高 Timeout 至 15 秒以允許傳送照片檔
-            const savePromise = new Promise(async (resolve, reject) => {
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('app_data')
-                        .upsert({ 
-                            id: 'main_data', 
-                            content: appData, 
-                            updated_at: new Date().toISOString() 
-                        });
-                    if (error) reject(error);
-                    else resolve(data);
-                } catch (e) {
-                    reject(e);
-                }
-            });
+            const { data, error } = await supabaseClient
+                .from('app_data')
+                .upsert({ 
+                    id: 'main_data', 
+                    content: appData, 
+                    updated_at: new Date().toISOString() 
+                });
 
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Network timeout')), 15000)
-            );
-
-            await Promise.race([savePromise, timeoutPromise]);
+            if (error) throw error;
             
             setSyncStatus('success', '已同步雲端');
             success = true;
         } catch (err) {
             console.error("Cloud Save Error:", err);
-            setSyncStatus('error', '僅儲存於本地');
+            setSyncStatus('error', '同步失敗');
         } finally {
             isSaving = false;
         }
@@ -712,13 +653,11 @@
 
     function renderApp() {
         const scrollY = window.scrollY;
-        
         updateDashboard();
         renderAnnouncementBox();
         renderMap();
         renderTable();
         renderAuditTrail();
-
         window.scrollTo(0, scrollY);
     }
 
@@ -752,6 +691,7 @@
         });
     }
 
+    /* 圖檔上傳核心修復：強制將尺寸壓縮至 600px、品質降低至 0.4 */
     function handleAnnouncementPhotoUpload(e) {
         const file = e.target.files[0];
         if (!file) return;
@@ -763,7 +703,7 @@
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
-                const max_size = 1000;
+                const max_size = 600;
 
                 if (width > height) {
                     if (width > max_size) { height *= max_size / width; width = max_size; }
@@ -776,8 +716,7 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // 降低品質至 0.65 以確保小於 Payload 上限
-                appData.announcementImg = canvas.toDataURL('image/jpeg', 0.65);
+                appData.announcementImg = canvas.toDataURL('image/jpeg', 0.4);
                 addAuditLog('系統公告', '更新了驗交車公告圖片');
                 autoSaveCloud();
                 renderApp();
@@ -824,14 +763,12 @@
 
     function renderMap() {
         const container = document.getElementById('mapContainer');
-        
         const zoneScrolls = {};
         document.querySelectorAll('.zone-body').forEach(zb => {
             if (zb.dataset.zoneId) zoneScrolls[zb.dataset.zoneId] = zb.scrollTop;
         });
 
         container.innerHTML = '';
-
         const authed = isAuthed();
         const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
         let filteredBuses = appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword) || (b.note||'').toLowerCase().includes(searchKeyword));
@@ -859,34 +796,27 @@
 
                 const photoCount = (bus.photos || []).length;
 
-                let dateHtml = '';
-                if (authed) {
-                    dateHtml = `
-                        <div class="bus-date-row">
-                            <div class="bus-date-group">
-                                <span>進</span>
-                                <input type="date" class="bus-date-input" value="${bus.startDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)">
-                            </div>
-                            <div class="bus-date-group">
-                                <span>出</span>
-                                <input type="date" class="bus-date-input" value="${bus.endDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)">
-                            </div>
+                let dateHtml = authed ? `
+                    <div class="bus-date-row">
+                        <div class="bus-date-group">
+                            <span>進</span>
+                            <input type="date" class="bus-date-input" value="${bus.startDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)">
                         </div>
-                    `;
-                } else {
-                    const startStr = bus.startDate ? bus.startDate : '未定';
-                    const endStr = bus.endDate ? bus.endDate : '未定';
-                    dateHtml = `
-                        <div class="bus-date-row">
-                            <div class="bus-date-group">
-                                <span class="bus-date-text">進：${startStr}</span>
-                            </div>
-                            <div class="bus-date-group">
-                                <span class="bus-date-text">出：${endStr}</span>
-                            </div>
+                        <div class="bus-date-group">
+                            <span>出</span>
+                            <input type="date" class="bus-date-input" value="${bus.endDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)">
                         </div>
-                    `;
-                }
+                    </div>
+                ` : `
+                    <div class="bus-date-row">
+                        <div class="bus-date-group">
+                            <span class="bus-date-text">進：${bus.startDate || '未定'}</span>
+                        </div>
+                        <div class="bus-date-group">
+                            <span class="bus-date-text">出：${bus.endDate || '未定'}</span>
+                        </div>
+                    </div>
+                `;
 
                 busCard.innerHTML = `
                     <div class="bus-header">
@@ -1101,6 +1031,7 @@
 
     function triggerPhotoUpload() { document.getElementById('busPhotoInput').click(); }
 
+    /* 車輛照片上傳修復：強制將尺寸壓至 600px、品質降低至 0.4 */
     function processAndUploadFiles(files, bus) {
         if (!files || !files.length || !bus) return;
 
@@ -1112,7 +1043,7 @@
                     const canvas = document.createElement('canvas');
                     let width = img.width;
                     let height = img.height;
-                    const max_size = 800; // 降低長寬防止 Body 超過 HTTP 限制
+                    const max_size = 600;
 
                     if (width > height) {
                         if (width > max_size) { height *= max_size / width; width = max_size; }
@@ -1125,7 +1056,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.65);
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.4);
 
                     if (!bus.photos) bus.photos = [];
                     bus.photos.push(compressedBase64);
