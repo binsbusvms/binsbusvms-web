@@ -668,16 +668,37 @@ async function uploadToSupabaseStorage(file) {
     if (textEl) textEl.innerText = text;
     if (dotEl) dotEl.className = `dot ${type}`;
 
-    // 自動找到狀態列的最外層容器並強制懸浮在右上角
+    // 找到原本的狀態列容器
     const targetEl = (textEl || dotEl)?.closest('div') || (textEl || dotEl)?.parentElement;
-    if (targetEl) {
+    if (!targetEl) return;
+
+    if (type === 'syncing' || type === 'success') {
+        // 🌟 當有動作（儲存中 或 成功）時，才讓它變成精緻的小浮動標籤出現在右上角
         targetEl.style.setProperty('position', 'fixed', 'important');
-        targetEl.style.setProperty('top', '15px', 'important');
-        targetEl.style.setProperty('right', '20px', 'important');
+        targetEl.style.setProperty('top', '10px', 'important');
+        targetEl.style.setProperty('right', '10px', 'important');
         targetEl.style.setProperty('z-index', '999999', 'important');
-        targetEl.style.setProperty('background', '#ffffff', 'important');
-        targetEl.style.setProperty('padding', '6px 14px', 'important');
+        targetEl.style.setProperty('background', 'rgba(0, 0, 0, 0.85)', 'important');
+        targetEl.style.setProperty('color', '#fff', 'important');
+        targetEl.style.setProperty('padding', '6px 12px', 'important');
         targetEl.style.setProperty('border-radius', '20px', 'important');
+        targetEl.style.setProperty('box-shadow', '0 4px 10px rgba(0,0,0,0.3)', 'important');
+        targetEl.style.setProperty('display', 'inline-flex', 'important');
+        targetEl.style.setProperty('align-items', 'center', 'important');
+        targetEl.style.setProperty('gap', '6px', 'important');
+        targetEl.style.setProperty('font-size', '12px', 'important');
+
+        // 如果是成功狀態，讓它 2 秒後自動縮回/淡出，不佔據畫面
+        if (type === 'success') {
+            setTimeout(() => {
+                targetEl.style.setProperty('display', 'none', 'important');
+            }, 2500);
+        }
+    } else {
+        // 平常沒事時保持隱藏或恢復預設
+        targetEl.style.setProperty('display', 'none', 'important');
+    }
+}
         targetEl.style.setProperty('box-shadow', '0 4px 12px rgba(0,0,0,0.15)', 'important');
         targetEl.style.setProperty('display', 'inline-flex', 'important');
         targetEl.style.setProperty('align-items', 'center', 'important');
