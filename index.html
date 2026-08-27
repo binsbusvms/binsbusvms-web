@@ -663,41 +663,54 @@ async function uploadToSupabaseStorage(file) {
     }
 
     function setSyncStatus(type, text) {
+    // 1. 保持原本頁面上的文字/燈號更新 (供不滑動時查看)
     const textEl = document.getElementById('syncText');
     const dotEl = document.getElementById('syncDot');
     if (textEl) textEl.innerText = text;
     if (dotEl) dotEl.className = `dot ${type}`;
 
-    // 找到原本的狀態列容器
-    const targetEl = (textEl || dotEl)?.closest('div') || (textEl || dotEl)?.parentElement;
-    if (!targetEl) return;
-
-    if (type === 'syncing' || type === 'success') {
-        // 🌟 當有動作（儲存中 或 成功）時，才讓它變成精緻的小浮動標籤出現在右上角
-        targetEl.style.setProperty('position', 'fixed', 'important');
-        targetEl.style.setProperty('top', '10px', 'important');
-        targetEl.style.setProperty('right', '10px', 'important');
-        targetEl.style.setProperty('z-index', '999999', 'important');
-        targetEl.style.setProperty('background', 'rgba(0, 0, 0, 0.85)', 'important');
-        targetEl.style.setProperty('color', '#fff', 'important');
-        targetEl.style.setProperty('padding', '6px 12px', 'important');
-        targetEl.style.setProperty('border-radius', '20px', 'important');
-        targetEl.style.setProperty('box-shadow', '0 4px 10px rgba(0,0,0,0.3)', 'important');
-        targetEl.style.setProperty('display', 'inline-flex', 'important');
-        targetEl.style.setProperty('align-items', 'center', 'important');
-        targetEl.style.setProperty('gap', '6px', 'important');
-        targetEl.style.setProperty('font-size', '12px', 'important');
-
-        // 如果是成功狀態，讓它 2 秒後自動縮回/淡出，不佔據畫面
-        if (type === 'success') {
-            setTimeout(() => {
-                targetEl.style.setProperty('display', 'none', 'important');
-            }, 2500);
-        }
-   } else {
-        // 平常沒事時保持隱藏
-        targetEl.style.setProperty('display', 'none', 'important');
+    // 2. 獨立懸浮 Toast 提示 (不影響原本的控制列與登出鍵)
+    let toast = document.getElementById('floatingSyncToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'floatingSyncToast';
+        toast.style.cssText = `
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 999999;
+            background: rgba(0, 0, 0, 0.85);
+            color: #ffffff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: none;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+        `;
+        document.body.appendChild(toast);
     }
+
+    // 清除舊的定時器
+    if (window.toastTimer) clearTimeout(window.toastTimer);
+
+    // 3. 只有在「儲存同步中」或「剛同步成功」時跳出小提示
+    if (type === 'syncing') {
+        toast.innerHTML = `<span style="color:#ffc107;">●</span> ${text}`;
+        toast.style.display = 'flex';
+    } else if (type === 'success') {
+        toast.innerHTML = `<span style="color:#28a745;">●</span> ${text}`;
+        toast.style.display = 'flex';
+        // 成功後 2 秒自動隱藏
+        window.toastTimer = setTimeout(() => {
+            toast.style.display = 'none';
+        }, 2000);
+    } else {
+        toast.style.display = 'none';
+    }
+}
 }    function addAuditLog(busPlate, action) {
         const timeStr = new Date().toLocaleString('zh-TW', { hour12: false });
         const logEntry = { time: timeStr, plate: busPlate, action: action };
