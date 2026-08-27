@@ -698,13 +698,6 @@ async function uploadToSupabaseStorage(file) {
         // 平常沒事時保持隱藏或恢復預設
         targetEl.style.setProperty('display', 'none', 'important');
     }
-}
-        targetEl.style.setProperty('box-shadow', '0 4px 12px rgba(0,0,0,0.15)', 'important');
-        targetEl.style.setProperty('display', 'inline-flex', 'important');
-        targetEl.style.setProperty('align-items', 'center', 'important');
-        targetEl.style.setProperty('gap', '8px', 'important');
-    }
-}
 
     function addAuditLog(busPlate, action) {
         const timeStr = new Date().toLocaleString('zh-TW', { hour12: false });
