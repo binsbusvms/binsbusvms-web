@@ -67,12 +67,21 @@
         .header-logo-icon { height: 26px; width: 26px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
         .author-tag { font-size: 0.65rem; font-weight: normal; opacity: 0.85; margin-left: 2px; }
 
+        /* 新增：公司地址與官方連結區塊樣式 */
+        .company-info-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.75rem; background: rgba(0, 0, 0, 0.2); padding: 6px 12px; border-radius: 6px; margin-bottom: 8px; }
+        .company-contact { display: flex; flex-wrap: wrap; gap: 12px; color: #e0e0e0; align-items: center; }
+        .company-links { display: flex; gap: 6px; flex-wrap: wrap; }
+        
+        .btn-link-line { background-color: #06C755; color: #ffffff !important; font-weight: bold; padding: 3px 8px; border-radius: 4px; text-decoration: none; font-size: 0.72rem; display: inline-flex; align-items: center; gap: 4px; transition: opacity 0.2s; }
+        .btn-link-line:hover { opacity: 0.9; }
+        .btn-link-web { background-color: #2B547E; color: #ffffff !important; font-weight: bold; padding: 3px 8px; border-radius: 4px; text-decoration: none; font-size: 0.72rem; display: inline-flex; align-items: center; gap: 4px; transition: opacity 0.2s; border: 1px solid rgba(255,255,255,0.3); }
+        .btn-link-web:hover { opacity: 0.9; }
+
         .controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; transition: all 0.3s ease; }
         .controls.admin-only { display: none !important; }
         .controls.admin-only.show { display: flex !important; }
         
         .header-top-right { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.2); padding: 4px 10px; border-radius: 6px; }
-        /* 修正時間跳動問題：加入 font-variant-numeric: tabular-nums 與固定寬度 */
         .live-clock { font-size: 0.8rem; font-weight: 500; color: #fff; white-space: nowrap; font-variant-numeric: tabular-nums; display: inline-block; min-width: 155px; text-align: center; }
         .auth-bar { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 6px; }
         .btn-auth { background: #ffc107; color: #212529; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; }
@@ -211,6 +220,18 @@
             <span class="autosave-badge"><span class="dot success" id="syncDot"></span><span id="syncText">已連線</span></span>
         </div>
     </h1>
+
+    <!-- 新增：公司地址與官方帳號/官網連結列 -->
+    <div class="company-info-bar">
+        <div class="company-contact">
+            <span>📍 桃園市新屋區東福路908巷50號</span>
+            <span>📞 03-4766788</span>
+        </div>
+        <div class="company-links">
+            <a href="https://lin.ee/8k22Jwf" target="_blank" rel="noopener noreferrer" class="btn-link-line">💬 LINE 官方帳號</a>
+            <a href="https://www.lbbsbus.com.tw/" target="_blank" rel="noopener noreferrer" class="btn-link-web">🌐 公司官網</a>
+        </div>
+    </div>
 
     <div class="controls admin-only" id="adminControls">
         <button class="btn btn-zone" onclick="openZoneManager()">⚙️ 區域管理</button>
