@@ -94,7 +94,7 @@
         .btn-theme { background: #4a5568; color: white; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; transition: background 0.2s; }
         .btn-theme:hover { background: #718096; }
 
-        .btn { background: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 34px; touch-action: manipulation; }
+        .btn { background: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: justify; min-height: 34px; touch-action: manipulation; }
         .btn-zone { background: #17a2b8; } 
         .btn-status { background: #6f42c1; } 
         .btn-save { background: #fd7e14; } 
@@ -102,37 +102,53 @@
         .btn-import { background: #e83e8c; }
         .btn-archive { background: #6c757d; }
 
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 8px; }
-        .kpi-card { background: var(--bg-kpi); padding: 8px 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #1f4e78; transition: background-color 0.3s ease, transform 0.15s; }
+        /* 修正 2：統計卡片再壓扁 (padding: 4px 8px，緊湊排列) */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; margin-bottom: 8px; }
+        .kpi-card { background: var(--bg-kpi); padding: 4px 8px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #1f4e78; transition: background-color 0.3s ease, transform 0.15s; display: flex; flex-direction: column; justify-content: center; }
         .kpi-card.clickable { cursor: pointer; }
         .kpi-card.clickable:hover { transform: translateY(-2px); box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
-        .kpi-card .kpi-title { font-size: 0.7rem; color: var(--text-sub); font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
-        .kpi-card .kpi-num { font-size: 1.2rem; font-weight: bold; color: var(--title-color); margin-top: 2px; font-variant-numeric: tabular-nums; }
+        .kpi-card .kpi-title { font-size: 0.68rem; color: var(--text-sub); font-weight: bold; display: flex; align-items: center; justify-content: space-between; line-height: 1.1; }
+        .kpi-card .kpi-num { font-size: 1.05rem; font-weight: bold; color: var(--title-color); margin-top: 1px; line-height: 1.1; font-variant-numeric: tabular-nums; }
 
         /* LINE 排程公告區塊樣式 */
-        .line-schedule-box { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .line-schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid var(--border-card); padding-bottom: 4px; }
-        .line-schedule-title { font-weight: bold; font-size: 0.88rem; color: var(--title-color); display: flex; align-items: center; gap: 6px; }
-        .chat-container { display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto; padding-right: 4px; }
-        .chat-card { display: flex; flex-direction: column; background: var(--bg-chat-bubble); border: 1px solid var(--border-chat-bubble); color: var(--text-chat-bubble); border-radius: 8px; padding: 8px 10px; font-size: 0.78rem; position: relative; }
-        .chat-sender { font-weight: bold; font-size: 0.72rem; color: var(--title-color); margin-bottom: 2px; display: flex; justify-content: space-between; align-items: center; }
-        .chat-meta { font-size: 0.68rem; color: var(--text-sub); font-weight: normal; }
-        .chat-body { margin-top: 2px; line-height: 1.4; word-break: break-all; }
-        .chat-vehicles { background: rgba(255,255,255,0.4); padding: 4px 6px; border-radius: 4px; margin-top: 4px; font-weight: bold; display: inline-block; }
+        .line-schedule-box { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 8px; padding: 8px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .line-schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid var(--border-card); padding-bottom: 4px; }
+        .line-schedule-title { font-weight: bold; font-size: 0.85rem; color: var(--title-color); display: flex; align-items: center; gap: 6px; }
+        .chat-container { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; padding-right: 4px; }
+        .chat-card { display: flex; flex-direction: column; background: var(--bg-chat-bubble); border: 1px solid var(--border-chat-bubble); color: var(--text-chat-bubble); border-radius: 8px; padding: 6px 8px; font-size: 0.75rem; position: relative; }
+        .chat-sender { font-weight: bold; font-size: 0.7rem; color: var(--title-color); margin-bottom: 2px; display: flex; justify-content: space-between; align-items: center; }
+        .chat-meta { font-size: 0.65rem; color: var(--text-sub); font-weight: normal; }
+        .chat-body { margin-top: 1px; line-height: 1.3; word-break: break-all; }
+        .chat-vehicles { background: rgba(255,255,255,0.4); padding: 3px 6px; border-radius: 4px; margin-top: 3px; font-weight: bold; display: inline-block; font-size: 0.7rem; }
 
-        .announcement-box { background: var(--bg-announcement); border: 1px solid var(--border-announcement); color: var(--text-announcement); padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .announcement-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .announcement-title { font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
-        .btn-announcement { background: #007bff; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+        /* 修正 3：驗交車公告再壓扁 (單行橫向緊湊排列、壓縮高度) */
+        .announcement-box { background: var(--bg-announcement); border: 1px solid var(--border-announcement); color: var(--text-announcement); padding: 4px 8px; border-radius: 6px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-height: 32px; }
+        .announcement-left { display: flex; align-items: center; gap: 6px; flex-shrink: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .announcement-title { font-weight: bold; font-size: 0.8rem; flex-shrink: 0; }
+        .btn-announcement { background: #007bff; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0; }
         .btn-announcement:hover { background: #0056b3; }
-        .btn-announcement-del { background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; cursor: pointer; }
+        .btn-announcement-del { background: #dc3545; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: bold; cursor: pointer; flex-shrink: 0; }
 
-        .sort-bar { display: flex; align-items: center; gap: 6px; background: var(--bg-sortbar); color: var(--text-main); padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.8rem; flex-wrap: wrap; }
-        .sort-bar select { width: auto; height: 30px; padding: 2px 6px; }
-        .search-input { height: 30px; padding: 2px 8px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.8rem; width: 180px; background-color: var(--bg-input); color: var(--text-main); }
+        /* 修正 1：重構搜尋排序結構 (CSS Grid 兩欄式雙行佈局) */
+        .sort-bar { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 4px 8px; 
+            background: var(--bg-sortbar); 
+            color: var(--text-main); 
+            padding: 6px 10px; 
+            border-radius: 6px; 
+            margin-bottom: 8px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+            font-size: 0.78rem; 
+        }
+        .sort-bar-label { font-weight: bold; display: flex; align-items: center; font-size: 0.78rem; }
+        .sort-bar-inputs { display: flex; gap: 4px; width: 100%; }
+        .sort-bar select { width: 50%; height: 28px; padding: 1px 4px; font-size: 0.78rem; border-radius: 4px; border: 1px solid var(--border-color); background-color: var(--bg-input); color: var(--text-main); }
+        .search-input { height: 28px; padding: 1px 6px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.78rem; width: 100%; background-color: var(--bg-input); color: var(--text-main); }
 
         .nav-tabs { display: flex; gap: 4px; margin-bottom: 8px; border-bottom: 2px solid #1f4e78; }
-        .tab-btn { flex: 1; padding: 8px 4px; background: var(--bg-table-header); border: none; border-radius: 6px 6px 0 0; font-weight: bold; cursor: pointer; color: var(--text-main); font-size: 0.85rem; text-align: center; min-height: 38px; }
+        .tab-btn { flex: 1; padding: 6px 4px; background: var(--bg-table-header); border: none; border-radius: 6px 6px 0 0; font-weight: bold; cursor: pointer; color: var(--text-main); font-size: 0.82rem; text-align: center; min-height: 34px; }
         .tab-btn.active { background: #1f4e78; color: white; }
         .tab-btn.admin-only { display: none !important; }
         .tab-btn.admin-only.show { display: block !important; }
@@ -140,12 +156,12 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .card { background: var(--bg-card); border-radius: 8px; padding: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-bottom: 10px; border: 1px solid var(--border-card); transition: background-color 0.3s ease; }
-        .card-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: var(--title-color); border-bottom: 2px solid var(--border-card); padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .card { background: var(--bg-card); border-radius: 8px; padding: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-bottom: 10px; border: 1px solid var(--border-card); transition: background-color 0.3s ease; }
+        .card-title { font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: var(--title-color); border-bottom: 2px solid var(--border-card); padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
 
-        .map-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; }
+        .map-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
         .zone { border: 2px solid var(--border-zone); border-radius: 6px; padding: 6px; background: var(--bg-zone); display: flex; flex-direction: column; max-height: 480px; transition: transform 0.15s, opacity 0.15s, background-color 0.3s ease; }
-        .zone-header { display: flex; justify-content: space-between; align-items: center; background: #2c3e50; color: white; padding: 6px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; user-select: none; }
+        .zone-header { display: flex; justify-content: space-between; align-items: center; background: #2c3e50; color: white; padding: 5px 8px; border-radius: 4px; font-size: 0.82rem; font-weight: bold; user-select: none; }
         
         .zone-body { overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-top: 6px; flex-grow: 1; min-height: 50px; }
         .zone-body::-webkit-scrollbar { width: 5px; }
@@ -154,7 +170,7 @@
         .bus-card { background: var(--bg-bus-card); border: 1px solid var(--border-color); border-radius: 5px; padding: 6px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: grab; transition: background-color 0.3s ease; }
         .bus-card:active { cursor: grabbing; }
         .bus-header { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
-        .bus-plate-input { font-weight: bold; font-size: 0.8rem; padding: 4px 6px; border-radius: 4px; text-align: center; flex-grow: 1; min-height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.2s; word-break: break-all; font-variant-numeric: tabular-nums; }
+        .bus-plate-input { font-weight: bold; font-size: 0.8rem; padding: 3px 6px; border-radius: 4px; text-align: center; flex-grow: 1; min-height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.2s; word-break: break-all; font-variant-numeric: tabular-nums; }
         .bus-plate-input:hover { opacity: 0.85; }
 
         .bus-badge-container { display: flex; gap: 4px; font-size: 0.68rem; flex-wrap: wrap; margin-top: 2px; }
@@ -163,11 +179,11 @@
 
         .bus-date-row { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-sub); }
         .bus-date-group { display: flex; align-items: center; gap: 2px; flex: 1; }
-        .bus-date-input { font-size: 0.68rem; padding: 1px 2px; border: 1px solid var(--border-color); border-radius: 3px; width: 100%; height: 26px; background-color: var(--bg-input); color: var(--text-main); font-variant-numeric: tabular-nums; }
-        .bus-date-text { font-size: 0.7rem; color: var(--text-main); font-weight: 500; background: var(--bg-input); padding: 3px 4px; border-radius: 3px; border: 1px solid var(--border-color); width: 100%; text-align: center; font-variant-numeric: tabular-nums; }
+        .bus-date-input { font-size: 0.68rem; padding: 1px 2px; border: 1px solid var(--border-color); border-radius: 3px; width: 100%; height: 24px; background-color: var(--bg-input); color: var(--text-main); font-variant-numeric: tabular-nums; }
+        .bus-date-text { font-size: 0.68rem; color: var(--text-main); font-weight: 500; background: var(--bg-input); padding: 2px 4px; border-radius: 3px; border: 1px solid var(--border-color); width: 100%; text-align: center; font-variant-numeric: tabular-nums; }
 
         .table-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-table); }
-        .table-scroll-tip { font-size: 0.75rem; color: #17a2b8; background: rgba(23, 162, 184, 0.15); padding: 4px 8px; border-radius: 4px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+        .table-scroll-tip { font-size: 0.72rem; color: #17a2b8; background: rgba(23, 162, 184, 0.15); padding: 3px 6px; border-radius: 4px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
 
         select, input, textarea { width: 100%; padding: 4px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.8rem; background-color: var(--bg-input); color: var(--text-main); }
         select:disabled, input:disabled { color: var(--text-main) !important; -webkit-text-fill-color: var(--text-main) !important; opacity: 1 !important; background-color: var(--bg-input) !important; border-color: var(--border-color) !important; }
@@ -245,8 +261,8 @@
             <span>📞 03-4766788</span>
         </div>
         <div class="company-links">
-            <a href="https://lin.ee/8k22Jwf" target="_blank" rel="noopener noreferrer" class="btn-link-line">💬 LINE 官方帳號</a>
-            <a href="https://www.lbbsbus.com.tw/" target="_blank" rel="noopener noreferrer" class="btn-link-web">🌐 公司官網</a>
+            <a href="https://lin.ee/8k22Jwf" target="_blank" rel="noopener noreferrer" class="btn-link-line">💬 LINE 客服帳號</a>
+            <a href="https://www.lbbsbus.com.tw/" target="_blank" rel="noopener noreferrer" class="btn-link-web">🌐 柏昇官網</a>
         </div>
     </div>
 
@@ -258,7 +274,7 @@
         <button class="btn btn-export" onclick="exportDispatchSheet()">📄 匯出派工單</button>
         <button class="btn btn-export" onclick="exportData()">📥 備份 JSON</button>
         <button class="btn btn-import" onclick="triggerImport()">📤 匯入 JSON</button>
-        <button class="btn btn-archive" onclick="openArchiveModal()">📦 歸檔庫</button>
+        <button class="btn btn-archive" onclick="openArchiveModal()">📦 已交車</button>
         <input type="file" id="importFileInput" class="hidden-file-input" accept=".json" onchange="importData(event)">
     </div>
 </div>
@@ -266,20 +282,20 @@
 <input type="file" id="globalDirectPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handleDirectPhotoUpload(event)">
 <input type="file" id="announcementFileInput" class="hidden-file-input" accept="image/*" onchange="handleAnnouncementPhotoUpload(event)">
 
+<!-- 修正 2：壓扁後的 KPI 看板 -->
 <div class="dashboard-grid">
     <div class="kpi-card" style="border-left-color: #1f4e78;">
-        <div class="kpi-title">總在場數量</div>
+        <div class="kpi-title">總在廠數量</div>
         <div class="kpi-num" id="kpiTotal">0 台</div>
     </div>
     <div class="kpi-card" style="border-left-color: #1E88E5;">
         <div class="kpi-title">施工中</div>
         <div class="kpi-num" id="kpiWorking">0 台</div>
     </div>
-    <!-- 待交車 KPI 卡片，新增點擊觸發 Modal 明細 -->
     <div class="kpi-card clickable" style="border-left-color: #4CAF50;" onclick="openPendingDeliveryModal()" title="點擊查看待交車詳細清單">
         <div class="kpi-title">
             <span>待交車</span>
-            <span style="font-size:0.65rem; color:#4CAF50; font-weight:normal;">🔍 點擊展開</span>
+            <span style="font-size:0.6rem; color:#4CAF50; font-weight:normal;">🔍展開</span>
         </div>
         <div class="kpi-num" id="kpiDone">0 台</div>
     </div>
@@ -289,10 +305,10 @@
     </div>
 </div>
 
-<!-- 新增：廠內即時車輛排程公告（LINE 對話風格） -->
+<!-- 廠內即時車輛排程公告 -->
 <div class="line-schedule-box">
     <div class="line-schedule-header">
-        <span class="line-schedule-title">💬 廠內即時車輛排程公告 (LINE 風格)</span>
+        <span class="line-schedule-title">💬 廠內即時車輛排程公告 </span>
         <div class="controls admin-only" id="adminScheduleControls" style="display:inline-flex; gap:4px;">
             <button class="btn" style="padding:2px 8px; font-size:0.75rem;" onclick="openAddScheduleModal()">➕ 新增排程公告</button>
         </div>
@@ -302,32 +318,38 @@
     </div>
 </div>
 
+<!-- 修正 3：壓扁後的單行橫向驗交車公告區塊 -->
 <div class="announcement-box" id="announcementBox">
     <div class="announcement-left">
-        <span class="announcement-title">📢 <b>查核 / 驗車 / 交車日公告</b></span>
-        <button class="btn-announcement" id="btnViewAnnouncement" onclick="viewAnnouncementImg()">🖼️ 查看公告圖片</button>
-        <span id="announcementStatusText" style="font-size:0.75rem; font-weight:normal; opacity:0.85;">(載入中...)</span>
+        <span class="announcement-title">📢 <b>查核/驗車/交車日公告</b></span>
+        <button class="btn-announcement" id="btnViewAnnouncement" onclick="viewAnnouncementImg()">🖼️ 查看圖片</button>
+        <span id="announcementStatusText" style="font-size:0.72rem; opacity:0.85; overflow:hidden; text-overflow:ellipsis;">(載入中...)</span>
     </div>
-    <div class="controls admin-only" id="adminAnnouncementControls" style="display:inline-flex; gap:4px;">
-        <button class="btn-announcement" style="background:#28a745;" onclick="triggerAnnouncementUpload()">📤 上傳公告圖片</button>
-        <button class="btn-announcement-del" id="btnDelAnnouncementImg" onclick="deleteAnnouncementImg()">🗑️ 刪除圖片</button>
+    <div class="controls admin-only" id="adminAnnouncementControls" style="display:inline-flex; gap:4px; flex-shrink:0;">
+        <button class="btn-announcement" style="background:#28a745;" onclick="triggerAnnouncementUpload()">📤 上傳圖片</button>
+        <button class="btn-announcement-del" id="btnDelAnnouncementImg" onclick="deleteAnnouncementImg()">🗑️ 刪除</button>
     </div>
 </div>
 
+<!-- 修正 1：CSS Grid 兩欄式雙行佈局搜尋與排序區塊 -->
 <div class="sort-bar">
-    <span><b>🔍 搜尋：</b></span>
-    <input type="text" id="searchInput" class="search-input" placeholder="搜尋車號或備註..." oninput="renderApp()">
+    <div class="sort-bar-label">🔍 搜尋車輛</div>
+    <div class="sort-bar-label">↕️ 排序選項</div>
     
-    <span style="margin-left: 10px;"><b>排序車輛：</b></span>
-    <select id="sortField" onchange="renderApp()">
-        <option value="plate">車號 / 名稱</option>
-        <option value="zone">區域</option>
-        <option value="id">建立順序</option>
-    </select>
-    <select id="sortOrder" onchange="renderApp()">
-        <option value="asc">升冪 ⬆️</option>
-        <option value="desc">降冪 ⬇️</option>
-    </select>
+    <div>
+        <input type="text" id="searchInput" class="search-input" placeholder="輸入車號或備註..." oninput="renderApp()">
+    </div>
+    <div class="sort-bar-inputs">
+        <select id="sortField" onchange="renderApp()">
+            <option value="plate">車號/名稱</option>
+            <option value="zone">區域</option>
+            <option value="id">建立順序</option>
+        </select>
+        <select id="sortOrder" onchange="renderApp()">
+            <option value="asc">升冪⬆️</option>
+            <option value="desc">降冪⬇️</option>
+        </select>
+    </div>
 </div>
 
 <div class="nav-tabs">
@@ -402,17 +424,18 @@
     </div>
 </div>
 
-<!-- 新增即時排程公告 Modal 彈窗 -->
+<!-- 新增/編輯即時排程公告 Modal 彈窗 -->
 <div class="modal" id="addScheduleModal">
     <div class="modal-content">
         <div class="modal-header">
-            <span>💬 發布即時排程公告</span>
+            <span id="schedModalTitle">💬 發布即時排程公告</span>
             <button onclick="closeModal('addScheduleModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;color:var(--text-main);">✕</button>
         </div>
         <div style="display:flex; flex-direction:column; gap:8px;">
+            <input type="hidden" id="schedEditIndex" value="-1">
             <div>
                 <label style="font-size:0.8rem; font-weight:bold;">發布者 / 單位：</label>
-                <input type="text" id="schedSender" placeholder="例如：同事 小游" value="同事 小游">
+                <input type="text" id="schedSender" placeholder="例如：小游" value="小游">
             </div>
             <div>
                 <label style="font-size:0.8rem; font-weight:bold;">對話日期標籤：</label>
@@ -433,7 +456,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-archive" onclick="closeModal('addScheduleModal')">取消</button>
-            <button class="btn" onclick="saveNewSchedule()">💬 發布公告</button>
+            <button class="btn" onclick="saveNewSchedule()">💬 儲存並發布公告</button>
         </div>
     </div>
 </div>
@@ -616,7 +639,7 @@
         schedules: [
             {
                 "id": "sched_1",
-                "sender": "同事 小游",
+                "sender": "小游",
                 "dateGroup": "8月24日(一)",
                 "taskType": "汽車美容",
                 "scheduleTime": "8/25星期二下午四點",
@@ -625,7 +648,7 @@
             },
             {
                 "id": "sched_2",
-                "sender": "同事 小游",
+                "sender": "小游",
                 "dateGroup": "昨天",
                 "taskType": "滅火系統",
                 "scheduleTime": "8/27星期四",
@@ -962,7 +985,10 @@
                     <span>👤 ${item.sender || '同事'} <span class="chat-meta">(${item.dateGroup || '近期'})</span></span>
                     <div>
                         <span class="chat-meta">${item.sentTime || ''}</span>
-                        ${authed ? `<button style="background:#dc3545; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:6px;" onclick="deleteSchedule(${index})">✕ 刪除</button>` : ''}
+                        ${authed ? `
+                            <button style="background:#17a2b8; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:6px;" onclick="editSchedule(${index})">✏️ 編輯</button>
+                            <button style="background:#dc3545; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:2px;" onclick="deleteSchedule(${index})">✕ 刪除</button>
+                        ` : ''}
                     </div>
                 </div>
                 <div class="chat-body">
@@ -976,34 +1002,64 @@
 
     function openAddScheduleModal() {
         requireAuth(() => {
+            document.getElementById('schedEditIndex').value = "-1";
+            document.getElementById('schedModalTitle').innerText = "💬 發布即時排程公告";
+            document.getElementById('schedSender').value = "小游";
+            document.getElementById('schedDateGroup').value = "";
+            document.getElementById('schedTaskType').value = "";
+            document.getElementById('schedTime').value = "";
+            document.getElementById('schedVehicles').value = "";
+            document.getElementById('addScheduleModal').classList.add('active');
+        });
+    }
+
+    function editSchedule(index) {
+        requireAuth(() => {
+            const sched = appData.schedules[index];
+            if (!sched) return;
+            document.getElementById('schedEditIndex').value = index;
+            document.getElementById('schedModalTitle').innerText = "✏️ 編輯即時排程公告";
+            document.getElementById('schedSender').value = sched.sender || '';
+            document.getElementById('schedDateGroup').value = sched.dateGroup || '';
+            document.getElementById('schedTaskType').value = sched.taskType || '';
+            document.getElementById('schedTime').value = sched.scheduleTime || '';
+            document.getElementById('schedVehicles').value = sched.vehicles || '';
             document.getElementById('addScheduleModal').classList.add('active');
         });
     }
 
     function saveNewSchedule() {
-        const sender = document.getElementById('schedSender').value.trim() || '同事 小游';
+        const editIndex = parseInt(document.getElementById('schedEditIndex').value, 10);
+        const sender = document.getElementById('schedSender').value.trim() || '小游';
         const dateGroup = document.getElementById('schedDateGroup').value.trim() || '今天';
         const taskType = document.getElementById('schedTaskType').value.trim() || '一般作業';
         const scheduleTime = document.getElementById('schedTime').value.trim() || '時間另行通知';
         const vehicles = document.getElementById('schedVehicles').value.trim();
 
-        const now = new Date();
-        const timeStr = `${now.getHours() > 12 ? '下午' : '上午'} ${now.getHours() % 12 || 12}:${String(now.getMinutes()).padStart(2, '0')}`;
+        if (editIndex >= 0 && appData.schedules[editIndex]) {
+            appData.schedules[editIndex].sender = sender;
+            appData.schedules[editIndex].dateGroup = dateGroup;
+            appData.schedules[editIndex].taskType = taskType;
+            appData.schedules[editIndex].scheduleTime = scheduleTime;
+            appData.schedules[editIndex].vehicles = vehicles;
+            addAuditLog('即時排程', `更新了公告：${taskType} (${vehicles})`);
+        } else {
+            const now = new Date();
+            const timeStr = `${now.getHours() > 12 ? '下午' : '上午'} ${now.getHours() % 12 || 12}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const newSched = {
+                id: 'sched_' + Date.now(),
+                sender,
+                dateGroup,
+                taskType,
+                scheduleTime,
+                vehicles,
+                sentTime: timeStr
+            };
+            if (!appData.schedules) appData.schedules = [];
+            appData.schedules.unshift(newSched);
+            addAuditLog('即時排程', `新增公告：${taskType} (${vehicles})`);
+        }
 
-        const newSched = {
-            id: 'sched_' + Date.now(),
-            sender,
-            dateGroup,
-            taskType,
-            scheduleTime,
-            vehicles,
-            sentTime: timeStr
-        };
-
-        if (!appData.schedules) appData.schedules = [];
-        appData.schedules.unshift(newSched);
-
-        addAuditLog('即時排程', `新增公告：${taskType} (${vehicles})`);
         autoSaveCloud();
         renderApp();
         closeModal('addScheduleModal');
@@ -1058,11 +1114,11 @@
 
         if (appData.announcementImg) {
             btnView.style.display = "inline-flex";
-            if (statusText) statusText.innerText = "(已有最新公告，點擊圖片按鈕查看)";
+            if (statusText) statusText.innerText = "(有最新公告)";
             if (delBtn) delBtn.style.display = "inline-block";
         } else {
             btnView.style.display = "none";
-            if (statusText) statusText.innerText = "(目前無公告圖片)";
+            if (statusText) statusText.innerText = "(無公告圖片)";
             if (delBtn) delBtn.style.display = "none";
         }
     }
@@ -1161,6 +1217,22 @@
         const authed = isAuthed();
         const searchKeyword = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
         let filteredBuses = appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword) || (b.note||'').toLowerCase().includes(searchKeyword));
+
+        // 排序邏輯
+        const sortField = document.getElementById('sortField')?.value || 'plate';
+        const sortOrder = document.getElementById('sortOrder')?.value || 'asc';
+
+        filteredBuses.sort((a, b) => {
+            let valA = a[sortField] || '';
+            let valB = b[sortField] || '';
+            if (sortField === 'zone') {
+                valA = appData.zones.find(z => z.id === a.zoneId)?.name || '';
+                valB = appData.zones.find(z => z.id === b.zoneId)?.name || '';
+            }
+            if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+            if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+            return 0;
+        });
 
         appData.zones.forEach(zone => {
             const zoneEl = document.createElement('div');
