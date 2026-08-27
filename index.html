@@ -470,8 +470,11 @@
         const updateClock = () => {
             const now = new Date();
             const weekDays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
-            document.getElementById('liveClock').textContent = 
-                `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${weekDays[now.getDay()]} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+            const clockEl = document.getElementById('liveClock');
+            if (clockEl) {
+                clockEl.textContent = 
+                    `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${weekDays[now.getDay()]} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+            }
         };
         setInterval(updateClock, 1000);
         updateClock();
@@ -592,16 +595,15 @@
         }
     }
 
-    /* 核心修復：高係數圖檔極致壓縮與容錯 Try-Catch */
+    /* 修正與備份優化：正確整理 Payload 結構並防禦超量儲存 */
     async function autoSaveCloud() {
         if (isSaving) return false;
         isSaving = true;
 
-        // 本地暫存包覆 try-catch，避免 QuotaExceededError 直接中斷程式
         try {
             localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData));
         } catch (e) {
-            console.warn("localStorage 容量上限，已跳過本地備份，繼續同步至雲端。", e);
+            console.warn("localStorage 容量上限，跳過本地備份。", e);
         }
 
         setSyncStatus('syncing', '儲存同步中...');
@@ -610,15 +612,17 @@
         try {
             if (!supabaseClient) throw new Error("Supabase 未初始化");
 
+            // 限制 auditLogs 紀錄數量最大 50 筆，避免封包暴增
+            const payloadContent = {
+                ...appData,
+                auditLogs: Array.isArray(appData.auditLogs) ? appData.auditLogs.slice(0, 50) : []
+            };
+
             const { data, error } = await supabaseClient
                 .from('app_data')
                 .upsert({ 
                     id: 'main_data', 
-                    content: {
-  ...appData,
-  // 假設 appData 內有過長的 logs 陣列，只保留最新 20 筆
-  logs: Array.isArray(appData.logs) ? appData.logs.slice(-20) : appData.logs
-},
+                    content: payloadContent,
                     updated_at: new Date().toISOString() 
                 });
 
@@ -627,10 +631,9 @@
             setSyncStatus('success', '已同步雲端');
             success = true;
         } catch (err) {
-    console.error("Cloud Save Error:", err);
-    const errorMsg = err.message || err.error_description || JSON.stringify(err);
-    setSyncStatus('error', `同步失敗: ${errorMsg}`);
-    alert(`手機同步失敗！\n錯誤原因：${errorMsg}`);
+            console.error("Cloud Save Error:", err);
+            const errorMsg = err.message || err.error_description || JSON.stringify(err);
+            setSyncStatus('error', `同步失敗`);
         } finally {
             isSaving = false;
         }
@@ -697,7 +700,6 @@
         });
     }
 
-    /* 圖檔上傳核心修復：強制將尺寸壓縮至 600px、品質降低至 0.4 */
     function handleAnnouncementPhotoUpload(e) {
         const file = e.target.files[0];
         if (!file) return;
@@ -922,6 +924,8 @@
         requireAuth(() => {
             currentEditBusId = busId;
             const bus = appData.buses.find(b => b.id === busId);
+            if (!bus) return;
+
             document.getElementById('modalBusTitle').value = bus.plate;
             document.getElementById('modalBusStartDate').value = bus.startDate || '';
             document.getElementById('modalBusEndDate').value = bus.endDate || '';
@@ -1037,7 +1041,6 @@
 
     function triggerPhotoUpload() { document.getElementById('busPhotoInput').click(); }
 
-    /* 車輛照片上傳修復：強制將尺寸壓至 600px、品質降低至 0.4 */
     function processAndUploadFiles(files, bus) {
         if (!files || !files.length || !bus) return;
 
@@ -1369,7 +1372,7 @@
     function exportData() {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
         const anchor = document.createElement('a');
-        anchor.setAttribute("href", anchor.getAttribute ? dataStr : "");
+        anchor.setAttribute("href", dataStr);
         anchor.setAttribute("download", `柏昇車輛備份_${new Date().toISOString().slice(0,10)}.json`);
         anchor.click();
     }
