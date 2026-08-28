@@ -1673,35 +1673,22 @@
         const file = e.target.files[0];
         if (!file) return;
 
+        // 驗交車公告圖片：直接讀取原始檔案，不經 Canvas 縮圖或 JPEG 壓縮，保留原始圖片品質與尺寸。
         const reader = new FileReader();
         reader.onload = (evt) => {
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
-                const max_size = 600;
-
-                if (width > height) {
-                    if (width > max_size) { height *= max_size / width; width = max_size; }
-                } else {
-                    if (height > max_size) { width *= max_size / height; height = max_size; }
-                }
-
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-
-                appData.announcementImg = canvas.toDataURL('image/jpeg', 0.4);
-                addAuditLog('系統公告', '更新了驗交車公告圖片');
-                autoSaveCloud();
-                renderApp();
-                alert("📢 驗交車公告圖片已更新完成！");
-            };
-            img.src = evt.target.result;
+            appData.announcementImg = evt.target.result;
+            addAuditLog('系統公告', '更新了驗交車公告圖片（原始品質）');
+            autoSaveCloud();
+            renderApp();
+            alert("📢 驗交車公告圖片已更新完成！（原始圖片，不經壓縮）");
+        };
+        reader.onerror = () => {
+            alert("圖片讀取失敗，請重新選擇圖片後再試一次。");
         };
         reader.readAsDataURL(file);
+
+        // 清空 input，確保再次選擇同一張圖片時也會觸發 onchange。
+        e.target.value = '';
     }
 
     function deleteAnnouncementImg() {
