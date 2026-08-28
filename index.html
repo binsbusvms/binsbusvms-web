@@ -1274,6 +1274,33 @@ html[data-theme="dark"] .mobile-aux-panel {
     }
 }
 
+
+/* 手機全車總表：強制保留原生左右滑動，不被後續 UI 樣式的 overflow:hidden 覆蓋 */
+.table-scroll-container {
+    overflow-x: auto !important;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+}
+.table-scroll-container > table#busTable {
+    min-width: 640px !important;
+}
+@media (max-width: 640px) {
+    .table-scroll-container {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto !important;
+        overflow-y: hidden;
+        touch-action: pan-x;
+    }
+    .table-scroll-container > table#busTable {
+        min-width: 640px !important;
+        width: 640px !important;
+    }
+}
+
 </style>
 </head>
 <body>
