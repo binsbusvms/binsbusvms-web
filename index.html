@@ -1873,6 +1873,76 @@ html[data-theme="dark"] .area-nav-btn.active {
     border: 2px solid #e53935 !important;
     box-shadow: 0 0 0 3px rgba(229,57,53,.10) !important;
 }
+
+
+/* ===== 統計面板與待交車明細優化 ===== */
+.kpi-working-card { position:relative; }
+.kpi-expand-hint { font-size:.58rem; color:var(--text-sub); font-weight:normal; white-space:nowrap; }
+.working-stats-panel {
+    grid-column: 1 / -1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-left: 4px solid #1E88E5;
+    border-radius: 7px;
+    padding: 8px 10px;
+    margin-top: -2px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.08);
+}
+.working-stats-title { font-weight:700; font-size:.72rem; color:var(--title-color); margin-bottom:6px; }
+.working-stats-list { display:flex; flex-wrap:wrap; gap:6px; }
+.working-stats-item {
+    display:inline-flex; align-items:center; justify-content:space-between; gap:8px;
+    min-width:130px; padding:5px 8px; border:1px solid var(--border-color);
+    border-radius:6px; background:var(--bg-input); color:var(--text-main); font-size:.72rem;
+}
+.working-stats-item strong { color:var(--title-color); font-size:.82rem; }
+.pending-delivery-modal-content {
+    width:min(94vw, 980px) !important;
+    max-width:980px !important;
+    max-height:90vh !important;
+    padding:20px !important;
+}
+#pendingDeliveryModal .modal-header { font-size:1.08rem; margin-bottom:14px; }
+#pendingDeliveryModal .table-scroll-container { max-height:65vh !important; }
+#pendingDeliveryModal table { font-size:.82rem !important; }
+#pendingDeliveryModal .modal-footer .btn { min-height:40px; font-size:.88rem; padding:8px 18px; }
+
+@media (max-width:900px) {
+    .working-stats-panel { padding:7px 8px; }
+    .working-stats-item { min-width:120px; }
+    .pending-delivery-modal-content {
+        width:96vw !important; max-width:96vw !important;
+        padding:14px !important; max-height:90vh !important;
+    }
+    #pendingDeliveryModal table { font-size:.78rem !important; }
+    #pendingDeliveryModal .table-scroll-container { max-height:62vh !important; overflow-x:auto !important; }
+}
+@media (max-width:600px) {
+    .working-stats-list { display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+    .working-stats-item { min-width:0; width:100%; }
+    #pendingDeliveryModal .modal-header { font-size:1rem; }
+    #pendingDeliveryModal table { min-width:520px; font-size:.78rem !important; }
+}
+@media (max-width:380px) {
+    .working-stats-list { grid-template-columns:1fr; }
+}
+
+
+/* 全廠車輛總表：手機版車號／名稱、當前區域保持單行 */
+@media (max-width:600px) {
+    #busTableBody > tr > td:first-child,
+    #busTableBody > tr > td:nth-child(2) {
+        white-space: nowrap !important;
+    }
+    #busTableBody .bus-table-name-wrap {
+        white-space: nowrap !important;
+        overflow: visible !important;
+    }
+    #busTableBody .bus-table-name-wrap > span {
+        white-space: nowrap !important;
+        display: inline-block !important;
+    }
+}
 </style>
 </head>
 <body>
@@ -1934,10 +2004,14 @@ html[data-theme="dark"] .area-nav-btn.active {
         <div class="kpi-title">總在廠數量</div>
         <div class="kpi-num" id="kpiTotal">0 台</div>
     </div>
-    <div class="kpi-card" style="border-left-color: #1E88E5;">
-        <div class="kpi-title">施工中</div>
+    <div class="kpi-card clickable kpi-working-card" style="border-left-color: #1E88E5;" onclick="toggleWorkingStats()" title="點擊展開各進度分類數量">
+        <div class="kpi-title">
+            <span>施工中</span>
+            <span class="kpi-expand-hint" id="kpiWorkingExpandHint">🔍展開</span>
+        </div>
         <div class="kpi-num" id="kpiWorking">0 台</div>
     </div>
+    <div id="workingStatsPanel" class="working-stats-panel" style="display:none;"></div>
     <div class="kpi-card clickable" style="border-left-color: #4CAF50;" onclick="openPendingDeliveryModal()" title="點擊查看待交車詳細清單">
         <div class="kpi-title">
             <span>待交車</span>
@@ -2056,7 +2130,7 @@ html[data-theme="dark"] .area-nav-btn.active {
 
 <!-- 待交車明細 Modal 彈窗 -->
 <div class="modal" id="pendingDeliveryModal">
-    <div class="modal-content" style="max-width: 680px;">
+    <div class="modal-content pending-delivery-modal-content">
         <div class="modal-header">
             <span>📋 待交車車輛明細列表</span>
             <button onclick="closeModal('pendingDeliveryModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;color:var(--text-main);">✕</button>
@@ -2065,10 +2139,9 @@ html[data-theme="dark"] .area-nav-btn.active {
             <table style="width:100%; border-collapse:collapse; font-size:0.58rem;">
                 <thead>
                     <tr style="background:var(--bg-table-header); position:sticky; top:0; z-index:2;">
-                        <th style="padding:6px 4px; border:1px solid var(--border-color);">車號 / 名稱</th>
-                        <th style="padding:6px 4px; border:1px solid var(--border-color);">當前區域</th>
-                        <th style="padding:6px 4px; border:1px solid var(--border-color);">預計交車/出廠日</th>
-                        <th style="padding:6px 4px; border:1px solid var(--border-color);">施工備註</th>
+                        <th style="padding:10px 8px; border:1px solid var(--border-color); white-space:nowrap;">車號 / 名稱</th>
+                        <th style="padding:10px 8px; border:1px solid var(--border-color); white-space:nowrap;">當前區域</th>
+                        <th style="padding:10px 8px; border:1px solid var(--border-color); white-space:nowrap;">預計交車日</th>
                     </tr>
                 </thead>
                 <tbody id="pendingDeliveryTableBody"></tbody>
@@ -2935,6 +3008,17 @@ html[data-theme="dark"] .area-nav-btn.active {
         const latest = getLatestAnnouncement();
         const latestId = getAnnouncementId(latest);
 
+        // 沒有任何真實公告：完全移除紅框與最新公告標記。
+        if (!latest) {
+            box.classList.remove('new-announcement-alert');
+            box.querySelectorAll('.latest-announcement-card').forEach(function(card) {
+                card.classList.remove('latest-announcement-card');
+            });
+            announcementAlertLatestId = null;
+            announcementAlertDismissed = true;
+            return;
+        }
+
         // 第一次載入：最新一筆直接提示。
         if (announcementAlertLatestId === null) {
             announcementAlertLatestId = latestId;
@@ -3008,6 +3092,9 @@ html[data-theme="dark"] .area-nav-btn.active {
         if (!schedules.length) {
             box.classList.add('announcement-no-data');
             box.classList.remove('announcement-loading', 'new-announcement-alert');
+            box.querySelectorAll('.latest-announcement-card').forEach(function(card) {
+                card.classList.remove('latest-announcement-card');
+            });
             if (container) container.innerHTML = '';
             return;
         }
@@ -3135,18 +3222,17 @@ html[data-theme="dark"] .area-nav-btn.active {
         const pendingBuses = appData.buses.filter(b => doneDeliveryIds.includes(b.statusId));
 
         if (pendingBuses.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:15px; color:#888;">目前全廠無待交車車輛</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:15px; color:#888;">目前全廠無待交車車輛</td></tr>`;
         } else {
             pendingBuses.forEach(b => {
                 const zName = appData.zones.find(z => z.id === b.zoneId)?.name || '未指定區域';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="padding:6px; border:1px solid var(--border-color); font-weight:bold;">
-                        <span style="background:${b.bg || '#8c5d5d'}; color:${b.color || '#ffffff'}; padding:2px 6px; border-radius:4px;">${b.plate}</span>
+                    <td style="padding:10px 8px; border:1px solid var(--border-color); font-weight:bold; white-space:nowrap;">
+                        <span style="background:${b.bg || '#8c5d5d'}; color:${b.color || '#ffffff'}; padding:3px 7px; border-radius:5px; display:inline-block; white-space:nowrap;">${escapeHtml(b.plate)}</span>
                     </td>
-                    <td style="padding:6px; border:1px solid var(--border-color);">${zName}</td>
-                    <td style="padding:6px; border:1px solid var(--border-color); text-align:center;">${b.endDate || '未定'}</td>
-                    <td style="padding:6px; border:1px solid var(--border-color);">${b.note || '-'}</td>
+                    <td style="padding:10px 8px; border:1px solid var(--border-color); white-space:nowrap;">${escapeHtml(zName)}</td>
+                    <td style="padding:10px 8px; border:1px solid var(--border-color); text-align:center; white-space:nowrap;">${b.deliveryDate || '未定'}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -3234,6 +3320,73 @@ html[data-theme="dark"] .area-nav-btn.active {
         });
     }
 
+    function toggleWorkingStats() {
+        const panel = document.getElementById('workingStatsPanel');
+        const hint = document.getElementById('kpiWorkingExpandHint');
+        if (!panel) return;
+
+        if (panel.style.display !== 'none') {
+            panel.style.display = 'none';
+            if (hint) hint.textContent = '🔍展開';
+            return;
+        }
+
+        const groups = Array.isArray(appData.statusGroups) ? appData.statusGroups : [];
+        const deliveryGroup = groups.find(g => String(g.name || '').trim() === '待交車');
+        const deliveryGroupId = deliveryGroup?.id || '';
+
+        // 施工中統計的規則：
+        // 1. 「待交車」母分類中的子進度，除了名稱完全為「待交車」的子進度以外，其餘都要算進施工中。
+        // 2. 「待交車」子進度本身已經算在上方「待交車」統計，因此施工中再次統計時排除。
+        // 3. 舊版沒有掛在母分類下的「待交車／待美容／已完成」等狀態仍維持排除，避免重複計算。
+        // 4. 統計時只顯示母分類，不細分子進度。
+        const workingBuses = appData.buses.filter(bus => {
+            const status = appData.statuses.find(s => s.id === bus.statusId);
+            if (!status) return false;
+
+            // 「待交車」母分類：只有子進度「待交車」排除，其餘子進度全部算施工中。
+            if (deliveryGroupId && status.groupId === deliveryGroupId) {
+                return String(status.name || '').trim() !== '待交車';
+            }
+
+            // 非「待交車」母分類的舊有結案／待交車類狀態維持排除。
+            return !(status.name.includes('待交車') || status.name.includes('待美容') || status.name.includes('已完成') || status.id === 'done' || status.id === 'S_1787581268044');
+        });
+        const counts = new Map();
+
+        workingBuses.forEach(bus => {
+            const status = appData.statuses.find(s => s.id === bus.statusId);
+            if (!status) return;
+            const group = status.groupId ? groups.find(g => g.id === status.groupId) : null;
+            const key = group ? ('group:' + group.id) : ('status:' + status.id);
+            const name = group ? group.name : status.name;
+            counts.set(key, { name, count: (counts.get(key)?.count || 0) + 1, order: group ? 0 : 1 });
+        });
+
+        // 依進度管理中的分類順序顯示；未分組的一般進度放在後面。
+        const items = Array.from(counts.values());
+        const groupOrder = new Map(groups.map((g, i) => [g.name, i]));
+        items.sort((a,b) => {
+            const ai = a.order === 0 ? (groupOrder.has(a.name) ? groupOrder.get(a.name) : 99999) : 100000;
+            const bi = b.order === 0 ? (groupOrder.has(b.name) ? groupOrder.get(b.name) : 99999) : 100000;
+            return ai - bi || a.name.localeCompare(b.name, 'zh-Hant');
+        });
+
+        panel.innerHTML = `
+            <div class="working-stats-title">📊 施工中各進度分類數量（不細分子進度）</div>
+            <div class="working-stats-list">
+                ${items.length ? items.map(item => `
+                    <div class="working-stats-item">
+                        <span>${escapeHtml(item.name)}</span>
+                        <strong>${item.count} 台</strong>
+                    </div>
+                `).join('') : `<div style="color:var(--text-sub);font-size:.72rem;">目前沒有可統計的施工中車輛。</div>`}
+            </div>
+        `;
+        panel.style.display = 'block';
+        if (hint) hint.textContent = '🔼收起';
+    }
+
     function updateDashboard() {
         const total = appData.buses.length;
         document.getElementById('kpiTotal').innerText = `${total} 台`;
@@ -3254,6 +3407,12 @@ html[data-theme="dark"] .area-nav-btn.active {
 
         const workingCount = appData.buses.filter(b => !doneDeliveryIds.includes(b.statusId)).length;
         document.getElementById('kpiWorking').innerText = `${workingCount} 台`;
+        const workingPanel = document.getElementById('workingStatsPanel');
+        if (workingPanel && workingPanel.style.display !== 'none') {
+            // 資料更新後維持展開狀態並重新計算。
+            workingPanel.style.display = 'none';
+            toggleWorkingStats();
+        }
     }
 
     function escapeHtml(value) {
