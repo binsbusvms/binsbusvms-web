@@ -1958,6 +1958,86 @@ html[data-theme="dark"] .area-nav-btn.active {
     display: none !important;
 }
 </style>
+<style id="announcement-no-data-final-guard">
+/* 最終防護：沒有真實公告時，公告區完全不佔版面，也不可能顯示紅框。 */
+.line-schedule-box.announcement-no-data {
+    display: none !important;
+    visibility: hidden !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    animation: none !important;
+    outline: none !important;
+}
+.line-schedule-box.announcement-no-data::before,
+.line-schedule-box.announcement-no-data::after {
+    display: none !important;
+    content: none !important;
+}
+</style>
+
+<style id="bus-table-mobile-desktop-final-fix">
+/* 全廠車輛總表最終調整：桌面三個資訊按鈕放大、手機區域完整顯示、修復中間滑動失效 */
+.bus-table-meta-actions {
+    gap: 5px !important;
+}
+.bus-table-meta-actions button {
+    min-height: 30px !important;
+    padding: 5px 7px !important;
+    font-size: .68rem !important;
+    font-weight: 700 !important;
+}
+@media (min-width: 601px) {
+    #busTable {
+        min-width: 760px !important;
+    }
+    #busTable th:first-child,
+    #busTable td:first-child {
+        min-width: 175px !important;
+    }
+    #busTable .bus-table-meta-actions button {
+        font-size: .72rem !important;
+        min-height: 32px !important;
+    }
+}
+
+/* 手機：所屬區域完整單行，不再被欄寬截斷 */
+@media (max-width: 600px) {
+    #busTable {
+        min-width: 760px !important;
+        width: 760px !important;
+        table-layout: auto !important;
+    }
+    #busTable th:nth-child(2),
+    #busTable td:nth-child(2) {
+        min-width: 175px !important;
+        width: 175px !important;
+        white-space: nowrap !important;
+    }
+    #busTable td:nth-child(2) select {
+        min-width: 165px !important;
+        max-width: none !important;
+        white-space: nowrap !important;
+    }
+    #busTable .bus-table-name-wrap {
+        overflow: visible !important;
+        white-space: nowrap !important;
+    }
+    #busTable .bus-table-meta-actions button {
+        min-height: 28px !important;
+        font-size: .66rem !important;
+    }
+
+    /* 關鍵：不可用 pan-x 把垂直頁面滑動鎖死；總表區域允許水平＋垂直手勢 */
+    #tab-table .table-scroll-container {
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-x pan-y !important;
+        overscroll-behavior-x: contain;
+        overscroll-behavior-y: auto;
+    }
+}
+</style>
 </head>
 <body>
 
@@ -2991,8 +3071,22 @@ html[data-theme="dark"] .area-nav-btn.active {
         return 0;
     }
 
-    function getLatestAnnouncement() {
+    // 只有真正具有公告內容的資料才算公告。
+    // 空物件、舊版預設值、載入中的佔位資料一律排除，避免沒有公告仍出現紅框。
+    function isRealAnnouncement(item) {
+        if (!item || typeof item !== 'object') return false;
+        if (item.id === 'sched_1' || item.id === 'sched_2') return false;
+        const fields = [item.sender, item.dateGroup, item.taskType, item.scheduleTime, item.vehicles, item.message, item.content, item.text];
+        return fields.some(v => typeof v === 'string' && v.trim() !== '');
+    }
+
+    function getRealAnnouncements() {
         const list = Array.isArray(appData.schedules) ? appData.schedules : [];
+        return list.filter(isRealAnnouncement);
+    }
+
+    function getLatestAnnouncement() {
+        const list = getRealAnnouncements();
         if (!list.length) return null;
 
         // 優先使用建立/發布時間判斷最後新增；若資料沒有時間欄位，
@@ -3024,22 +3118,30 @@ html[data-theme="dark"] .area-nav-btn.active {
 
     function refreshAnnouncementAlert(forceNew = false) {
         const box = document.querySelector('.line-schedule-box');
-        if (!box || !Array.isArray(appData.schedules) || !appData.schedules.length) {
-            if (box) {
-                box.classList.add('announcement-no-data');
-                box.classList.remove('new-announcement-alert');
-                box.querySelectorAll('.latest-announcement-card').forEach(function(card) {
-                    card.classList.remove('latest-announcement-card');
-                });
-            }
+        if (!box) return;
+
+        const realAnnouncements = getRealAnnouncements();
+        const latest = getLatestAnnouncement();
+
+        // 最重要防呆：沒有真實公告時，不論 schedules 裡是否殘留空資料，
+        // 一律移除紅框、動畫、最新公告標記，並隱藏整個即時公告區。
+        if (!realAnnouncements.length || !latest) {
+            box.classList.add('announcement-no-data');
+            box.classList.remove('new-announcement-alert', 'announcement-loading');
+            box.style.removeProperty('border');
+            box.style.removeProperty('box-shadow');
+            box.style.removeProperty('animation');
+            box.querySelectorAll('.latest-announcement-card').forEach(function(card) {
+                card.classList.remove('latest-announcement-card');
+            });
             announcementAlertLatestId = null;
             announcementAlertDismissed = true;
             return;
         }
+
         box.classList.remove('announcement-no-data');
         if (!box) return;
 
-        const latest = getLatestAnnouncement();
         const latestId = getAnnouncementId(latest);
 
         // 沒有任何真實公告：完全移除紅框與最新公告標記。
@@ -3120,12 +3222,15 @@ html[data-theme="dark"] .area-nav-btn.active {
 
         if (!box) return;
 
-        const schedules = Array.isArray(appData.schedules) ? appData.schedules : [];
+        const schedules = getRealAnnouncements();
 
         // 重要：沒有真實公告時，整個公告區隱藏，絕不顯示預設／範例內容。
         if (!schedules.length) {
             box.classList.add('announcement-no-data');
             box.classList.remove('announcement-loading', 'new-announcement-alert');
+            box.style.removeProperty('border');
+            box.style.removeProperty('box-shadow');
+            box.style.removeProperty('animation');
             box.querySelectorAll('.latest-announcement-card').forEach(function(card) {
                 card.classList.remove('latest-announcement-card');
             });
