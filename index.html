@@ -2447,7 +2447,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             </div>
             <div>
                 <label style="font-size:0.8rem; font-weight:bold;">預定時間：</label>
-                <input type="datetime-local" id="schedTime" aria-label="預定時間">
+                <input type="date" id="schedTime" aria-label="預定時間">
             </div>
             <div>
                 <label style="font-size:0.8rem; font-weight:bold;">相關車輛 / 車主清單 (用逗號隔開)：</label>
@@ -3428,7 +3428,21 @@ html[data-theme="dark"] .area-nav-btn.active {
         const slash = raw.match(/(\d{1,2})[\/-](\d{1,2})/);
         if (slash) {
             const y = new Date().getFullYear();
-            const dt = new Date(y, Number(slash[1]) - 1, Number(slash[2]));
+            const a = Number(slash[1]);
+            const b = Number(slash[2]);
+            // 舊公告資料可能以「日/月」儲存（例如 02/09 代表 9 月 2 日）。
+            // 新版日期選擇器使用 YYYY-MM-DD，不會走到這裡；因此對舊式斜線日期採 DD/MM，
+            // 同時保留像 8/25 這種明確的月/日格式。
+            let month, day;
+            if (a > 12 && b <= 12) {
+                month = b; day = a;
+            } else if (b > 12 && a <= 12) {
+                month = a; day = b;
+            } else {
+                // 兩邊皆可作月份時，舊公告以 DD/MM 優先，避免 02/09 被誤顯示成 2/9。
+                day = a; month = b;
+            }
+            const dt = new Date(y, month - 1, day);
             return Number.isNaN(dt.getTime()) ? null : dt;
         }
         const parsed = new Date(raw);
@@ -3444,7 +3458,8 @@ html[data-theme="dark"] .area-nav-btn.active {
     function formatAnnouncementDate(value) {
         const dt = parseAnnouncementDate(value);
         if (!dt) return String(value || '近期').replace(/[（(]?\s*(?:週|星期)[日一二三四五六七]\s*[)）]?/g, '').trim();
-        return `${dt.getMonth()+1}/${dt.getDate()}`;
+        // 公告日期固定使用「月/日」，不受瀏覽器地區格式影響。
+        return `${dt.getMonth() + 1}/${dt.getDate()}`;
     }
 
     function getAnnouncementWeekday(value) {
@@ -3463,21 +3478,10 @@ html[data-theme="dark"] .area-nav-btn.active {
     }
 
     function formatAnnouncementScheduleTime(item) {
+        // 「預定時間」現在只選日期，不再選小時與分鐘。
         const raw = String(item?.scheduleTime || '').trim();
-        if (!raw) return '時間另行通知';
-        const dt = new Date(raw);
-        if (!Number.isNaN(dt.getTime()) && /T|\d{4}-\d{2}-\d{2}/.test(raw)) {
-            const hh = dt.getHours();
-            const mm = String(dt.getMinutes()).padStart(2,'0');
-            const ampm = hh >= 12 ? '下午' : '上午';
-            const h12 = hh % 12 || 12;
-            return `${ampm}${h12}:${mm}`;
-        }
-        const cleaned = raw
-            .replace(/[（(]?\s*(?:週|星期)[日一二三四五六七]\s*[)）]?/g, '')
-            .replace(/\s{2,}/g, ' ')
-            .trim();
-        return cleaned || '時間另行通知';
+        const dt = parseAnnouncementDate(raw);
+        return dt ? `${dt.getMonth() + 1}/${dt.getDate()}(${getAnnouncementWeekday(dt)})` : '';
     }
 
     function getAnnouncementDisplayDate(item) {
@@ -3520,9 +3524,8 @@ html[data-theme="dark"] .area-nav-btn.active {
         card.className = 'chat-card';
         card.innerHTML = `
             <div class="chat-sender">
-                <span>👤 ${escapeHtml(latest.sender || '同事')} <span class="chat-meta">(${escapeHtml(formatAnnouncementDate(latest.dateGroup))})</span></span>
+                <span>👤 ${escapeHtml(latest.sender || '同事')} <span class="chat-meta">(${escapeHtml(formatAnnouncementDate(latest.dateGroup))})</span> <span class="chat-meta">${escapeHtml(latest.sentTime || '')}</span></span>
                 <div>
-                    <span class="chat-meta">${escapeHtml(latest.sentTime || '')}</span>
                     ${authed ? `
                         <button style="background:#17a2b8; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:6px;" onclick="editSchedule(${sourceIndex})">✏️ 編輯</button>
                         <button style="background:#dc3545; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:2px;" onclick="deleteSchedule(${sourceIndex})">✕ 刪除</button>
@@ -3531,7 +3534,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             </div>
             <div class="chat-body">
                 ${getAnnouncementDisplayDate(latest) ? `<span class="announcement-date-prefix">${escapeHtml(getAnnouncementDisplayDate(latest))}</span> ` : ''}
-                📌 <b>${escapeHtml(latest.taskType || '排程作業')}</b>：${escapeHtml(formatAnnouncementScheduleTime(latest))}
+                📌 <b>${escapeHtml(latest.taskType || '排程作業')}</b>
             </div>
             ${latest.vehicles ? `<div class="chat-vehicles">🚌 相關車輛：${escapeHtml(latest.vehicles)}</div>` : ''}
         `;
@@ -3548,7 +3551,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             document.getElementById('schedDateGroup').value = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
             document.getElementById('schedTaskType').value = "";
             const localNow = new Date();
-            document.getElementById('schedTime').value = `${localNow.getFullYear()}-${String(localNow.getMonth()+1).padStart(2,'0')}-${String(localNow.getDate()).padStart(2,'0')}T${String(localNow.getHours()).padStart(2,'0')}:${String(localNow.getMinutes()).padStart(2,'0')}`;
+            document.getElementById('schedTime').value = `${localNow.getFullYear()}-${String(localNow.getMonth()+1).padStart(2,'0')}-${String(localNow.getDate()).padStart(2,'0')}`;
             document.getElementById('schedVehicles').value = "";
             document.getElementById('addScheduleModal').classList.add('active');
         });
@@ -3563,7 +3566,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             document.getElementById('schedSender').value = sched.sender || '';
             document.getElementById('schedDateGroup').value = dateInputValue(sched.dateGroup);
             document.getElementById('schedTaskType').value = sched.taskType || '';
-            document.getElementById('schedTime').value = dateTimeLocalValue(sched.scheduleTime);
+            document.getElementById('schedTime').value = dateInputValue(sched.scheduleTime);
             document.getElementById('schedVehicles').value = sched.vehicles || '';
             document.getElementById('addScheduleModal').classList.add('active');
         });
@@ -3575,7 +3578,7 @@ html[data-theme="dark"] .area-nav-btn.active {
         const dateValue = document.getElementById('schedDateGroup').value;
         const dateGroup = dateValue || '今天';
         const taskType = document.getElementById('schedTaskType').value.trim() || '一般作業';
-        const scheduleTime = document.getElementById('schedTime').value.trim() || '時間另行通知';
+        const scheduleTime = document.getElementById('schedTime').value.trim() || '日期另行通知';
         const vehicles = document.getElementById('schedVehicles').value.trim();
         const now = Date.now();
 
@@ -3799,7 +3802,7 @@ html[data-theme="dark"] .area-nav-btn.active {
         });
 
         panel.innerHTML = `
-            <div class="working-stats-title">📊 施工中各進度分類數量（不細分子進度）</div>
+            <div class="working-stats-title">📊 施工中各進度分類數量</div>
             <div class="working-stats-list">
                 ${items.length ? items.map(item => `
                     <div class="working-stats-item">
@@ -5688,12 +5691,14 @@ html[data-theme="dark"] #busTable input[type="date"] { color-scheme:dark; }
   margin-right:4px;
   white-space:nowrap;
 }
-#addScheduleModal input[type="datetime-local"] {
+#addScheduleModal input[type="datetime-local"],
+#addScheduleModal input[type="date"] {
   background:var(--bg-input);
   color:var(--text-main);
   border:1px solid var(--border-color);
 }
-html[data-theme="dark"] #addScheduleModal input[type="datetime-local"] { color-scheme:dark; }
+html[data-theme="dark"] #addScheduleModal input[type="datetime-local"],
+#addScheduleModal input[type="date"] { color-scheme:dark; }
 </style>
 
 <script>
