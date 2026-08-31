@@ -3479,66 +3479,47 @@ html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
         updateBusZoneStatus(busId, 'statusId', statusId);
     }
 
-    // 重新定位目前開啟中的進度選單；以 picker 的唯一 key 尋找按鈕，避免總表與車輛方塊同一台車互相抓錯。
+    // 重新定位目前開啟中的進度選單。
+    // 重要：總表與車輛方塊可能有相同 busId，因此一律從「目前這個 menu 自己的 picker」找按鈕，
+    // 絕不透過 busId 反查 DOM，避免捲動時找錯元素而把選單誤關閉。
     function repositionOpenStatusPickers() {
         document.querySelectorAll('.status-picker-menu').forEach(menu => {
             if (menu.style.display !== 'block') return;
             const picker = menu.closest('.status-picker');
             const button = picker ? picker.querySelector('.status-picker-button') : null;
-            if (!button) { menu.style.display = 'none'; return; }
+            if (!button) return; // 捲動／重繪期間暫時找不到按鈕時，保持開啟，不要誤關閉
+
             const rect = button.getBoundingClientRect();
             const gap = 3, pad = 8;
+            const width = Math.min(rect.width, Math.max(120, window.innerWidth - pad * 2));
             const menuHeight = Math.min(320, Math.max(120, window.innerHeight - pad * 2));
             let top = rect.bottom + gap;
             if (top + menuHeight > window.innerHeight - pad) {
-                top = Math.max(pad, rect.top - Math.min(menuHeight, 320) - gap);
+                top = Math.max(pad, rect.top - menuHeight - gap);
             }
-            const width = Math.min(rect.width, window.innerWidth - pad * 2);
+
             menu.style.left = Math.max(pad, Math.min(rect.left, window.innerWidth - width - pad)) + 'px';
             menu.style.width = width + 'px';
             menu.style.top = top + 'px';
+            menu.style.maxHeight = menuHeight + 'px';
         });
     }
 
-    window.addEventListener('scroll', repositionOpenStatusPickers, true);
+    // capture scroll：任何頁面／總表／車輛區塊捲動都只重新定位，絕不關閉進度選單。
+    document.addEventListener('scroll', repositionOpenStatusPickers, true);
+    window.addEventListener('scroll', repositionOpenStatusPickers, { passive: true });
     window.addEventListener('resize', repositionOpenStatusPickers);
 
     document.addEventListener('click', (event) => {
         if (event.target.closest('.status-picker')) return;
-        // 點擊車輛區塊的捲動區／捲軸時，不關閉目前的進度選單。
-        if (event.target.closest('.zone-body')) return;
+        // 點擊任何可捲動的表格／車輛區域或其捲軸時，保留目前開啟的進度選單。
+        if (event.target.closest('.zone-body, .table-scroll-container, .status-picker-menu')) return;
         document.querySelectorAll('.status-picker-menu').forEach(m => {
             m.style.display = 'none';
             const card = m.closest('.bus-card');
             if (card) card.classList.remove('status-picker-open');
         });
     });
-
-    // 進度選單開啟時允許車輛區塊正常捲動；不因滾輪而關閉。
-    // 捲動後重新依按鈕位置定位，避免 fixed 選單與按鈕脫節。
-    function repositionOpenStatusPickers() {
-        document.querySelectorAll('.status-picker-menu').forEach(menu => {
-            if (menu.style.display !== 'block') return;
-            const id = menu.id.replace('statusPicker_', '');
-            const picker = document.querySelector(`.status-picker[data-bus-id="${CSS.escape(id)}"]`);
-            const button = picker ? picker.querySelector('.status-picker-button') : null;
-            if (!button) { menu.style.display = 'none'; return; }
-            const rect = button.getBoundingClientRect();
-            const gap = 3, pad = 8;
-            const menuHeight = Math.min(320, Math.max(120, window.innerHeight - pad * 2));
-            let top = rect.bottom + gap;
-            if (top + menuHeight > window.innerHeight - pad) {
-                top = Math.max(pad, rect.top - Math.min(menuHeight, 320) - gap);
-            }
-            menu.style.left = Math.max(pad, Math.min(rect.left, window.innerWidth - Math.min(rect.width, window.innerWidth - pad * 2) - pad)) + 'px';
-            menu.style.width = Math.min(rect.width, window.innerWidth - pad * 2) + 'px';
-            menu.style.top = top + 'px';
-        });
-    }
-
-    // capture scroll：重新定位，但絕不自動關閉選單。
-    document.addEventListener('scroll', repositionOpenStatusPickers, true);
-    window.addEventListener('resize', repositionOpenStatusPickers);
 
     let statusChildDragId = null;
 
