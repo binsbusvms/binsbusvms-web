@@ -2438,8 +2438,8 @@ html[data-theme="dark"] .area-nav-btn.active {
                 <input type="text" id="schedSender" placeholder="例如：小游" value="小游">
             </div>
             <div>
-                <label style="font-size:0.8rem; font-weight:bold;">對話日期標籤：</label>
-                <input type="text" id="schedDateGroup" placeholder="例如：8月24日(一) 或 今天">
+                <label style="font-size:0.8rem; font-weight:bold;">公告日期：</label>
+                <input type="date" id="schedDateGroup" aria-label="公告日期">
             </div>
             <div>
                 <label style="font-size:0.8rem; font-weight:bold;">作業項目 / 項目說明：</label>
@@ -3403,70 +3403,115 @@ html[data-theme="dark"] .area-nav-btn.active {
         refreshAnnouncementAlert();
     }
 
+    function parseAnnouncementDate(value) {
+        if (!value) return null;
+        const raw = String(value).trim();
+        if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+            const [y,m,d] = raw.split('-').map(Number);
+            const dt = new Date(y, m - 1, d);
+            return Number.isNaN(dt.getTime()) ? null : dt;
+        }
+        if (raw === '今天') {
+            const n = new Date();
+            return new Date(n.getFullYear(), n.getMonth(), n.getDate());
+        }
+        if (raw === '昨天') {
+            const n = new Date(); n.setDate(n.getDate() - 1);
+            return new Date(n.getFullYear(), n.getMonth(), n.getDate());
+        }
+        const m = raw.match(/(\d{1,2})月(\d{1,2})日/);
+        if (m) {
+            const y = new Date().getFullYear();
+            const dt = new Date(y, Number(m[1]) - 1, Number(m[2]));
+            return Number.isNaN(dt.getTime()) ? null : dt;
+        }
+        const slash = raw.match(/(\d{1,2})[\/-](\d{1,2})/);
+        if (slash) {
+            const y = new Date().getFullYear();
+            const dt = new Date(y, Number(slash[1]) - 1, Number(slash[2]));
+            return Number.isNaN(dt.getTime()) ? null : dt;
+        }
+        const parsed = new Date(raw);
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    function dateInputValue(value) {
+        const dt = parseAnnouncementDate(value);
+        if (!dt) return '';
+        return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+    }
+
+    function formatAnnouncementDate(value) {
+        const dt = parseAnnouncementDate(value);
+        if (!dt) return String(value || '近期').replace(/[（(]?\s*(?:週|星期)[日一二三四五六七]\s*[)）]?/g, '').trim();
+        return `${dt.getMonth()+1}月${dt.getDate()}日`;
+    }
+
+    function getAnnouncementWeekday(value) {
+        const dt = parseAnnouncementDate(value);
+        if (!dt) return '';
+        return ['週日','週一','週二','週三','週四','週五','週六'][dt.getDay()];
+    }
+
+    function formatAnnouncementScheduleTime(item) {
+        const raw = String(item?.scheduleTime || '無時間備註').trim();
+        const cleaned = raw
+            .replace(/[（(]?\s*(?:週|星期)[日一二三四五六七]\s*[)）]?/g, '')
+            .replace(/\s{2,}/g, ' ')
+            .trim();
+        const weekday = getAnnouncementWeekday(item?.dateGroup);
+        if (weekday && cleaned !== '無時間備註') return `${weekday} ${cleaned}`;
+        return cleaned || '無時間備註';
+    }
+
     function renderSchedules() {
         const box = document.querySelector('.line-schedule-box');
         const authed = isAuthed();
-        const container = document.getElementById('scheduleList') ||
-                          (box ? box.querySelector('.chat-list, .schedule-list, .announcement-list') : null);
+        const container = document.getElementById('chatContainer') ||
+                          document.getElementById('scheduleList') ||
+                          (box ? box.querySelector('.chat-list, .schedule-list, .announcement-list, .chat-container') : null);
 
         if (!box) return;
 
         const schedules = getRealAnnouncements();
-        const latest = getLatestAnnouncement();
         box.classList.remove('new-announcement-alert');
-        box.querySelectorAll('.latest-announcement-card').forEach(function(card) {
-            card.classList.remove('latest-announcement-card');
-        });
+        box.querySelectorAll('.latest-announcement-card').forEach(card => card.classList.remove('latest-announcement-card'));
 
-        // 沒有真實公告時：保留「即時公告」區塊標題，但不顯示任何公告內容，
-        // 並且絕對不顯示紅框。
         if (!schedules.length) {
             box.classList.add('announcement-no-data');
-            box.classList.remove('new-announcement-alert', 'announcement-loading');
-            box.style.removeProperty('border');
-            box.style.removeProperty('box-shadow');
-            box.style.removeProperty('animation');
-            box.querySelectorAll('.latest-announcement-card').forEach(function(card) {
-                card.classList.remove('latest-announcement-card');
-            });
             if (container) container.innerHTML = '';
             announcementAlertLatestId = null;
             announcementAlertDismissed = true;
-            box.classList.remove('new-announcement-alert');
+            refreshAnnouncementAlert();
             return;
         }
 
         box.classList.remove('announcement-no-data');
-        if (container) {
-            container.innerHTML = '';
-            const latestAnnouncement = getLatestAnnouncement();
-            const latestItems = latestAnnouncement ? [latestAnnouncement] : [];
-            latestItems.forEach((item) => {
-            const sourceIndex = Array.isArray(appData.schedules) ? appData.schedules.indexOf(item) : -1;
+        if (!container) return;
 
-            const card = document.createElement('div');
-            card.className = 'chat-card';
-            card.innerHTML = `
-                <div class="chat-sender">
-                    <span>👤 ${item.sender || '同事'} <span class="chat-meta">(${item.dateGroup || '近期'})</span></span>
-                    <div>
-                        <span class="chat-meta">${item.sentTime || ''}</span>
-                        ${authed ? `
-                            <button style="background:#17a2b8; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:6px;" onclick="editSchedule(${sourceIndex})">✏️ 編輯</button>
-                            <button style="background:#dc3545; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:2px;" onclick="deleteSchedule(${sourceIndex})">✕ 刪除</button>
-                        ` : ''}
-                    </div>
+        container.innerHTML = '';
+        const latest = getLatestAnnouncement();
+        if (!latest) return;
+        const sourceIndex = Array.isArray(appData.schedules) ? appData.schedules.indexOf(latest) : -1;
+        const card = document.createElement('div');
+        card.className = 'chat-card';
+        card.innerHTML = `
+            <div class="chat-sender">
+                <span>👤 ${escapeHtml(latest.sender || '同事')} <span class="chat-meta">(${escapeHtml(formatAnnouncementDate(latest.dateGroup))})</span></span>
+                <div>
+                    <span class="chat-meta">${escapeHtml(latest.sentTime || '')}</span>
+                    ${authed ? `
+                        <button style="background:#17a2b8; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:6px;" onclick="editSchedule(${sourceIndex})">✏️ 編輯</button>
+                        <button style="background:#dc3545; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:2px;" onclick="deleteSchedule(${sourceIndex})">✕ 刪除</button>
+                    ` : ''}
                 </div>
-                <div class="chat-body">
-                    📌 <b>${item.taskType || '排程作業'}</b>：${item.scheduleTime || '無時間備註'}
-                </div>
-                ${item.vehicles ? `<div class="chat-vehicles">🚌 相關車輛：${item.vehicles}</div>` : ''}
-            `;
-            container.appendChild(card);
-        
-            });
-        }
-
+            </div>
+            <div class="chat-body">
+                📌 <b>${escapeHtml(latest.taskType || '排程作業')}</b>：${escapeHtml(formatAnnouncementScheduleTime(latest))}
+            </div>
+            ${latest.vehicles ? `<div class="chat-vehicles">🚌 相關車輛：${escapeHtml(latest.vehicles)}</div>` : ''}
+        `;
+        container.appendChild(card);
         refreshAnnouncementAlert();
     }
 
@@ -3475,7 +3520,8 @@ html[data-theme="dark"] .area-nav-btn.active {
             document.getElementById('schedEditIndex').value = "-1";
             document.getElementById('schedModalTitle').innerText = "💬 發布即時排程公告";
             document.getElementById('schedSender').value = "小游";
-            document.getElementById('schedDateGroup').value = "";
+            const today = new Date();
+            document.getElementById('schedDateGroup').value = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
             document.getElementById('schedTaskType').value = "";
             document.getElementById('schedTime').value = "";
             document.getElementById('schedVehicles').value = "";
@@ -3490,7 +3536,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             document.getElementById('schedEditIndex').value = index;
             document.getElementById('schedModalTitle').innerText = "✏️ 編輯即時排程公告";
             document.getElementById('schedSender').value = sched.sender || '';
-            document.getElementById('schedDateGroup').value = sched.dateGroup || '';
+            document.getElementById('schedDateGroup').value = dateInputValue(sched.dateGroup);
             document.getElementById('schedTaskType').value = sched.taskType || '';
             document.getElementById('schedTime').value = sched.scheduleTime || '';
             document.getElementById('schedVehicles').value = sched.vehicles || '';
@@ -3501,7 +3547,8 @@ html[data-theme="dark"] .area-nav-btn.active {
     async function saveNewSchedule() {
         const editIndex = parseInt(document.getElementById('schedEditIndex').value, 10);
         const sender = document.getElementById('schedSender').value.trim() || '小游';
-        const dateGroup = document.getElementById('schedDateGroup').value.trim() || '今天';
+        const dateValue = document.getElementById('schedDateGroup').value;
+        const dateGroup = dateValue || '今天';
         const taskType = document.getElementById('schedTaskType').value.trim() || '一般作業';
         const scheduleTime = document.getElementById('schedTime').value.trim() || '時間另行通知';
         const vehicles = document.getElementById('schedVehicles').value.trim();
@@ -3516,22 +3563,22 @@ html[data-theme="dark"] .area-nav-btn.active {
             target.taskType = taskType;
             target.scheduleTime = scheduleTime;
             target.vehicles = vehicles;
+            // 編輯舊公告不改變其建立時間，避免舊公告被誤判成最新新增公告。
+            if (!target.createdAt && !target.created_at) {
+                target.createdAt = now;
+                target.created_at = new Date(now).toISOString();
+            }
             addAuditLog('即時排程', `更新了公告：${taskType} (${vehicles})`);
         } else {
             const d = new Date(now);
-            const timeStr = `${d.getHours() > 12 ? '下午' : '上午'} ${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}`;
-            const newSched = {
+            const timeStr = `${d.getHours() >= 12 ? '下午' : '上午'} ${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}`;
+            appData.schedules.unshift({
                 id: 'sched_' + now + '_' + Math.random().toString(36).slice(2, 7),
-                sender,
-                dateGroup,
-                taskType,
-                scheduleTime,
-                vehicles,
+                sender, dateGroup, taskType, scheduleTime, vehicles,
                 sentTime: timeStr,
                 createdAt: now,
                 created_at: new Date(now).toISOString()
-            };
-            appData.schedules.unshift(newSched);
+            });
             addAuditLog('即時排程', `新增公告：${taskType} (${vehicles})`);
         }
 
@@ -3539,20 +3586,18 @@ html[data-theme="dark"] .area-nav-btn.active {
         announcementAlertLatestId = null;
         announcementAlertSignature = null;
 
-        // 重要：一定等雲端確認成功後才關閉視窗／重整，避免「畫面看似新增、
-        // 實際還沒同步」就被重新載入而把新公告吃掉。
+        // 先把本地畫面更新，確保使用者立即看到新公告；再等待雲端成功。
+        renderApp();
         const success = await autoSaveCloud();
         if (!success) {
-            renderApp();
-            setTimeout(bindAnnouncementAlert, 0);
-            alert('❌ 公告同步失敗，這次沒有重新整理頁面。請確認網路與登入狀態後再儲存。');
+            alert('❌ 公告同步失敗，資料已保留在本機，未重新整理。請確認網路與登入狀態後再試。');
             return;
         }
 
         closeModal('addScheduleModal');
         setSyncStatus('success', '公告已同步，正在重新載入…');
-        // 用完整重載重新從 Supabase 讀取，確保公告顯示的是雲端已保存版本。
-        setTimeout(() => window.location.reload(), 250);
+        // 同步成功後才重整，重新從雲端讀取，避免畫面看似成功但資料沒有寫入。
+        setTimeout(() => window.location.reload(), 350);
     }
 
     function deleteSchedule(index) {
@@ -5582,6 +5627,44 @@ function reloadAfterAnnouncementSync() {
 }
 </script>
 
+
+<style id="final-table-date-control-theme">
+/* 手機全廠總表：所有可選／可編輯欄位與車輛方塊日期欄使用同一套底色。 */
+@media (max-width:600px) {
+  #busTable select,
+  #busTable input[type="date"],
+  #busTable .status-picker-button,
+  #busTable .bus-table-meta-actions button {
+    background:rgba(241,245,248,.78) !important;
+    border-color:#c0d0db !important;
+    color:#263536 !important;
+    -webkit-text-fill-color:#263536 !important;
+    box-shadow:none !important;
+  }
+  #busTable input[type="date"] { color-scheme:light; }
+}
+html[data-theme="dark"] #busTable select,
+html[data-theme="dark"] #busTable input[type="date"],
+html[data-theme="dark"] #busTable .status-picker-button,
+html[data-theme="dark"] #busTable .bus-table-meta-actions button {
+  background:rgba(15,24,31,.76) !important;
+  border-color:#405462 !important;
+  color:#dce8ef !important;
+  -webkit-text-fill-color:#dce8ef !important;
+  box-shadow:none !important;
+}
+html[data-theme="dark"] #busTable input[type="date"] { color-scheme:dark; }
+</style>
+<script>
+/* 公告最終修復：確保使用真正的 chatContainer，而不是不存在的 scheduleList。 */
+(function(){
+  function forceAnnouncementRender(){
+    try { renderSchedules(); } catch(e) { console.error('公告渲染錯誤:', e); }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', forceAnnouncementRender);
+  else forceAnnouncementRender();
+})();
+</script>
 </body>
 <!-- UI 2.1 integrated: latest functional logic preserved; scroll navigation added. -->
 </html>
