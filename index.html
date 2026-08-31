@@ -1298,9 +1298,8 @@ html[data-theme="dark"] .mobile-aux-panel {
         width: 100%;
         max-width: 100%;
         overflow-x: auto !important;
-        overflow-y: auto !important;
-        touch-action: pan-x pan-y !important;
-        -webkit-overflow-scrolling: touch;
+        overflow-y: hidden;
+        touch-action: pan-x;
     }
     .table-scroll-container > table#busTable {
         min-width: 640px !important;
@@ -1612,6 +1611,62 @@ html[data-theme="dark"] .table-status-select {
 html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
 </style>
 
+
+<style id="vehicle-meta-management-v1">
+/* 車輛方塊：維持原本卡片總體尺寸，只重新分配進度列內部空間 */
+.bus-card .bus-meta-row{display:grid;grid-template-columns:minmax(0,1fr) 82px 96px;gap:5px;align-items:stretch;margin:3px 0 5px;}
+.bus-card .bus-meta-btn{min-width:0;min-height:34px;border:1px solid var(--border-color);background:var(--bg-bus-card, var(--bg-card));color:var(--text-main);border-radius:7px;padding:4px 6px;font-size:.70rem;font-weight:700;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bus-card .bus-meta-btn:hover,.bus-card .bus-meta-btn:focus{filter:brightness(1.08);outline:none;border-color:var(--primary);}
+.bus-card .bus-meta-btn.paint-meta{font-size:.68rem;}
+.bus-card .status-picker{min-width:0;}
+.bus-card .status-picker-button{min-height:34px;font-size:.76rem;}
+.bus-card .bus-bottom-row{display:grid;grid-template-columns:minmax(0,1fr) 92px 118px;gap:5px;align-items:center;margin-top:5px;}
+.bus-card .bus-bottom-row .photo-badge{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;justify-content:center;}
+.bus-card .bus-date-row{display:flex;gap:4px;}
+.bus-card .bus-date-group{min-width:0;flex:1;}
+.vehicle-meta-modal .modal-content{max-width:520px;}
+.vehicle-meta-help{padding:8px 10px;margin-bottom:8px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-table-header);color:var(--text-main);font-size:.78rem;line-height:1.5;}
+.vehicle-meta-list{display:flex;flex-direction:column;gap:5px;max-height:52vh;overflow-y:auto;padding-right:2px;}
+.vehicle-meta-item{display:grid;grid-template-columns:1fr auto auto;gap:5px;align-items:center;border:1px solid var(--border-color);border-radius:7px;padding:5px;background:var(--bg-card);}
+.vehicle-meta-item.selected{border-color:var(--primary);box-shadow:inset 3px 0 0 var(--primary);}
+.vehicle-meta-select{min-width:0;text-align:left;border:0;background:transparent;color:var(--text-main);font-weight:700;padding:7px;cursor:pointer;border-radius:5px;}
+.vehicle-meta-action{min-width:30px;height:30px;border:1px solid var(--border-color);border-radius:6px;background:var(--bg-card);color:var(--text-main);cursor:pointer;font-size:.8rem;}
+.vehicle-meta-action.delete{color:#ff6b6b;}
+.vehicle-meta-empty{text-align:center;padding:18px;color:var(--text-sub);}
+.vehicle-meta-add{width:100%;margin-top:8px;}
+@media (max-width:600px){
+  .bus-card .bus-meta-row{grid-template-columns:minmax(0,1fr) 70px 82px;gap:4px;}
+  .bus-card .bus-meta-btn{font-size:.64rem;padding:4px 4px;}
+  .bus-card .bus-bottom-row{grid-template-columns:minmax(0,1fr) 82px 100px;gap:4px;}
+  .vehicle-meta-modal .modal-content{width:min(94vw,520px);}
+
+}
+
+/* 未登入時：車輛組別／型號／噴漆僅顯示，不觸發登入或編輯 */
+.bus-meta-btn.meta-readonly,
+.bus-table-meta-actions button.meta-readonly{cursor:default;}
+.bus-meta-btn.meta-readonly:hover,
+.bus-table-meta-actions button.meta-readonly:hover{filter:none;border-color:var(--border-color);}
+
+/* 全廠總表：車號/名稱旁的三個同步編輯小按鈕 */
+.bus-table-name-wrap{display:block; margin-bottom:6px; line-height:1.25;}
+.bus-table-meta-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;width:100%;margin:0;vertical-align:top;}
+.bus-table-meta-actions button{min-width:0;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-main);border-radius:4px;padding:3px 2px;font-size:.58rem;line-height:1.1;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bus-table-meta-actions button:hover,.bus-table-meta-actions button:focus{border-color:var(--primary);outline:none;}
+html[data-theme="dark"] .bus-card .bus-meta-btn,
+html[data-theme="dark"] .vehicle-meta-item,
+html[data-theme="dark"] .vehicle-meta-action,
+html[data-theme="dark"] .vehicle-meta-select,
+html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-card,#182531);color:var(--text-main);border-color:var(--border-color);}
+
+/* 手機版全廠總表：三個資訊按鈕垂直排列，名稱與按鈕分開，避免互相覆蓋 */
+@media (max-width:600px){
+  .bus-table-name-wrap{margin-bottom:10px;}
+  .bus-table-meta-actions{grid-template-columns:1fr;gap:4px;margin-top:2px;}
+  .bus-table-meta-actions button{width:100%;min-height:26px;font-size:.62rem;padding:4px 5px;}
+}
+</style>
+
 </head>
 <body>
 
@@ -1843,6 +1898,38 @@ html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
             <button class="btn" onclick="saveNewSchedule()">💬 儲存並發布公告</button>
         </div>
     </div>
+</div>
+
+
+
+<div class="modal" id="deliveryDateModal">
+  <div class="modal-content" style="max-width:360px;">
+    <div class="modal-header">
+      <span>📅 預定交車日</span>
+      <button type="button" onclick="closeModal('deliveryDateModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;color:var(--text-main);">✕</button>
+    </div>
+    <label style="font-size:.8rem;font-weight:700;">選擇日期：</label>
+    <input type="date" id="quickDeliveryDateInput" style="margin-top:5px;">
+    <div class="modal-footer">
+      <button class="btn btn-archive" type="button" onclick="clearDeliveryDate()">清除日期</button>
+      <button class="btn" type="button" onclick="saveQuickDeliveryDate()">💾 儲存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal vehicle-meta-modal" id="vehicleMetaModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span id="vehicleMetaModalTitle">編輯</span>
+      <button type="button" onclick="closeModal('vehicleMetaModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;color:var(--text-main);">✕</button>
+    </div>
+    <div class="vehicle-meta-help" id="vehicleMetaModalHelp"></div>
+    <div class="vehicle-meta-list" id="vehicleMetaList"></div>
+    <button class="btn vehicle-meta-add" type="button" onclick="addVehicleMetaOption()">＋ 新增選項</button>
+    <div class="modal-footer">
+      <button class="btn btn-archive" type="button" onclick="closeModal('vehicleMetaModal')">關閉</button>
+    </div>
+  </div>
 </div>
 
 <div class="modal" id="busModal">
@@ -2106,6 +2193,12 @@ html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
             {"id":"F","name":"【F】後方空地底盤區","color":"#2c3e50"}
         ],
         statusGroups: [],
+        vehicleGroups: [],
+        vehicleModels: [],
+        paintGroups: [
+            {"id":"PG_gui","name":"貴"},
+            {"id":"PG_jun","name":"駿"}
+        ],
         statuses: [
             {"id":"pending","name":"待施工","color":"#78909C","groupId":""},
             {"id":"working","name":"施工中","color":"#1E88E5","groupId":""},
@@ -2117,7 +2210,7 @@ html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
             {"id":"S_1787581268044","name":"待交車","color":"#7c6a9c","groupId":""}
         ],
         buses: [
-            {"id":"1787618807848","plate":"0782993 鍾權國","zoneId":"E","statusId":"S_1787581229246","startDate":"","endDate":"","bg":"#8c5d5d","color":"#ffffff","note":"","photos":[],"logs":[]}
+            {"id":"1787618807848","plate":"0782993 鍾權國","zoneId":"E","statusId":"S_1787581229246","startDate":"","endDate":"","groupId":"","modelId":"","paintGroupId":"PG_gui","deliveryDate":"","bg":"#8c5d5d","color":"#ffffff","note":"","photos":[],"logs":[]}
         ],
         archivedBuses: [],
         auditLogs: []
@@ -2383,6 +2476,13 @@ html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
         if (!appData.announcementImg) appData.announcementImg = "";
         if (!appData.schedules) appData.schedules = [];
         if (!Array.isArray(appData.statusGroups)) appData.statusGroups = [];
+        if (!Array.isArray(appData.vehicleGroups)) appData.vehicleGroups = [];
+        if (!Array.isArray(appData.vehicleModels)) appData.vehicleModels = [];
+        if (!Array.isArray(appData.paintGroups)) appData.paintGroups = [];
+        if (!appData.paintGroups.length) appData.paintGroups = [{id:'PG_gui', name:'貴'}, {id:'PG_jun', name:'駿'}];
+        appData.vehicleGroups.forEach(g => { if (!g.id) g.id='VG_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); if (typeof g.name!=='string') g.name='未命名組別'; });
+        appData.vehicleModels.forEach(g => { if (!g.id) g.id='VM_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); if (typeof g.name!=='string') g.name='未命名車型'; });
+        appData.paintGroups.forEach(g => { if (!g.id) g.id='PG_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); if (typeof g.name!=='string') g.name='未命名'; });
         if (!Array.isArray(appData.statuses)) appData.statuses = [];
         appData.statusGroups.forEach(g => {
             if (!g.id) g.id = 'SG_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
@@ -2397,6 +2497,10 @@ html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
         appData.buses.forEach(b => {
             if (!b.photos) b.photos = [];
             if (!b.logs) b.logs = [];
+            if (b.groupId == null) b.groupId = '';
+            if (b.modelId == null) b.modelId = '';
+            if (b.paintGroupId == null) b.paintGroupId = '';
+            if (b.deliveryDate == null) b.deliveryDate = '';
             if (!b.bg) b.bg = '#8c5d5d';
             if (!b.color) b.color = '#ffffff';
         });
@@ -2831,24 +2935,25 @@ html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
                 let dateHtml = authed ? `
                     <div class="bus-date-row">
                         <div class="bus-date-group">
-                            <span>進</span>
+                            <span>起</span>
                             <input type="date" class="bus-date-input" value="${bus.startDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)">
                         </div>
                         <div class="bus-date-group">
-                            <span>出</span>
+                            <span>迄</span>
                             <input type="date" class="bus-date-input" value="${bus.endDate || ''}" onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)">
                         </div>
                     </div>
                 ` : `
                     <div class="bus-date-row">
-                        <div class="bus-date-group">
-                            <span class="bus-date-text">進：${bus.startDate || '未定'}</span>
-                        </div>
-                        <div class="bus-date-group">
-                            <span class="bus-date-text">出：${bus.endDate || '未定'}</span>
-                        </div>
+                        <div class="bus-date-group"><span class="bus-date-text">起：${bus.startDate || '未定'}</span></div>
+                        <div class="bus-date-group"><span class="bus-date-text">迄：${bus.endDate || '未定'}</span></div>
                     </div>
                 `;
+
+                const groupName = appData.vehicleGroups.find(x=>x.id===bus.groupId)?.name || '組別';
+                const modelName = appData.vehicleModels.find(x=>x.id===bus.modelId)?.name || '車型';
+                const paintName = appData.paintGroups.find(x=>x.id===bus.paintGroupId)?.name || '噴漆';
+                const deliveryDate = bus.deliveryDate || '';
 
                 busCard.innerHTML = `
                     <div class="bus-header">
@@ -2857,10 +2962,26 @@ html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
                         </div>
                         ${authed ? `<button style="background:#ff4d4f;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:0.65rem;" onclick="deleteBus('${bus.id}')">✕</button>` : ''}
                     </div>
-                    ${authed ? renderStatusPickerHtml(bus.id, bus.statusId) : `<div class="status-picker readonly"><button type="button" class="status-picker-button" disabled>${escapeHtml((appData.statuses.find(st=>st.id===bus.statusId)||{}).name || '請選擇進度')}</button></div>`}
+                    <div class="bus-meta-row">
+                        <div class="status-picker-wrap">${authed ? renderStatusPickerHtml(bus.id, bus.statusId) : `<div class="status-picker readonly"><button type="button" class="status-picker-button" disabled>${escapeHtml((appData.statuses.find(st=>st.id===bus.statusId)||{}).name || '請選擇進度')}</button></div>`}</div>
+                        ${authed
+                            ? `<button type="button" class="bus-meta-btn" title="點擊編輯組別" onclick="openVehicleMetaManager('${bus.id}','group')">${escapeHtml(groupName)}</button>`
+                            : `<button type="button" class="bus-meta-btn meta-readonly" title="登入後可編輯" disabled>${escapeHtml(groupName)}</button>`}
+                        ${authed
+                            ? `<button type="button" class="bus-meta-btn" title="點擊編輯車輛型號" onclick="openVehicleMetaManager('${bus.id}','model')">${escapeHtml(modelName)}</button>`
+                            : `<button type="button" class="bus-meta-btn meta-readonly" title="登入後可編輯" disabled>${escapeHtml(modelName)}</button>`}
+                    </div>
                     ${dateHtml}
-                    <div class="bus-badge-container">
-                        <span class="photo-badge" onclick="openPhotoGallery('${bus.id}')">📷 照片 (${photoCount})${authed ? ' · 管理' : ''}</span>
+                    <div class="bus-bottom-row">
+                        <div class="bus-badge-container">
+                            <span class="photo-badge" onclick="openPhotoGallery('${bus.id}')">📷 照片 (${photoCount})${authed ? ' · 管理' : ''}</span>
+                        </div>
+                        ${authed
+                            ? `<button type="button" class="bus-meta-btn paint-meta" title="點擊編輯噴漆組別" onclick="openVehicleMetaManager('${bus.id}','paint')">${escapeHtml(paintName)}</button>`
+                            : `<button type="button" class="bus-meta-btn paint-meta meta-readonly" title="登入後可編輯" disabled>${escapeHtml(paintName)}</button>`}
+                        ${authed
+                            ? `<button type="button" class="bus-meta-btn" title="選擇預定交車日" onclick="editDeliveryDate('${bus.id}')">${deliveryDate ? '交車 '+escapeHtml(deliveryDate) : '預定交車日'}</button>`
+                            : `<button type="button" class="bus-meta-btn meta-readonly" title="登入後可編輯" disabled>${deliveryDate ? '交車 '+escapeHtml(deliveryDate) : '預定交車日'}</button>`}
                     </div>
                 `;
 
@@ -2913,22 +3034,37 @@ html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
         appData.buses.filter(b => !searchKeyword || (b.plate||'').toLowerCase().includes(searchKeyword)).forEach(bus => {
             const photoCount = (bus.photos || []).length;
             const logCount = (bus.logs || []).length;
+            const groupName = appData.vehicleGroups.find(x=>x.id===bus.groupId)?.name || '組別';
+            const modelName = appData.vehicleModels.find(x=>x.id===bus.modelId)?.name || '型號';
+            const paintName = appData.paintGroups.find(x=>x.id===bus.paintGroupId)?.name || '噴漆';
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding:4px; border:1px solid var(--border-color); text-align:center;">
-                    <span style="background:${bus.bg || '#8c5d5d'}; color:${bus.color || '#ffffff'}; padding:2px 4px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="handleBusPlateClick('${bus.id}')">${bus.plate}</span>
+                    <div class="bus-table-name-wrap"><span style="background:${bus.bg || '#8c5d5d'}; color:${bus.color || '#ffffff'}; padding:2px 4px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="handleBusPlateClick('${bus.id}')">${escapeHtml(bus.plate)}</span></div>
+                    <div class="bus-table-meta-actions">
+                        ${authed
+                            ? `<button type="button" onclick="openVehicleMetaManager('${bus.id}','group')">${escapeHtml(groupName)}</button>`
+                            : `<button type="button" class="meta-readonly" title="登入後可編輯" disabled>${escapeHtml(groupName)}</button>`}
+                        ${authed
+                            ? `<button type="button" onclick="openVehicleMetaManager('${bus.id}','model')">${escapeHtml(modelName)}</button>`
+                            : `<button type="button" class="meta-readonly" title="登入後可編輯" disabled>${escapeHtml(modelName)}</button>`}
+                        ${authed
+                            ? `<button type="button" onclick="openVehicleMetaManager('${bus.id}','paint')">${escapeHtml(paintName)}</button>`
+                            : `<button type="button" class="meta-readonly" title="登入後可編輯" disabled>${escapeHtml(paintName)}</button>`}
+                    </div>
                 </td>
                 <td style="padding:4px; border:1px solid var(--border-color);">
                     <select ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'zoneId', this.value)">
-                        ${appData.zones.map(z => `<option value="${z.id}" ${z.id === bus.zoneId ? 'selected' : ''}>${z.name}</option>`).join('')}
+                        ${appData.zones.map(z => `<option value="${z.id}" ${z.id === bus.zoneId ? 'selected' : ''}>${escapeHtml(z.name)}</option>`).join('')}
                     </select>
                 </td>
                 <td class="table-status-picker-cell" style="padding:4px; border:1px solid var(--border-color);">
                     ${renderTableStatusSelectHtml(bus.id, bus.statusId, authed)}
                 </td>
                 <td style="padding:4px; border:1px solid var(--border-color); font-size:0.7rem;">
-                    進:<input type="date" value="${bus.startDate || ''}" ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)">
-                    出:<input type="date" value="${bus.endDate || ''}" ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)">
+                    起:<input type="date" value="${bus.startDate || ''}" ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)">
+                    迄:<input type="date" value="${bus.endDate || ''}" ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'endDate', this.value)">
+                    <div style="margin-top:3px;">預定交車日:<input type="date" value="${bus.deliveryDate || ''}" ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'deliveryDate', this.value)"></div>
                 </td>
                 <td style="padding:4px; border:1px solid var(--border-color); text-align:center; font-size:0.75rem;">
                     <span style="cursor:pointer;" onclick="openPhotoGallery('${bus.id}')">📷 ${photoCount}</span> / ⏱️ ${logCount}
@@ -2952,6 +3088,144 @@ html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
             item.innerHTML = `<span class="timeline-time">${log.time}</span> - <b>${log.plate}</b>：${log.action}`;
             list.appendChild(item);
         });
+    }
+
+    const vehicleMetaConfig = {
+        group: { title:'🧩 編輯組別', help:'組別可新增、修改名稱、刪除；點選名稱即可套用到目前車輛。', listKey:'vehicleGroups', field:'groupId', empty:'尚未建立組別', addText:'請輸入新的組別名稱：' },
+        model: { title:'🚍 編輯車輛型號', help:'車輛型號可新增、修改名稱、刪除；點選名稱即可套用到目前車輛。', listKey:'vehicleModels', field:'modelId', empty:'尚未建立車輛型號', addText:'請輸入新的車輛型號：' },
+        paint: { title:'🎨 編輯噴漆組別', help:'噴漆組別目前預設「貴／駿」，也可以自行新增、修改或刪除。點選名稱即可套用。', listKey:'paintGroups', field:'paintGroupId', empty:'尚未建立噴漆組別', addText:'請輸入新的噴漆組別名稱（例如：貴、駿）：' }
+    };
+    let currentVehicleMeta = { busId:null, type:null };
+
+    function openVehicleMetaManager(busId, type) {
+        requireAuth(() => {
+            if (!vehicleMetaConfig[type]) return;
+            currentVehicleMeta = { busId, type };
+            const cfg = vehicleMetaConfig[type];
+            document.getElementById('vehicleMetaModalTitle').textContent = cfg.title;
+            document.getElementById('vehicleMetaModalHelp').textContent = cfg.help;
+            renderVehicleMetaList();
+            document.getElementById('vehicleMetaModal').classList.add('active');
+        });
+    }
+
+    function renderVehicleMetaList() {
+        const cfg = vehicleMetaConfig[currentVehicleMeta.type];
+        const list = document.getElementById('vehicleMetaList');
+        if (!cfg || !list) return;
+        const bus = appData.buses.find(b=>b.id===currentVehicleMeta.busId);
+        if (!bus) { closeModal('vehicleMetaModal'); return; }
+        const options = Array.isArray(appData[cfg.listKey]) ? appData[cfg.listKey] : [];
+        const selectedId = bus[cfg.field] || '';
+        list.innerHTML = '';
+        if (!options.length) {
+            list.innerHTML = `<div class="vehicle-meta-empty">${cfg.empty}<br>按下方「新增選項」即可建立。</div>`;
+            return;
+        }
+        options.forEach((item, idx) => {
+            const row = document.createElement('div');
+            row.className = 'vehicle-meta-item' + (item.id === selectedId ? ' selected' : '');
+            row.innerHTML = `
+                <button type="button" class="vehicle-meta-select" title="套用此選項">${escapeHtml(item.name)}</button>
+                <button type="button" class="vehicle-meta-action" title="修改名稱">✏️</button>
+                <button type="button" class="vehicle-meta-action delete" title="刪除選項">🗑</button>
+            `;
+            row.querySelector('.vehicle-meta-select').onclick = () => selectVehicleMetaOption(item.id);
+            row.querySelector('.vehicle-meta-action').onclick = () => renameVehicleMetaOption(idx);
+            row.querySelector('.vehicle-meta-action.delete').onclick = () => deleteVehicleMetaOption(idx);
+            list.appendChild(row);
+        });
+    }
+
+    async function selectVehicleMetaOption(optionId) {
+        const cfg = vehicleMetaConfig[currentVehicleMeta.type];
+        const bus = appData.buses.find(b=>b.id===currentVehicleMeta.busId);
+        if (!cfg || !bus) return;
+        bus[cfg.field] = optionId;
+        const option = appData[cfg.listKey].find(x=>x.id===optionId);
+        addAuditLog(bus.plate, `更新${cfg.title.replace(/^\S+ /,'')}為：${option?.name || ''}`);
+        await autoSaveCloud();
+        closeModal('vehicleMetaModal');
+        renderApp();
+    }
+
+    function addVehicleMetaOption() {
+        requireAuth(() => {
+            const cfg = vehicleMetaConfig[currentVehicleMeta.type];
+            if (!cfg) return;
+            const name = prompt(cfg.addText);
+            if (!name || !name.trim()) return;
+            const key = cfg.listKey;
+            const prefix = currentVehicleMeta.type === 'group' ? 'VG_' : currentVehicleMeta.type === 'model' ? 'VM_' : 'PG_';
+            appData[key].push({ id: prefix + Date.now() + '_' + Math.random().toString(36).slice(2,6), name:name.trim() });
+            autoSaveCloud();
+            renderVehicleMetaList();
+            renderApp();
+        });
+    }
+
+    function renameVehicleMetaOption(idx) {
+        requireAuth(() => {
+            const cfg = vehicleMetaConfig[currentVehicleMeta.type];
+            const item = appData[cfg.listKey]?.[idx];
+            if (!item) return;
+            const name = prompt('修改名稱：', item.name);
+            if (!name || !name.trim()) return;
+            item.name = name.trim();
+            autoSaveCloud();
+            renderVehicleMetaList();
+            renderApp();
+        });
+    }
+
+    function deleteVehicleMetaOption(idx) {
+        requireAuth(() => {
+            const cfg = vehicleMetaConfig[currentVehicleMeta.type];
+            const item = appData[cfg.listKey]?.[idx];
+            if (!item) return;
+            const used = appData.buses.filter(b => b[cfg.field] === item.id).length;
+            if (used > 0) {
+                alert(`「${item.name}」目前有 ${used} 台車正在使用，請先把這些車輛改到其他選項後再刪除。`);
+                return;
+            }
+            if (!confirm(`確定刪除「${item.name}」？`)) return;
+            appData[cfg.listKey].splice(idx,1);
+            autoSaveCloud();
+            renderVehicleMetaList();
+            renderApp();
+        });
+    }
+
+    let currentDeliveryBusId = null;
+    function editDeliveryDate(busId) {
+        requireAuth(() => {
+            const bus = appData.buses.find(b=>b.id===busId);
+            if (!bus) return;
+            currentDeliveryBusId = busId;
+            document.getElementById('quickDeliveryDateInput').value = bus.deliveryDate || '';
+            document.getElementById('deliveryDateModal').classList.add('active');
+        });
+    }
+
+    async function saveQuickDeliveryDate() {
+        const bus = appData.buses.find(b=>b.id===currentDeliveryBusId);
+        if (!bus) return;
+        const value = document.getElementById('quickDeliveryDateInput').value || '';
+        bus.deliveryDate = value;
+        addAuditLog(bus.plate, value ? `預定交車日：${value}` : '已清除預定交車日');
+        await autoSaveCloud();
+        closeModal('deliveryDateModal');
+        renderApp();
+    }
+
+    async function clearDeliveryDate() {
+        const bus = appData.buses.find(b=>b.id===currentDeliveryBusId);
+        if (!bus) return;
+        bus.deliveryDate = '';
+        addAuditLog(bus.plate, '已清除預定交車日');
+        await autoSaveCloud();
+        closeModal('deliveryDateModal');
+        renderApp();
     }
 
     function openBusModal(busId) {
@@ -3701,7 +3975,7 @@ html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
         list.forEach(b => {
             const zName = appData.zones.find(z => z.id === b.zoneId)?.name || '';
             const sName = appData.statuses.find(s => s.id === b.statusId)?.name || '';
-            csvContent += `"${b.plate}","${zName}","${sName}","${b.startDate||''}","${b.endDate||''}","${b.note||''}"\n`;
+            csvContent += `"${b.plate}","${zName}","${sName}","${b.startDate||''}","${b.endDate||''}","${appData.vehicleGroups.find(x=>x.id===b.groupId)?.name||''}","${appData.vehicleModels.find(x=>x.id===b.modelId)?.name||''}","${appData.paintGroups.find(x=>x.id===b.paintGroupId)?.name||''}","${b.deliveryDate||''}","${b.note||''}"\n`;
         });
 
         const encodedUri = encodeURI(csvContent);
@@ -3789,6 +4063,10 @@ html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
                     color: '#ffffff',
                     startDate: '',
                     endDate: '',
+                    groupId: '',
+                    modelId: '',
+                    paintGroupId: '',
+                    deliveryDate: '',
                     note: '',
                     photos: [],
                     logs: []
