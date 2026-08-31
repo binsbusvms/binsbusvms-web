@@ -108,6 +108,20 @@
         /* 單行橫向驗交車公告區塊 */
         .announcement-box { background: var(--bg-announcement); border: 1px solid var(--border-announcement); color: var(--text-announcement); padding: 4px 8px; border-radius: 6px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-height: 32px; }
         .announcement-left { display: flex; align-items: center; gap: 6px; flex-shrink: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        /* 新開 App / 重整後：只醒目顯示最新一筆公告 */
+        .chat-card.latest-announcement-card {
+            border: 2px solid #e53935 !important;
+            box-shadow: 0 0 0 3px rgba(229,57,53,.10), 0 5px 16px rgba(229,57,53,.12) !important;
+        }
+        .chat-card.latest-announcement-card::before {
+            content: '● 最新公告';
+            display: inline-block;
+            align-self: flex-start;
+            color: #e53935;
+            font-size: .66rem;
+            font-weight: 900;
+            margin-bottom: 3px;
+        }
         /* 即時公告：每次開啟/重新整理，以及新增公告時顯示紅框；點擊後本次頁面不再提示 */
         .line-schedule-box.new-announcement-alert {
             border: 2px solid #e53935 !important;
@@ -2836,41 +2850,75 @@ html[data-theme="dark"] .area-nav-btn.active {
         }
     }
 
-    // 公告提示只存在於本次頁面生命週期：重整/重新開啟會再次提示；點擊後直到下一次重整都不提示。
+    // 公告提示規則：
+    // 1. 每次新開 App / 重新整理，最新一筆公告會被醒目提示。
+    // 2. 點擊公告區塊後，本次頁面生命週期內不再提示。
+    // 3. 使用期間有新增公告時，只提示「最新新增」的那一筆。
     let announcementAlertDismissed = false;
-    let announcementAlertSignature = null;
+    let announcementAlertLatestId = null;
 
-    function getAnnouncementSignature() {
+    function getLatestAnnouncement() {
         const list = Array.isArray(appData.schedules) ? appData.schedules : [];
-        return list.map(x => x && (x.id || ((x.taskType || '') + '|' + (x.sentTime || '') + '|' + (x.scheduleTime || '')))).join('||');
+        return list.length ? list[0] : null;
+    }
+
+    function getAnnouncementId(item) {
+        if (!item) return null;
+        return item.id || (
+            (item.sender || '') + '|' +
+            (item.dateGroup || '') + '|' +
+            (item.taskType || '') + '|' +
+            (item.scheduleTime || '') + '|' +
+            (item.sentTime || '')
+        );
     }
 
     function refreshAnnouncementAlert(forceNew = false) {
         const box = document.querySelector('.line-schedule-box');
         if (!box) return;
-        const signature = getAnnouncementSignature();
-        if (announcementAlertSignature === null) {
-            // 首次載入：只要有公告，就顯示提示。
-            announcementAlertSignature = signature;
+
+        const latest = getLatestAnnouncement();
+        const latestId = getAnnouncementId(latest);
+
+        // 第一次載入：最新一筆直接提示。
+        if (announcementAlertLatestId === null) {
+            announcementAlertLatestId = latestId;
             announcementAlertDismissed = false;
-        } else if (signature !== announcementAlertSignature) {
-            // 公告清單有變化（新增/刪除/更新）：重新顯示提示。
-            announcementAlertSignature = signature;
+        } else if (latestId !== announcementAlertLatestId) {
+            // 新公告出現：只針對最新新增的這一筆重新提示。
+            announcementAlertLatestId = latestId;
             announcementAlertDismissed = false;
         } else if (forceNew) {
             announcementAlertDismissed = false;
         }
 
-        const hasAnnouncement = Array.isArray(appData.schedules) && appData.schedules.length > 0;
-        box.classList.toggle('new-announcement-alert', hasAnnouncement && !announcementAlertDismissed);
+        box.classList.toggle(
+            'new-announcement-alert',
+            !!latest && !announcementAlertDismissed
+        );
+
+        // 只標示最新一筆，不讓舊公告一起出現「新公告」效果。
+        box.querySelectorAll('.chat-card').forEach(function(card, index) {
+            card.classList.toggle(
+                'latest-announcement-card',
+                !!latest && index === 0 && !announcementAlertDismissed
+            );
+        });
     }
 
     function dismissAnnouncementAlert(event) {
         // 管理按鈕、表單按鈕等操作不視為「看過公告」。
         if (event && event.target && event.target.closest('button, input, select, textarea, a')) return;
+
         announcementAlertDismissed = true;
+
         const box = document.querySelector('.line-schedule-box');
-        if (box) box.classList.remove('new-announcement-alert');
+        if (box) {
+            box.classList.remove('new-announcement-alert');
+            box.querySelectorAll('.latest-announcement-card').forEach(function(card) {
+                card.classList.remove('latest-announcement-card');
+            });
+        }
     }
 
     function renderApp() {
@@ -2903,7 +2951,10 @@ html[data-theme="dark"] .area-nav-btn.active {
             return;
         }
 
-        appData.schedules.forEach((item, index) => {
+        // 新開 App / 重新整理後，公告區只先顯示最新新增的一筆。
+        // 新公告永遠 unshift 到陣列最前面，因此 index 0 即最新。
+        const latestItems = appData.schedules.length ? [appData.schedules[0]] : [];
+        latestItems.forEach((item, index) => {
             const card = document.createElement('div');
             card.className = 'chat-card';
             card.innerHTML = `
@@ -2924,6 +2975,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             `;
             container.appendChild(card);
         });
+        refreshAnnouncementAlert();
     }
 
     function openAddScheduleModal() {
