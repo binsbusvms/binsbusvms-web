@@ -2038,6 +2038,76 @@ html[data-theme="dark"] .area-nav-btn.active {
     }
 }
 </style>
+<style id="mobile-zone-status-announcement-fix">
+/* ===== 手機全廠總表：區域＋當前進度合併欄 ===== */
+@media (max-width: 600px) {
+    #busTable th:nth-child(2) {
+        min-width: 175px !important;
+        width: 175px !important;
+    }
+    #busTable th:nth-child(3),
+    #busTable td:nth-child(3) {
+        display: none !important;
+    }
+    #busTable .desktop-zone-control { display:none !important; }
+    #busTable td.table-status-picker-cell { display:none !important; }
+    #busTable td:nth-child(2) {
+        min-width: 175px !important;
+        width: 175px !important;
+        white-space: normal !important;
+        vertical-align: middle !important;
+        padding: 5px !important;
+    }
+    #busTable td:nth-child(2) > .mobile-zone-status-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        width: 100%;
+        min-width: 0;
+    }
+    #busTable .mobile-zone-label,
+    #busTable .mobile-status-label {
+        display: block;
+        width: 100%;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        line-height: 1.25;
+    }
+    #busTable .mobile-zone-label {
+        font-weight: 700;
+        color: var(--text-main);
+    }
+    #busTable .mobile-status-label {
+        color: var(--text-sub);
+        font-size: .72rem;
+    }
+    #busTable .mobile-status-label .status-picker {
+        width: 100%;
+    }
+    #busTable .mobile-status-label .status-picker-button {
+        width: 100%;
+        min-height: 30px;
+        white-space: normal !important;
+        line-height: 1.25;
+    }
+    #busTable .mobile-status-readonly {
+        width: 100%;
+        white-space: normal !important;
+        line-height: 1.25;
+        word-break: break-word;
+    }
+}
+
+/* 沒有真正公告時，公告容器絕不顯示任何紅框／動畫／陰影 */
+.line-schedule-box.announcement-no-data {
+    display: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    animation: none !important;
+}
+.mobile-zone-status-stack { display:none; }
+</style>
 </head>
 <body>
 
@@ -2568,7 +2638,7 @@ html[data-theme="dark"] .area-nav-btn.active {
     }
 
     let appData = {
-        announcementImg: "", 
+        announcementImg: "",
         schedules: [],
         zones: [
             {"id":"B1_1","name":"【B1】麥克內裝區","color":"#2c3e50","textColor":"#ffffff"},
@@ -2857,42 +2927,9 @@ html[data-theme="dark"] .area-nav-btn.active {
             }
             setSyncStatus('error', '離線模式');
         }
-        const hadLegacyDemoAnnouncements = Array.isArray(appData.schedules) &&
-            appData.schedules.some(item => item && (item.id === 'sched_1' || item.id === 'sched_2'));
-        sanitizeData();
-        renderApp();
-        if (hadLegacyDemoAnnouncements && isAuthed()) {
-            autoSaveCloud().catch(err => console.warn('清理舊示範公告同步失敗：', err));
-        }
-    }
-
-    // 清除舊版程式內建的兩筆「示範公告」。它們不是使用者真正發布的公告，
-    // 不應觸發「新公告」紅框；真正新增的公告仍會正常保留。
-    function removeLegacyDemoAnnouncements() {
-        if (!Array.isArray(appData.schedules)) {
-            appData.schedules = [];
-            return false;
-        }
-        const before = appData.schedules.length;
-        appData.schedules = appData.schedules.filter(item => {
-            if (!item) return false;
-            const isDemo1 = item.id === 'sched_1' &&
-                item.sender === '小游' &&
-                item.taskType === '汽車美容' &&
-                item.scheduleTime === '8/25星期二下午四點' &&
-                item.vehicles === '曹圓圓(F)7465145';
-            const isDemo2 = item.id === 'sched_2' &&
-                item.sender === '小游' &&
-                item.taskType === '滅火系統' &&
-                item.scheduleTime === '8/27星期四' &&
-                item.vehicles === 'F簡伯瑞7464222, F蔡志興7465141';
-            return !(isDemo1 || isDemo2);
-        });
-        return appData.schedules.length !== before;
     }
 
     function sanitizeData() {
-        removeLegacyDemoAnnouncements();
         if (!appData.archivedBuses) appData.archivedBuses = [];
         if (!appData.auditLogs) appData.auditLogs = [];
         if (!appData.announcementImg) appData.announcementImg = "";
@@ -3223,6 +3260,10 @@ html[data-theme="dark"] .area-nav-btn.active {
         if (!box) return;
 
         const schedules = getRealAnnouncements();
+        box.classList.remove('new-announcement-alert');
+        box.querySelectorAll('.latest-announcement-card').forEach(function(card) {
+            card.classList.remove('latest-announcement-card');
+        });
 
         // 重要：沒有真實公告時，整個公告區隱藏，絕不顯示預設／範例內容。
         if (!schedules.length) {
@@ -3736,10 +3777,20 @@ html[data-theme="dark"] .area-nav-btn.active {
                             : `<button type="button" class="meta-readonly" title="登入後可編輯" disabled>${escapeHtml(paintName)}</button>`}
                     </div>
                 </td>
-                <td style="padding:4px; border:1px solid var(--border-color);">
-                    <select ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'zoneId', this.value)">
-                        ${appData.zones.map(z => `<option value="${z.id}" ${z.id === bus.zoneId ? 'selected' : ''}>${escapeHtml(z.name)}</option>`).join('')}
-                    </select>
+                <td class="table-zone-cell" style="padding:4px; border:1px solid var(--border-color);">
+                    <div class="desktop-zone-control">
+                        <select ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'zoneId', this.value)">
+                            ${appData.zones.map(z => `<option value="${z.id}" ${z.id === bus.zoneId ? 'selected' : ''}>${escapeHtml(z.name)}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="mobile-zone-status-stack">
+                        <div class="mobile-zone-label">
+                            📍 ${escapeHtml(appData.zones.find(z => z.id === bus.zoneId)?.name || '未指定區域')}
+                        </div>
+                        <div class="mobile-status-label">
+                            ${renderTableStatusSelectHtml(bus.id, bus.statusId, authed)}
+                        </div>
+                    </div>
                 </td>
                 <td class="table-status-picker-cell" style="padding:4px; border:1px solid var(--border-color);">
                     ${renderTableStatusSelectHtml(bus.id, bus.statusId, authed)}
