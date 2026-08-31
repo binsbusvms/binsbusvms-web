@@ -767,6 +767,34 @@
         html[data-theme="dark"] .table-scroll-container { background:#101a23; border-color:#354b59; }
         html[data-theme="dark"] .table-scroll-container table td { background:rgba(18,29,39,.96); color:#d9e5ec; border-color:#2e414e; }
         html[data-theme="dark"] .table-scroll-container table tr:nth-child(even) td { background:rgba(24,37,48,.92); }
+
+/* 手機版：車輛方塊／全廠總表的可選擇、可編輯欄位，統一參考車輛日期欄的底色。 */
+@media (max-width:600px) {
+    .bus-card .bus-meta-btn,
+    .bus-card .status-picker-button,
+    .bus-card .bus-date-input,
+    #busTable .bus-table-meta-actions button,
+    #busTable .table-zone-cell select,
+    #busTable .table-status-picker-cell .status-picker-button,
+    #busTable select {
+        background:rgba(241,245,248,.78) !important;
+        border-color:#c0d0db !important;
+        color:var(--text-main) !important;
+    }
+}
+
+html[data-theme="dark"] .bus-card .bus-meta-btn,
+html[data-theme="dark"] .bus-card .status-picker-button,
+html[data-theme="dark"] .bus-card .bus-date-input,
+html[data-theme="dark"] #busTable .bus-table-meta-actions button,
+html[data-theme="dark"] #busTable .table-zone-cell select,
+html[data-theme="dark"] #busTable .table-status-picker-cell .status-picker-button,
+html[data-theme="dark"] #busTable select {
+    background:rgba(15,24,31,.76) !important;
+    border-color:#405462 !important;
+    color:#dce8ef !important;
+    -webkit-text-fill-color:#dce8ef !important;
+}
         html[data-theme="dark"] .table-scroll-container table th { background:#1b2b38 !important; color:#bfe5f7 !important; border-color:#3b5260 !important; }
         html[data-theme="dark"] .table-scroll-tip { background:#132a34; color:#7ed8e6; border-color:#2e5a67; }
         html[data-theme="dark"] .announcement-box { background:#302919; border-color:#625329; color:#f0d778; }
@@ -3207,14 +3235,15 @@ html[data-theme="dark"] .area-nav-btn.active {
     function announcementTime(item) {
         if (!item) return 0;
         const candidates = [
-            item.created_at, item.createdAt, item.sent_at, item.sentAt,
-            item.updated_at, item.updatedAt, item.timestamp, item.time
+            // 「最新公告」以建立／發布時間為準；編輯舊公告不應把它變成最新新增。
+            item.created_at, item.createdAt, item.createdTime, item.sent_at, item.sentAt,
+            item.timestamp, item.time
         ];
         for (const value of candidates) {
             if (value === null || value === undefined || value === '') continue;
-            const t = Date.parse(value);
+            if (typeof value === 'number' && Number.isFinite(value)) return value;
+            const t = Date.parse(String(value));
             if (!Number.isNaN(t)) return t;
-            if (typeof value === 'number') return value;
         }
         return 0;
     }
@@ -3232,9 +3261,11 @@ html[data-theme="dark"] .area-nav-btn.active {
         const list = Array.isArray(appData.schedules) ? appData.schedules : [];
         return list.filter(item => {
             if (!item || typeof item !== 'object') return false;
+            // 舊版內建示範資料永遠不是使用者真正發布的公告。
+            if (item.id === 'sched_1' || item.id === 'sched_2') return false;
             const fields = [
                 item.sender, item.message, item.content, item.text,
-                item.title, item.taskType, item.description
+                item.title, item.taskType, item.description, item.scheduleTime, item.vehicles
             ];
             return fields.some(v => v !== null && v !== undefined && String(v).trim() !== '');
         });
@@ -3374,6 +3405,7 @@ html[data-theme="dark"] .area-nav-btn.active {
 
     function renderSchedules() {
         const box = document.querySelector('.line-schedule-box');
+        const authed = isAuthed();
         const container = document.getElementById('scheduleList') ||
                           (box ? box.querySelector('.chat-list, .schedule-list, .announcement-list') : null);
 
@@ -3409,7 +3441,8 @@ html[data-theme="dark"] .area-nav-btn.active {
             container.innerHTML = '';
             const latestAnnouncement = getLatestAnnouncement();
             const latestItems = latestAnnouncement ? [latestAnnouncement] : [];
-            latestItems.forEach((item, index) => {
+            latestItems.forEach((item) => {
+            const sourceIndex = Array.isArray(appData.schedules) ? appData.schedules.indexOf(item) : -1;
 
             const card = document.createElement('div');
             card.className = 'chat-card';
@@ -3419,8 +3452,8 @@ html[data-theme="dark"] .area-nav-btn.active {
                     <div>
                         <span class="chat-meta">${item.sentTime || ''}</span>
                         ${authed ? `
-                            <button style="background:#17a2b8; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:6px;" onclick="editSchedule(${index})">✏️ 編輯</button>
-                            <button style="background:#dc3545; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:2px;" onclick="deleteSchedule(${index})">✕ 刪除</button>
+                            <button style="background:#17a2b8; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:6px;" onclick="editSchedule(${sourceIndex})">✏️ 編輯</button>
+                            <button style="background:#dc3545; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:2px;" onclick="deleteSchedule(${sourceIndex})">✕ 刪除</button>
                         ` : ''}
                     </div>
                 </div>
@@ -3465,44 +3498,61 @@ html[data-theme="dark"] .area-nav-btn.active {
         });
     }
 
-    function saveNewSchedule() {
+    async function saveNewSchedule() {
         const editIndex = parseInt(document.getElementById('schedEditIndex').value, 10);
         const sender = document.getElementById('schedSender').value.trim() || '小游';
         const dateGroup = document.getElementById('schedDateGroup').value.trim() || '今天';
         const taskType = document.getElementById('schedTaskType').value.trim() || '一般作業';
         const scheduleTime = document.getElementById('schedTime').value.trim() || '時間另行通知';
         const vehicles = document.getElementById('schedVehicles').value.trim();
+        const now = Date.now();
+
+        if (!Array.isArray(appData.schedules)) appData.schedules = [];
 
         if (editIndex >= 0 && appData.schedules[editIndex]) {
-            appData.schedules[editIndex].sender = sender;
-            appData.schedules[editIndex].dateGroup = dateGroup;
-            appData.schedules[editIndex].taskType = taskType;
-            appData.schedules[editIndex].scheduleTime = scheduleTime;
-            appData.schedules[editIndex].vehicles = vehicles;
+            const target = appData.schedules[editIndex];
+            target.sender = sender;
+            target.dateGroup = dateGroup;
+            target.taskType = taskType;
+            target.scheduleTime = scheduleTime;
+            target.vehicles = vehicles;
             addAuditLog('即時排程', `更新了公告：${taskType} (${vehicles})`);
         } else {
-            const now = new Date();
-            const timeStr = `${now.getHours() > 12 ? '下午' : '上午'} ${now.getHours() % 12 || 12}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const d = new Date(now);
+            const timeStr = `${d.getHours() > 12 ? '下午' : '上午'} ${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}`;
             const newSched = {
-                id: 'sched_' + Date.now(),
+                id: 'sched_' + now + '_' + Math.random().toString(36).slice(2, 7),
                 sender,
                 dateGroup,
                 taskType,
                 scheduleTime,
                 vehicles,
-                sentTime: timeStr
+                sentTime: timeStr,
+                createdAt: now,
+                created_at: new Date(now).toISOString()
             };
-            if (!appData.schedules) appData.schedules = [];
             appData.schedules.unshift(newSched);
             addAuditLog('即時排程', `新增公告：${taskType} (${vehicles})`);
         }
 
-        autoSaveCloud();
         announcementAlertDismissed = false;
+        announcementAlertLatestId = null;
         announcementAlertSignature = null;
-        renderApp();
-        setTimeout(bindAnnouncementAlert, 0);
+
+        // 重要：一定等雲端確認成功後才關閉視窗／重整，避免「畫面看似新增、
+        // 實際還沒同步」就被重新載入而把新公告吃掉。
+        const success = await autoSaveCloud();
+        if (!success) {
+            renderApp();
+            setTimeout(bindAnnouncementAlert, 0);
+            alert('❌ 公告同步失敗，這次沒有重新整理頁面。請確認網路與登入狀態後再儲存。');
+            return;
+        }
+
         closeModal('addScheduleModal');
+        setSyncStatus('success', '公告已同步，正在重新載入…');
+        // 用完整重載重新從 Supabase 讀取，確保公告顯示的是雲端已保存版本。
+        setTimeout(() => window.location.reload(), 250);
     }
 
     function deleteSchedule(index) {
