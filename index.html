@@ -108,6 +108,33 @@
         /* 單行橫向驗交車公告區塊 */
         .announcement-box { background: var(--bg-announcement); border: 1px solid var(--border-announcement); color: var(--text-announcement); padding: 4px 8px; border-radius: 6px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-height: 32px; }
         .announcement-left { display: flex; align-items: center; gap: 6px; flex-shrink: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        /* 即時公告：每次開啟/重新整理，以及新增公告時顯示紅框；點擊後本次頁面不再提示 */
+        .line-schedule-box.new-announcement-alert {
+            border: 2px solid #e53935 !important;
+            box-shadow: 0 0 0 3px rgba(229,57,53,.12), 0 8px 22px rgba(229,57,53,.16) !important;
+            animation: announcementAlertPulse 1.25s ease-in-out infinite;
+            cursor: pointer;
+        }
+        .line-schedule-box.new-announcement-alert .line-schedule-title::after {
+            content: ' ● 新公告';
+            color: #e53935;
+            font-size: .68rem;
+            font-weight: 900;
+            animation: announcementDotPulse 1s ease-in-out infinite;
+        }
+        @keyframes announcementAlertPulse {
+            0%,100% { box-shadow: 0 0 0 2px rgba(229,57,53,.08), 0 7px 20px rgba(229,57,53,.10); }
+            50% { box-shadow: 0 0 0 5px rgba(229,57,53,.18), 0 9px 26px rgba(229,57,53,.20); }
+        }
+        @keyframes announcementDotPulse {
+            0%,100% { opacity: .55; }
+            50% { opacity: 1; }
+        }
+        html[data-theme="dark"] .line-schedule-box.new-announcement-alert {
+            border-color: #ff5a57 !important;
+            box-shadow: 0 0 0 3px rgba(255,90,87,.16), 0 8px 24px rgba(255,90,87,.20) !important;
+        }
+
         .announcement-title { font-weight: bold; font-size: 0.8rem; flex-shrink: 0; }
         .btn-announcement { background: #007bff; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0; }
         .btn-announcement:hover { background: #0056b3; }
@@ -1667,6 +1694,153 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
 }
 </style>
 
+<style id="zone-and-note-v2-style">
+.zone-header{background:var(--zone-header-bg,#2c3e50);color:var(--zone-header-text,#fff);}
+.zone-header span{color:inherit;}
+.zone-manage-row{display:grid;grid-template-columns:24px 1fr 34px 34px 34px;gap:6px;align-items:center;cursor:grab;}
+.zone-manage-row.dragging{opacity:.45;}
+.zone-manage-row.drag-over{outline:2px dashed var(--primary);outline-offset:2px;}
+.zone-drag-handle{color:var(--text-muted);font-size:1.1rem;user-select:none;}
+.zone-color-input{width:30px;height:30px;padding:0;border:1px solid var(--border-color);border-radius:5px;cursor:pointer;background:transparent;}
+.bus-note-btn{flex:0 0 auto;width:22px;height:22px;min-width:22px;padding:0;border:1px solid var(--border-color);border-radius:5px;background:var(--bg-bus-card);color:var(--text-main);font-size:.62rem;font-weight:800;cursor:pointer;line-height:20px;text-align:center;}
+.bus-note-btn:hover{border-color:var(--primary);}
+.bus-note-btn.has-note{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary) inset;}
+.add-bus-meta-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+.add-bus-meta-grid label{font-size:.78rem;font-weight:700;display:block;margin-bottom:3px;}
+@media(max-width:600px){.add-bus-meta-grid{grid-template-columns:1fr;}.zone-manage-row{grid-template-columns:22px 1fr 32px 32px 32px;gap:4px;}}
+</style>
+
+<style id="area-navigation-test-style">
+/* ===== 廠區區域快速導覽：手機收摺＋電腦點擊定位修正版 ===== */
+.area-nav-bar {
+    display:flex;
+    align-items:center;
+    gap:7px;
+    flex-wrap:wrap;
+    margin:8px 0 10px;
+    padding:7px 9px;
+    border:1px solid var(--border-color);
+    border-radius:9px;
+    background:var(--card-bg, var(--bg-card, rgba(255,255,255,.72)));
+    position:relative;
+    z-index:30;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.area-nav-label {
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-size:.76rem;
+    font-weight:800;
+    white-space:nowrap;
+    color:var(--text-color, inherit);
+}
+.area-nav-toggle {
+    display:none;
+    border:1px solid var(--border-color);
+    background:transparent;
+    color:var(--text-color, inherit);
+    border-radius:7px;
+    padding:4px 8px;
+    font-size:.7rem;
+    font-weight:800;
+    cursor:pointer;
+}
+.area-nav-scroll {
+    display:flex;
+    gap:5px;
+    flex-wrap:wrap;
+    flex:1 1 auto;
+    min-width:0;
+    overflow:visible;
+}
+.area-nav-btn {
+    flex:0 0 auto;
+    border:1px solid var(--border-color);
+    background:transparent;
+    color:var(--text-color, inherit);
+    border-radius:999px;
+    padding:5px 9px;
+    font-size:.7rem;
+    font-weight:750;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .15s ease, border-color .15s ease, transform .1s ease;
+}
+.area-nav-btn:hover {
+    background:rgba(22,132,199,.08);
+    border-color:#1684c7;
+}
+.area-nav-btn.active {
+    background:rgba(22,132,199,.18);
+    border-color:#1684c7;
+    box-shadow:0 0 0 1px rgba(22,132,199,.10);
+}
+.area-nav-btn:active {
+    transform:scale(.98);
+}
+.area-nav-btn .area-count {
+    opacity:.72;
+    font-weight:600;
+}
+.area-zone-hidden {
+    display:none !important;
+}
+.area-jump-highlight {
+    animation:areaJumpPulse 1.2s ease 1;
+}
+@keyframes areaJumpPulse {
+    0%,100% { box-shadow:0 0 0 0 rgba(22,132,199,0); }
+    25% { box-shadow:0 0 0 5px rgba(22,132,199,.24); }
+    55% { box-shadow:0 0 0 3px rgba(22,132,199,.12); }
+}
+html[data-theme="dark"] .area-nav-bar {
+    background:var(--bg-card, #1d2a33);
+    box-shadow:0 3px 10px rgba(0,0,0,.22);
+}
+html[data-theme="dark"] .area-nav-btn,
+html[data-theme="dark"] .area-nav-toggle,
+html[data-theme="dark"] .area-nav-label {
+    color:#e7eef3;
+}
+html[data-theme="dark"] .area-nav-btn.active {
+    background:rgba(70,180,235,.18);
+    border-color:#46b4eb;
+}
+@media (max-width:640px) {
+    .area-nav-bar {
+        display:block;
+        margin:6px 0 8px;
+        padding:6px 7px;
+    }
+    .area-nav-label {
+        width:100%;
+        justify-content:space-between;
+        font-size:.72rem;
+    }
+    .area-nav-toggle {
+        display:inline-block;
+        margin-left:auto;
+    }
+    .area-nav-scroll {
+        display:none;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:5px;
+        width:100%;
+        margin-top:6px;
+    }
+    .area-nav-bar.expanded .area-nav-scroll {
+        display:grid;
+    }
+    .area-nav-btn {
+        width:100%;
+        padding:6px 7px;
+        font-size:.66rem;
+        text-align:center;
+    }
+}
+</style>
+
 </head>
 <body>
 
@@ -1800,7 +1974,17 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
 <div id="tab-map" class="tab-content active">
     <div class="card">
         <div class="card-title">📍 廠區分區配置圖</div>
-        <div class="map-container" id="mapContainer"></div>
+        
+<!-- AREA NAVIGATION TEST -->
+<div class="area-nav-bar" id="areaNavBar">
+  <div class="area-nav-label">
+    <span>📍 區域</span>
+    <button type="button" class="area-nav-toggle" id="areaNavToggle"
+            aria-expanded="false" aria-controls="areaNavScroll">選擇區域 ▾</button>
+  </div>
+  <div class="area-nav-scroll" id="areaNavScroll"></div>
+</div>
+<div class="map-container" id="mapContainer"></div>
     </div>
 </div>
 
@@ -1901,6 +2085,30 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
 </div>
 
 
+
+<div class="modal" id="addBusModal">
+  <div class="modal-content" style="max-width:520px;">
+    <div class="modal-header"><span>➕ 新增車輛</span><button type="button" onclick="closeModal('addBusModal')" style="border:none;background:none;cursor:pointer;color:var(--text-main);">✕</button></div>
+    <label style="font-size:.8rem;font-weight:700;">車輛編號 / 車號：</label>
+    <input type="text" id="addBusPlateInput" placeholder="請輸入車號或名稱" style="margin-top:4px;margin-bottom:10px;">
+    <div class="add-bus-meta-grid">
+      <div><label>組別</label><select id="addBusGroupSelect"></select></div>
+      <div><label>車輛型號</label><select id="addBusModelSelect"></select></div>
+      <div><label>噴漆組別</label><select id="addBusPaintSelect"></select></div>
+    </div>
+    <div style="margin-top:10px;"><label style="font-size:.8rem;font-weight:700;">進度</label><select id="addBusStatusSelect"></select></div>
+    <div class="modal-footer"><button class="btn btn-archive" type="button" onclick="closeModal('addBusModal')">取消</button><button class="btn" type="button" onclick="saveNewBus()">💾 新增車輛</button></div>
+  </div>
+</div>
+
+<div class="modal" id="busNoteModal">
+  <div class="modal-content" style="max-width:520px;">
+    <div class="modal-header"><span id="busNoteModalTitle">📝 車輛備註</span><button type="button" onclick="closeModal('busNoteModal')" style="border:none;background:none;cursor:pointer;color:var(--text-main);">✕</button></div>
+    <textarea id="busNoteInput" rows="7" placeholder="輸入車輛說明、施工注意事項、特殊需求……"></textarea>
+    <div id="busNoteReadonlyHint" style="font-size:.75rem;color:var(--text-sub);margin-top:6px;display:none;">未登入：僅供查看，登入後才能修改。</div>
+    <div class="modal-footer"><button class="btn btn-archive" type="button" onclick="closeModal('busNoteModal')">關閉</button><button id="busNoteSaveBtn" class="btn" type="button" onclick="saveBusNote()">💾 儲存</button></div>
+  </div>
+</div>
 
 <div class="modal" id="deliveryDateModal">
   <div class="modal-content" style="max-width:360px;">
@@ -2038,6 +2246,7 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
             <span>⚙️ 全廠區域管理</span>
             <button onclick="closeModal('zoneManagerModal')" style="border:none;background:none;cursor:pointer;color:var(--text-main);">✕</button>
         </div>
+        <div style="font-size:.78rem;color:var(--text-sub);margin-bottom:8px;">☷ 可拖移排序；區域名稱、文字顏色、標題底色都可直接修改。</div>
         <div class="manage-list" id="zoneManageList"></div>
         <button class="btn btn-zone" style="width:100%;" onclick="addNewZone()">➕ 新增區域</button>
         <div class="modal-footer"><button class="btn" onclick="closeModal('zoneManagerModal')">關閉</button></div>
@@ -2181,16 +2390,16 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
             }
         ],
         zones: [
-            {"id":"B1_1","name":"【B1】麥克內裝區","color":"#2c3e50"},
-            {"id":"B2","name":"【B2】麥克板金區","color":"#2c3e50"},
-            {"id":"B3","name":"【B3】阿安內裝區","color":"#2c3e50"},
-            {"id":"B4","name":"【B4】阿益骨架區","color":"#2c3e50"},
-            {"id":"A","name":"【A】A棟臨停區","color":"#2c3e50"},
-            {"id":"B1_2","name":"【B1】後方臨停+座椅區","color":"#2c3e50"},
-            {"id":"C","name":"【C】噴漆補土區","color":"#2c3e50"},
-            {"id":"D","name":"【D】紅丹區","color":"#2c3e50"},
-            {"id":"E","name":"【E】烤漆爐","color":"#2c3e50"},
-            {"id":"F","name":"【F】後方空地底盤區","color":"#2c3e50"}
+            {"id":"B1_1","name":"【B1】麥克內裝區","color":"#2c3e50","textColor":"#ffffff"},
+            {"id":"B2","name":"【B2】麥克板金區","color":"#2c3e50","textColor":"#ffffff"},
+            {"id":"B3","name":"【B3】阿安內裝區","color":"#2c3e50","textColor":"#ffffff"},
+            {"id":"B4","name":"【B4】阿益骨架區","color":"#2c3e50","textColor":"#ffffff"},
+            {"id":"A","name":"【A】A棟臨停區","color":"#2c3e50","textColor":"#ffffff"},
+            {"id":"B1_2","name":"【B1】後方臨停+座椅區","color":"#2c3e50","textColor":"#ffffff"},
+            {"id":"C","name":"【C】噴漆補土區","color":"#2c3e50","textColor":"#ffffff"},
+            {"id":"D","name":"【D】紅丹區","color":"#2c3e50","textColor":"#ffffff"},
+            {"id":"E","name":"【E】烤漆爐","color":"#2c3e50","textColor":"#ffffff"},
+            {"id":"F","name":"【F】後方空地底盤區","color":"#2c3e50","textColor":"#ffffff"}
         ],
         statusGroups: [],
         vehicleGroups: [],
@@ -2411,6 +2620,7 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
 
     function updateAuthUI() {
         const authed = isAuthed();
+        refreshAnnouncementAlert();
         document.body.classList.toggle('admin-mode', authed);
         document.getElementById("authStatusText").innerHTML = authed ? "🟢 管理員模式" : "👁️ 唯讀模式";
         const btn = document.getElementById("authBtn");
@@ -2475,6 +2685,13 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
         if (!appData.auditLogs) appData.auditLogs = [];
         if (!appData.announcementImg) appData.announcementImg = "";
         if (!appData.schedules) appData.schedules = [];
+        if (!Array.isArray(appData.zones)) appData.zones = [];
+        appData.zones.forEach(z => {
+            if (!z.id) z.id='Z_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+            if (typeof z.name !== 'string') z.name='未命名區域';
+            if (!z.color) z.color='#2c3e50';
+            if (!z.textColor) z.textColor='#ffffff';
+        });
         if (!Array.isArray(appData.statusGroups)) appData.statusGroups = [];
         if (!Array.isArray(appData.vehicleGroups)) appData.vehicleGroups = [];
         if (!Array.isArray(appData.vehicleModels)) appData.vehicleModels = [];
@@ -2619,6 +2836,43 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
         }
     }
 
+    // 公告提示只存在於本次頁面生命週期：重整/重新開啟會再次提示；點擊後直到下一次重整都不提示。
+    let announcementAlertDismissed = false;
+    let announcementAlertSignature = null;
+
+    function getAnnouncementSignature() {
+        const list = Array.isArray(appData.schedules) ? appData.schedules : [];
+        return list.map(x => x && (x.id || ((x.taskType || '') + '|' + (x.sentTime || '') + '|' + (x.scheduleTime || '')))).join('||');
+    }
+
+    function refreshAnnouncementAlert(forceNew = false) {
+        const box = document.querySelector('.line-schedule-box');
+        if (!box) return;
+        const signature = getAnnouncementSignature();
+        if (announcementAlertSignature === null) {
+            // 首次載入：只要有公告，就顯示提示。
+            announcementAlertSignature = signature;
+            announcementAlertDismissed = false;
+        } else if (signature !== announcementAlertSignature) {
+            // 公告清單有變化（新增/刪除/更新）：重新顯示提示。
+            announcementAlertSignature = signature;
+            announcementAlertDismissed = false;
+        } else if (forceNew) {
+            announcementAlertDismissed = false;
+        }
+
+        const hasAnnouncement = Array.isArray(appData.schedules) && appData.schedules.length > 0;
+        box.classList.toggle('new-announcement-alert', hasAnnouncement && !announcementAlertDismissed);
+    }
+
+    function dismissAnnouncementAlert(event) {
+        // 管理按鈕、表單按鈕等操作不視為「看過公告」。
+        if (event && event.target && event.target.closest('button, input, select, textarea, a')) return;
+        announcementAlertDismissed = true;
+        const box = document.querySelector('.line-schedule-box');
+        if (box) box.classList.remove('new-announcement-alert');
+    }
+
     function renderApp() {
         const scrollY = window.scrollY;
         updateDashboard();
@@ -2628,6 +2882,14 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
         renderTable();
         renderAuditTrail();
         window.scrollTo(0, scrollY);
+    }
+
+    function bindAnnouncementAlert() {
+        const box = document.querySelector('.line-schedule-box');
+        if (!box || box.dataset.alertBound === '1') return;
+        box.dataset.alertBound = '1';
+        box.addEventListener('click', dismissAnnouncementAlert);
+        refreshAnnouncementAlert();
     }
 
     function renderSchedules() {
@@ -2725,7 +2987,10 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
         }
 
         autoSaveCloud();
+        announcementAlertDismissed = false;
+        announcementAlertSignature = null;
         renderApp();
+        setTimeout(bindAnnouncementAlert, 0);
         closeModal('addScheduleModal');
     }
 
@@ -2914,8 +3179,8 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
             zoneEl.dataset.zoneId = zone.id;
 
             zoneEl.innerHTML = `
-                <div class="zone-header" style="background:${zone.color||'#2c3e50'}">
-                    <span>${zone.name}</span>
+                <div class="zone-header" style="background:${zone.color||'#2c3e50'};color:${zone.textColor||'#ffffff'}">
+                    <span>${escapeHtml(zone.name)}</span>
                 </div>
                 <div class="zone-body" data-zone-id="${zone.id}"></div>
             `;
@@ -2960,6 +3225,7 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
                         <div class="bus-plate-input" style="background:${bus.bg || '#8c5d5d'}; color:${bus.color || '#ffffff'};" onclick="handleBusPlateClick('${bus.id}')">
                             ${bus.plate}
                         </div>
+                        <button type="button" class="bus-note-btn ${bus.note ? 'has-note' : ''}" title="${bus.note ? '查看／編輯備註' : '新增備註'}" onclick="event.stopPropagation();openBusNoteModal('${bus.id}')">註</button>
                         ${authed ? `<button style="background:#ff4d4f;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:0.65rem;" onclick="deleteBus('${bus.id}')">✕</button>` : ''}
                     </div>
                     <div class="bus-meta-row">
@@ -3226,6 +3492,31 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
         await autoSaveCloud();
         closeModal('deliveryDateModal');
         renderApp();
+    }
+
+    let currentBusNoteId = null;
+    function openBusNoteModal(busId) {
+        const bus = appData.buses.find(b => b.id === busId);
+        if (!bus) return;
+        currentBusNoteId = busId;
+        const input = document.getElementById('busNoteInput');
+        const saveBtn = document.getElementById('busNoteSaveBtn');
+        const hint = document.getElementById('busNoteReadonlyHint');
+        const title = document.getElementById('busNoteModalTitle');
+        if (title) title.textContent = '📝 ' + bus.plate + '｜備註';
+        if (input) { input.value = bus.note || ''; input.disabled = !isAuthed(); }
+        if (saveBtn) saveBtn.style.display = isAuthed() ? '' : 'none';
+        if (hint) hint.style.display = isAuthed() ? 'none' : 'block';
+        document.getElementById('busNoteModal').classList.add('active');
+    }
+    async function saveBusNote() {
+        requireAuth(async () => {
+            const bus = appData.buses.find(b => b.id === currentBusNoteId);
+            if (!bus) return;
+            bus.note = document.getElementById('busNoteInput')?.value || '';
+            addAuditLog(bus.plate, '更新車輛備註');
+            await autoSaveCloud(); renderApp(); closeModal('busNoteModal');
+        });
     }
 
     function openBusModal(busId) {
@@ -3516,39 +3807,67 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
         });
     }
 
+    let draggedZoneIndex = null;
+
     function renderZoneManageList() {
         const list = document.getElementById('zoneManageList');
         if (!list) return;
         list.innerHTML = '';
         appData.zones.forEach((z, idx) => {
             const item = document.createElement('div');
-            item.className = 'manage-item';
+            item.className = 'manage-item zone-manage-row';
+            item.draggable = true;
+            item.dataset.zoneIndex = idx;
             item.innerHTML = `
-                <input type="color" value="${z.color || '#2c3e50'}" style="width:30px; height:30px; padding:0; border:none; cursor:pointer;" onchange="appData.zones[${idx}].color=this.value; autoSaveCloud(); renderApp();">
-                <input type="text" value="${z.name}" style="flex-grow:1;" onchange="appData.zones[${idx}].name=this.value; autoSaveCloud(); renderApp();">
-                <button class="btn" style="background:#dc3545; min-height:24px; padding:2px 6px;" onclick="deleteZone(${idx})">✕</button>
+                <span class="zone-drag-handle" title="拖移排序">☷</span>
+                <input type="text" value="${escapeHtml(z.name)}" title="區域名稱" onchange="updateZoneField(${idx}, 'name', this.value)">
+                <input class="zone-color-input" type="color" value="${z.textColor || '#ffffff'}" title="文字顏色" onchange="updateZoneField(${idx}, 'textColor', this.value)">
+                <input class="zone-color-input" type="color" value="${z.color || '#2c3e50'}" title="標題底色" onchange="updateZoneField(${idx}, 'color', this.value)">
+                <button class="btn" style="background:#dc3545;min-height:24px;padding:2px 6px;" onclick="deleteZone(${idx})">✕</button>
             `;
+            item.addEventListener('dragstart', e => { draggedZoneIndex = idx; item.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
+            item.addEventListener('dragover', e => { e.preventDefault(); item.classList.add('drag-over'); });
+            item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
+            item.addEventListener('drop', e => {
+                e.preventDefault(); item.classList.remove('drag-over');
+                const target = Number(item.dataset.zoneIndex);
+                if (draggedZoneIndex == null || target === draggedZoneIndex) return;
+                const moved = appData.zones.splice(draggedZoneIndex, 1)[0];
+                appData.zones.splice(target, 0, moved);
+                draggedZoneIndex = null;
+                autoSaveCloud(); renderZoneManageList(); renderApp();
+            });
+            item.addEventListener('dragend', () => { draggedZoneIndex=null; item.classList.remove('dragging'); });
             list.appendChild(item);
         });
     }
 
+    function updateZoneField(idx, field, value) {
+        requireAuth(() => {
+            const z = appData.zones[idx];
+            if (!z) return;
+            z[field] = field === 'name' ? String(value).trim() || '未命名區域' : value;
+            autoSaveCloud(); renderZoneManageList(); renderApp();
+        });
+    }
+
     function addNewZone() {
-        const name = prompt("請輸入新區域名稱：");
-        if (name && name.trim() !== '') {
-            appData.zones.push({ id: 'Z_' + Date.now(), name: name.trim(), color: '#2c3e50' });
-            autoSaveCloud();
-            renderZoneManageList();
-            renderApp();
-        }
+        requireAuth(() => {
+            const name = prompt("請輸入新區域名稱：");
+            if (name && name.trim() !== '') {
+                appData.zones.push({ id: 'Z_' + Date.now(), name: name.trim(), color: '#2c3e50', textColor:'#ffffff' });
+                autoSaveCloud(); renderZoneManageList(); renderApp();
+            }
+        });
     }
 
     function deleteZone(idx) {
-        if (confirm("確定刪除此區域？")) {
-            appData.zones.splice(idx, 1);
-            autoSaveCloud();
-            renderZoneManageList();
-            renderApp();
-        }
+        requireAuth(() => {
+            if (confirm("確定刪除此區域？")) {
+                appData.zones.splice(idx, 1);
+                autoSaveCloud(); renderZoneManageList(); renderApp();
+            }
+        });
     }
 
     function openStatusManager() {
@@ -3589,7 +3908,6 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
                 <div style="display:flex;align-items:center;gap:7px;margin-bottom:${collapsed ? '0' : '8px'};">
                     <button type="button" class="btn" style="min-height:30px;padding:3px 8px;font-size:1rem;" title="${collapsed ? '展開' : '收摺'}" onclick="toggleStatusGroup('${g.id}')">${collapsed ? '▶' : '▼'}</button>
                     <span style="font-size:1rem;">📁</span>
-                    <input type="color" value="${g.color || '#2c3e50'}" style="width:32px;height:32px;padding:0;border:none;cursor:pointer;" onchange="updateStatusGroupField(${gIdx}, 'color', this.value)">
                     <input type="text" value="${escapeHtml(g.name)}" style="flex:1;font-weight:700;" onchange="updateStatusGroupField(${gIdx}, 'name', this.value)">
                     <span style="font-size:0.72rem;color:var(--text-muted);white-space:nowrap;">${children.length} 項</span>
                     <button class="btn btn-status" style="min-height:28px;padding:3px 8px;" onclick="addChildStatus('${g.id}')">➕ 子進度</button>
@@ -3615,7 +3933,6 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
                     row.innerHTML = `
                         <span class="status-drag-handle" title="拖移排序" aria-label="拖移排序">☷</span>
                         <span style="color:${g.color || '#2c3e50'};font-weight:bold;">└</span>
-                        <input type="color" value="${st.color || '#78909C'}" style="width:30px;height:30px;padding:0;border:none;cursor:pointer;" onchange="updateStatusField(${idx}, 'color', this.value)">
                         <input type="text" value="${escapeHtml(st.name)}" style="flex-grow:1;" onchange="updateStatusField(${idx}, 'name', this.value)">
                         <button class="btn" style="background:#dc3545;min-height:24px;padding:2px 6px;" onclick="deleteStatus(${idx})">✕</button>
                     `;
@@ -3637,7 +3954,6 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
             item.className = 'manage-item';
             item.innerHTML = `
                 <span style="font-size:0.8rem;color:#888;">一般</span>
-                <input type="color" value="${st.color || '#78909C'}" style="width:30px;height:30px;padding:0;border:none;cursor:pointer;" onchange="updateStatusField(${idx}, 'color', this.value)">
                 <input type="text" value="${escapeHtml(st.name)}" style="flex-grow:1;" onchange="updateStatusField(${idx}, 'name', this.value)">
                 <select style="max-width:150px;" onchange="moveStatusToGroup(${idx}, this.value)">
                     <option value="" ${!st.groupId ? 'selected' : ''}>不分類</option>
@@ -4052,31 +4368,48 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
 
     function handleAddBus() {
         requireAuth(() => {
-            const plate = prompt("請輸入新增車號或名稱：");
-            if (plate && plate.trim() !== '') {
-                const newBus = {
-                    id: 'b_' + Date.now(),
-                    plate: plate.trim(),
-                    zoneId: appData.zones[0]?.id || '',
-                    statusId: appData.statuses[0]?.id || '',
-                    bg: '#8c5d5d',
-                    color: '#ffffff',
-                    startDate: '',
-                    endDate: '',
-                    groupId: '',
-                    modelId: '',
-                    paintGroupId: '',
-                    deliveryDate: '',
-                    note: '',
-                    photos: [],
-                    logs: []
-                };
-                appData.buses.push(newBus);
-                addAuditLog(newBus.plate, '建立新車輛');
-                autoSaveCloud();
-                renderApp();
-            }
+            const modal = document.getElementById('addBusModal');
+            const plate = document.getElementById('addBusPlateInput');
+            const group = document.getElementById('addBusGroupSelect');
+            const model = document.getElementById('addBusModelSelect');
+            const paint = document.getElementById('addBusPaintSelect');
+            const status = document.getElementById('addBusStatusSelect');
+            if (!modal || !plate) return;
+            const fill = (el, arr, placeholder) => {
+                el.innerHTML = `<option value="">${placeholder}</option>` + (arr || []).map(x => `<option value="${x.id}">${escapeHtml(x.name)}</option>`).join('');
+            };
+            fill(group, appData.vehicleGroups, '未指定組別');
+            fill(model, appData.vehicleModels, '未指定車型');
+            fill(paint, appData.paintGroups, '未指定噴漆組別');
+            status.innerHTML = renderStatusOptionsHtml(appData.statuses[0]?.id || '');
+            const defaultZone = appData.zones.find(z => /後方底盤區/.test(z.name)) || appData.zones.find(z => /後方空地底盤區/.test(z.name)) || appData.zones[0];
+            plate.value=''; group.value=''; model.value=''; paint.value='';
+            if (status.options.length) status.value = appData.statuses[0]?.id || '';
+            modal.dataset.defaultZoneId = defaultZone?.id || '';
+            modal.classList.add('active');
+            setTimeout(() => plate.focus(), 50);
         });
+    }
+
+    async function saveNewBus() {
+        if (!isAuthed()) { requireAuth(() => {}); return; }
+        const plate = (document.getElementById('addBusPlateInput')?.value || '').trim();
+        if (!plate) { alert('請輸入車號或名稱。'); return; }
+        const modal = document.getElementById('addBusModal');
+        const newBus = {
+            id:'b_'+Date.now(), plate,
+            zoneId: modal?.dataset.defaultZoneId || appData.zones[0]?.id || '',
+            statusId: document.getElementById('addBusStatusSelect')?.value || appData.statuses[0]?.id || '',
+            bg:'#8c5d5d', color:'#ffffff',
+            startDate: new Date().toISOString().slice(0,10), endDate:'',
+            groupId: document.getElementById('addBusGroupSelect')?.value || '',
+            modelId: document.getElementById('addBusModelSelect')?.value || '',
+            paintGroupId: document.getElementById('addBusPaintSelect')?.value || '',
+            deliveryDate:'', note:'', photos:[], logs:[]
+        };
+        appData.buses.push(newBus);
+        addAuditLog(newBus.plate, '建立新車輛');
+        await autoSaveCloud(); renderApp(); closeModal('addBusModal');
     }
 
     function deleteBus(id) {
@@ -4325,6 +4658,275 @@ html[data-theme="dark"] .bus-table-meta-actions button{background:var(--bg-bus-c
         </form>
     </div>
 </div>
+
+
+<script id="area-navigation-test-script">
+(function(){
+  'use strict';
+
+  // 區域導覽使用「zoneId」而不是 DOM index，避免 renderMap / 排序 / 重繪後
+  // 按鈕仍指向舊索引，造成「點擊閃爍但沒有跳到正確區域」的問題。
+  let selectedAreaId = '';
+  let rebuildTimer = null;
+  let applyingArea = false;
+
+  function textClean(s){
+    return (s || '').replace(/\s+/g,' ').trim();
+  }
+
+  function getZoneElements(){
+    const map = document.getElementById('mapContainer');
+    return map ? Array.from(map.querySelectorAll(':scope > .zone')) : [];
+  }
+
+  function getZoneName(zone, index){
+    const title = zone.querySelector('.zone-header, .zone-title, h2, h3');
+    let name = title ? textClean(title.textContent) : '';
+    if (!name) name = '區域 ' + (index + 1);
+    return name;
+  }
+
+  function getZoneCount(zone){
+    return zone.querySelectorAll('.bus-card').length;
+  }
+
+  function getAllCount(){
+    const map = document.getElementById('mapContainer');
+    return map ? map.querySelectorAll('.bus-card').length : 0;
+  }
+
+  function setActiveArea(zoneId){
+    selectedAreaId = zoneId || '';
+    document.querySelectorAll('.area-nav-btn').forEach(function(btn){
+      const active = (btn.dataset.areaZoneId || '') === selectedAreaId;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+  }
+
+  function closeMobileAreaMenu(){
+    const bar = document.getElementById('areaNavBar');
+    const toggle = document.getElementById('areaNavToggle');
+    if (!bar || !toggle) return;
+    if (window.matchMedia('(max-width: 640px)').matches) {
+      bar.classList.remove('expanded');
+      toggle.setAttribute('aria-expanded','false');
+      toggle.textContent = '選擇區域 ▾';
+    }
+  }
+
+  function toggleMobileAreaMenu(){
+    const bar = document.getElementById('areaNavBar');
+    const toggle = document.getElementById('areaNavToggle');
+    if (!bar || !toggle) return;
+    const expanded = bar.classList.toggle('expanded');
+    toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    toggle.textContent = expanded ? '收起區域 ▴' : '選擇區域 ▾';
+  }
+
+  function scrollToZone(zone){
+    if (!zone || !document.body.contains(zone)) return;
+
+    // 等待 display/layout 完成後再計算位置；不使用 scrollIntoView，
+    // 避免桌面版被內層 scroll container 帶偏。
+    const rect = zone.getBoundingClientRect();
+    const y = rect.top + window.pageYOffset - 12;
+    const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+
+    window.scrollTo({
+      top: Math.min(Math.max(0, y), maxY),
+      left: 0,
+      behavior: 'smooth'
+    });
+
+    zone.classList.remove('area-jump-highlight');
+    void zone.offsetWidth;
+    zone.classList.add('area-jump-highlight');
+  }
+
+  function applySelectedArea(){
+    const zones = getZoneElements();
+
+    // renderMap 重繪後，如果原本選中的區域仍存在，就重新套用隱藏狀態。
+    // 若區域已被刪除，才回到「全部」。
+    if (selectedAreaId && !zones.some(z => z.dataset.zoneId === selectedAreaId)) {
+      selectedAreaId = '';
+    }
+
+    zones.forEach(function(zone){
+      const shouldHide = !!selectedAreaId && zone.dataset.zoneId !== selectedAreaId;
+      zone.classList.toggle('area-zone-hidden', shouldHide);
+    });
+
+    setActiveArea(selectedAreaId);
+  }
+
+  function showAreaById(zoneId){
+    const zones = getZoneElements();
+    const target = zoneId ? zones.find(z => z.dataset.zoneId === zoneId) : null;
+
+    if (zoneId && !target) {
+      setActiveArea('');
+      zones.forEach(z => z.classList.remove('area-zone-hidden'));
+      closeMobileAreaMenu();
+      return;
+    }
+
+    // 先停止任何尚未完成的跳轉，避免連點不同區域時產生多次動畫互相干擾。
+    if (typeof window.stop === 'function') window.stop();
+
+    selectedAreaId = zoneId || '';
+    applyingArea = true;
+
+    zones.forEach(function(zone){
+      zone.classList.toggle('area-zone-hidden', !!zoneId && zone.dataset.zoneId !== zoneId);
+    });
+
+    setActiveArea(selectedAreaId);
+    closeMobileAreaMenu();
+
+    // 隱藏其他區域後再計算 target 位置，桌面 / 手機橫向都使用同一套定位。
+    if (target) {
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          applyingArea = false;
+          scrollToZone(target);
+        });
+      });
+    } else {
+      applyingArea = false;
+      const nav = document.getElementById('areaNavBar');
+      if (nav) {
+        const rect = nav.getBoundingClientRect();
+        window.scrollTo({
+          top: Math.max(0, rect.top + window.pageYOffset - 12),
+          behavior:'smooth'
+        });
+      }
+    }
+  }
+
+  // 舊版外部若仍呼叫 showArea(index)，保留相容性，但真正執行改用 zoneId。
+  function showArea(index){
+    const zones = getZoneElements();
+    if (index === -1 || index === null || typeof index === 'undefined') {
+      showAreaById('');
+      return;
+    }
+    const target = zones[index];
+    showAreaById(target ? (target.dataset.zoneId || '') : '');
+  }
+
+  function buildAreaNav(){
+    const scroll = document.getElementById('areaNavScroll');
+    if (!scroll) return;
+
+    const zones = getZoneElements();
+    const fragment = document.createDocumentFragment();
+
+    const all = document.createElement('button');
+    all.type = 'button';
+    all.className = 'area-nav-btn';
+    all.dataset.areaZoneId = '';
+    all.setAttribute('aria-pressed', selectedAreaId === '' ? 'true' : 'false');
+    all.innerHTML = '全部 <span class="area-count">(' + getAllCount() + ')</span>';
+    all.addEventListener('click', function(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+      showAreaById('');
+    });
+    fragment.appendChild(all);
+
+    zones.forEach(function(zone, i){
+      const zoneId = zone.dataset.zoneId || ('__zone_' + i);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'area-nav-btn';
+      btn.dataset.areaZoneId = zoneId;
+      btn.setAttribute('aria-pressed', selectedAreaId === zoneId ? 'true' : 'false');
+      btn.innerHTML = escapeAreaText(getZoneName(zone,i)) +
+        ' <span class="area-count">(' + getZoneCount(zone) + ')</span>';
+
+      btn.addEventListener('click', function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        showAreaById(zoneId);
+      });
+
+      fragment.appendChild(btn);
+    });
+
+    // 一次性替換，避免逐顆 append 觸發 observer 造成無限重建／閃爍。
+    scroll.replaceChildren(fragment);
+    setActiveArea(selectedAreaId);
+  }
+
+  function escapeAreaText(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+
+  function scheduleBuild(){
+    clearTimeout(rebuildTimer);
+    rebuildTimer = setTimeout(function(){
+      buildAreaNav();
+      if (!applyingArea) applySelectedArea();
+    }, 60);
+  }
+
+  function initAreaNav(){
+    const toggle = document.getElementById('areaNavToggle');
+    if (toggle && !toggle.dataset.bound) {
+      toggle.dataset.bound = '1';
+      toggle.addEventListener('click', function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        toggleMobileAreaMenu();
+      });
+    }
+    buildAreaNav();
+    applySelectedArea();
+  }
+
+  // 只觀察真正會重繪的 mapContainer，不再觀察整個 body。
+  // 舊版觀察 body 會因為自己新增 area-nav button 而不停觸發 buildAreaNav，
+  // 造成桌面版點擊閃爍、跳轉被重置。
+  let observer = null;
+  function initObserver(){
+    const map = document.getElementById('mapContainer');
+    if (!map || observer) return;
+    observer = new MutationObserver(function(mutations){
+      const relevant = mutations.some(function(m){
+        return m.type === 'childList' && (m.addedNodes.length || m.removedNodes.length);
+      });
+      if (relevant) scheduleBuild();
+    });
+    observer.observe(map, {childList:true, subtree:true});
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    initAreaNav();
+    initObserver();
+    setTimeout(bindAnnouncementAlert, 0);
+    setTimeout(initAreaNav, 400);
+    setTimeout(initObserver, 400);
+    setTimeout(initAreaNav, 1000);
+    setTimeout(initObserver, 1000);
+  });
+
+  window.addEventListener('load', function(){
+    initAreaNav();
+    initObserver();
+    setTimeout(bindAnnouncementAlert, 0);
+  });
+
+  window.refreshAreaNavigation = buildAreaNav;
+  window.showAreaNavigation = showArea;
+  window.showAreaNavigationById = showAreaById;
+  window.applySelectedAreaNavigation = applySelectedArea;
+})();
+</script>
 
 </body>
 <!-- UI 2.1 integrated: latest functional logic preserved; scroll navigation added. -->
