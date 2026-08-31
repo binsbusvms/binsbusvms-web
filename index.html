@@ -1298,8 +1298,9 @@ html[data-theme="dark"] .mobile-aux-panel {
         width: 100%;
         max-width: 100%;
         overflow-x: auto !important;
-        overflow-y: hidden;
-        touch-action: pan-x;
+        overflow-y: auto !important;
+        touch-action: pan-x pan-y !important;
+        -webkit-overflow-scrolling: touch;
     }
     .table-scroll-container > table#busTable {
         min-width: 640px !important;
