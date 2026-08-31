@@ -1855,6 +1855,17 @@ html[data-theme="dark"] .area-nav-btn.active {
 }
 </style>
 
+
+<style id="announcement-latest-only-fix">
+/* 沒有真實公告資料時，不顯示公告預設內容／空白模板 */
+.line-schedule-box.announcement-no-data {
+    display: none !important;
+}
+/* 公告資料載入前避免預設內容閃現 */
+.line-schedule-box.announcement-loading {
+    visibility: hidden !important;
+}
+</style>
 </head>
 <body>
 
@@ -2856,6 +2867,7 @@ html[data-theme="dark"] .area-nav-btn.active {
     // 3. 使用期間有新增公告時，只提示「最新新增」的那一筆。
     let announcementAlertDismissed = false;
     let announcementAlertLatestId = null;
+    let announcementDataReady = false;
 
     function getLatestAnnouncement() {
         const list = Array.isArray(appData.schedules) ? appData.schedules : [];
@@ -2875,6 +2887,11 @@ html[data-theme="dark"] .area-nav-btn.active {
 
     function refreshAnnouncementAlert(forceNew = false) {
         const box = document.querySelector('.line-schedule-box');
+        if (!box || !Array.isArray(appData.schedules) || !appData.schedules.length) {
+            if (box) box.classList.add('announcement-no-data');
+            return;
+        }
+        box.classList.remove('announcement-no-data');
         if (!box) return;
 
         const latest = getLatestAnnouncement();
@@ -2941,20 +2958,28 @@ html[data-theme="dark"] .area-nav-btn.active {
     }
 
     function renderSchedules() {
-        const container = document.getElementById('chatContainer');
-        if (!container) return;
-        container.innerHTML = '';
-        const authed = isAuthed();
+        const box = document.querySelector('.line-schedule-box');
+        const container = document.getElementById('scheduleList') ||
+                          (box ? box.querySelector('.chat-list, .schedule-list, .announcement-list') : null);
 
-        if (!appData.schedules || appData.schedules.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding:10px; color:#888; font-size:0.78rem;">目前尚無排程公告</div>`;
+        if (!box) return;
+
+        const schedules = Array.isArray(appData.schedules) ? appData.schedules : [];
+
+        // 重要：沒有真實公告時，整個公告區隱藏，絕不顯示預設／範例內容。
+        if (!schedules.length) {
+            box.classList.add('announcement-no-data');
+            box.classList.remove('announcement-loading', 'new-announcement-alert');
+            if (container) container.innerHTML = '';
             return;
         }
 
-        // 新開 App / 重新整理後，公告區只先顯示最新新增的一筆。
-        // 新公告永遠 unshift 到陣列最前面，因此 index 0 即最新。
-        const latestItems = appData.schedules.length ? [appData.schedules[0]] : [];
-        latestItems.forEach((item, index) => {
+        box.classList.remove('announcement-no-data');
+        if (container) {
+            container.innerHTML = '';
+            const latestItems = [schedules[0]];
+            latestItems.forEach((item, index) => {
+
             const card = document.createElement('div');
             card.className = 'chat-card';
             card.innerHTML = `
@@ -2974,7 +2999,10 @@ html[data-theme="dark"] .area-nav-btn.active {
                 ${item.vehicles ? `<div class="chat-vehicles">🚌 相關車輛：${item.vehicles}</div>` : ''}
             `;
             container.appendChild(card);
-        });
+        
+            });
+        }
+
         refreshAnnouncementAlert();
     }
 
