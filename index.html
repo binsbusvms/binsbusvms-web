@@ -1859,7 +1859,7 @@ html[data-theme="dark"] .area-nav-btn.active {
 <style id="announcement-latest-only-fix">
 /* 沒有真實公告資料時，不顯示公告預設內容／空白模板 */
 .line-schedule-box.announcement-no-data {
-    display: none !important;
+    display: block !important;
 }
 /* 公告資料載入前避免預設內容閃現 */
 .line-schedule-box.announcement-loading {
@@ -1948,7 +1948,7 @@ html[data-theme="dark"] .area-nav-btn.active {
 <style id="announcement-no-data-alert-hard-stop">
 .line-schedule-box.announcement-no-data,
 .line-schedule-box.announcement-no-data.new-announcement-alert {
-    display: none !important;
+    display: block !important;
     border: 0 !important;
     box-shadow: none !important;
     animation: none !important;
@@ -1961,8 +1961,8 @@ html[data-theme="dark"] .area-nav-btn.active {
 <style id="announcement-no-data-final-guard">
 /* 最終防護：沒有真實公告時，公告區完全不佔版面，也不可能顯示紅框。 */
 .line-schedule-box.announcement-no-data {
-    display: none !important;
-    visibility: hidden !important;
+    display: block !important;
+    visibility: visible !important;
     border: 0 !important;
     box-shadow: none !important;
     animation: none !important;
@@ -2101,7 +2101,6 @@ html[data-theme="dark"] .area-nav-btn.active {
 
 /* 沒有真正公告時，公告容器絕不顯示任何紅框／動畫／陰影 */
 .line-schedule-box.announcement-no-data {
-    display: none !important;
     border: 0 !important;
     box-shadow: none !important;
     animation: none !important;
@@ -2927,6 +2926,38 @@ html[data-theme="dark"] .area-nav-btn.active {
             }
             setSyncStatus('error', '離線模式');
         }
+        const hadLegacyDemoAnnouncements = Array.isArray(appData.schedules) &&
+            appData.schedules.some(item => item && (item.id === 'sched_1' || item.id === 'sched_2'));
+        sanitizeData();
+        renderApp();
+        if (hadLegacyDemoAnnouncements && isAuthed()) {
+            autoSaveCloud().catch(err => console.warn('清理舊示範公告同步失敗：', err));
+        }
+    }
+
+    // 清除舊版程式內建的兩筆「示範公告」。它們不是使用者真正發布的公告，
+    // 不應觸發「新公告」紅框；真正新增的公告仍會正常保留。
+    function removeLegacyDemoAnnouncements() {
+        if (!Array.isArray(appData.schedules)) {
+            appData.schedules = [];
+            return false;
+        }
+        const before = appData.schedules.length;
+        appData.schedules = appData.schedules.filter(item => {
+            if (!item) return false;
+            const isDemo1 = item.id === 'sched_1' &&
+                item.sender === '小游' &&
+                item.taskType === '汽車美容' &&
+                item.scheduleTime === '8/25星期二下午四點' &&
+                item.vehicles === '曹圓圓(F)7465145';
+            const isDemo2 = item.id === 'sched_2' &&
+                item.sender === '小游' &&
+                item.taskType === '滅火系統' &&
+                item.scheduleTime === '8/27星期四' &&
+                item.vehicles === 'F簡伯瑞7464222, F蔡志興7465141';
+            return !(isDemo1 || isDemo2);
+        });
+        return appData.schedules.length !== before;
     }
 
     function sanitizeData() {
@@ -3268,7 +3299,7 @@ html[data-theme="dark"] .area-nav-btn.active {
         // 重要：沒有真實公告時，整個公告區隱藏，絕不顯示預設／範例內容。
         if (!schedules.length) {
             box.classList.add('announcement-no-data');
-            box.classList.remove('announcement-loading', 'new-announcement-alert');
+            box.classList.remove('new-announcement-alert', 'announcement-loading');
             box.style.removeProperty('border');
             box.style.removeProperty('box-shadow');
             box.style.removeProperty('animation');
