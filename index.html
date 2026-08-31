@@ -1331,6 +1331,8 @@ html[data-theme="dark"] .mobile-aux-panel {
 .status-picker-option{display:block;width:100%;border:0;background:transparent;color:var(--text-main);padding:7px 9px;text-align:left;border-radius:5px;cursor:pointer;}
 .status-picker-option:hover,.status-picker-option.selected{background:var(--bg-soft);font-weight:700;}
 .status-picker.readonly .status-picker-button{cursor:default;opacity:.9;}
+.table-status-picker-cell .status-picker{min-width:150px;}
+.table-status-picker-cell .status-picker-button{font-size:.82rem;min-height:32px;}
 
 /* 進度管理強化：浮動新增鈕與深色模式可讀性 */
 .floating-add-status-group {
@@ -1587,6 +1589,26 @@ html[data-theme="dark"] #statusManagerModal #statusManageList [id^="statusGroupC
   color:#e4edf5 !important;
   border-color:#334756 !important;
 }
+
+/* 全廠總表進度：原生下拉選單，手機／電腦都可直接操作 */
+.table-status-select {
+    width:100%; min-height:32px; cursor:pointer;
+    background:var(--bg-input) !important; color:var(--text-main) !important;
+    border:1px solid var(--border-color); border-radius:6px;
+}
+html[data-theme="dark"] .table-status-select {
+    background:#111a23 !important; color:#e4edf5 !important; border-color:#334756 !important;
+}
+/* 子進度拖移排序 */
+.status-child-row { cursor:grab; transition:transform .12s, opacity .12s, outline-color .12s; }
+.status-child-row.dragging { opacity:.45; }
+.status-child-row.drag-over { outline:2px dashed var(--primary); outline-offset:2px; }
+.status-drag-handle {
+    flex:0 0 20px; width:20px; text-align:center; font-size:1.15rem;
+    color:var(--text-muted); cursor:grab; user-select:none; touch-action:none;
+}
+.status-child-row:active .status-drag-handle { cursor:grabbing; }
+html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
 </style>
 
 </head>
@@ -2867,6 +2889,20 @@ html[data-theme="dark"] #statusManagerModal #statusManageList [id^="statusGroupC
         }
     }
 
+    // 全廠車輛總表沿用新版自訂進度選單：分類可收摺、子進度依目前進度管理排序。
+    // 登入後可直接修改；未登入則維持唯讀顯示。
+    function renderTableStatusSelectHtml(busId, selectedId, authed) {
+        if (!authed) {
+            const statuses = Array.isArray(appData.statuses) ? appData.statuses : [];
+            const groups = Array.isArray(appData.statusGroups) ? appData.statusGroups : [];
+            const selected = statuses.find(st => st.id === selectedId);
+            const selectedGroup = selected && selected.groupId ? groups.find(g => g.id === selected.groupId) : null;
+            const label = selected ? ((selectedGroup ? selectedGroup.name + ' / ' : '') + selected.name) : '請選擇進度';
+            return `<div class="status-picker readonly" data-bus-id="${busId}"><button type="button" class="status-picker-button" disabled>${escapeHtml(label)} <span>▾</span></button></div>`;
+        }
+        return renderStatusPickerHtml(busId, selectedId, 'table');
+    }
+
     function renderTable() {
         const tbody = document.getElementById('busTableBody');
         tbody.innerHTML = '';
@@ -2886,8 +2922,8 @@ html[data-theme="dark"] #statusManagerModal #statusManageList [id^="statusGroupC
                         ${appData.zones.map(z => `<option value="${z.id}" ${z.id === bus.zoneId ? 'selected' : ''}>${z.name}</option>`).join('')}
                     </select>
                 </td>
-                <td style="padding:4px; border:1px solid var(--border-color);">
-                    ${authed ? renderStatusPickerHtml(bus.id, bus.statusId) : `<div class="status-picker readonly"><button type="button" class="status-picker-button" disabled>${escapeHtml((appData.statuses.find(st=>st.id===bus.statusId)||{}).name || '請選擇進度')}</button></div>`}
+                <td class="table-status-picker-cell" style="padding:4px; border:1px solid var(--border-color);">
+                    ${renderTableStatusSelectHtml(bus.id, bus.statusId, authed)}
                 </td>
                 <td style="padding:4px; border:1px solid var(--border-color); font-size:0.7rem;">
                     進:<input type="date" value="${bus.startDate || ''}" ${!authed ? 'disabled' : ''} onchange="updateBusZoneStatus('${bus.id}', 'startDate', this.value)">
@@ -3296,14 +3332,23 @@ html[data-theme="dark"] #statusManagerModal #statusManageList [id^="statusGroupC
                 children.forEach(st => {
                     const idx = appData.statuses.indexOf(st);
                     const row = document.createElement('div');
-                    row.className = 'manage-item';
+                    row.className = 'manage-item status-child-row';
                     row.style.marginBottom = '0';
+                    row.draggable = true;
+                    row.dataset.statusId = st.id;
+                    row.dataset.groupId = g.id;
                     row.innerHTML = `
+                        <span class="status-drag-handle" title="拖移排序" aria-label="拖移排序">☷</span>
                         <span style="color:${g.color || '#2c3e50'};font-weight:bold;">└</span>
                         <input type="color" value="${st.color || '#78909C'}" style="width:30px;height:30px;padding:0;border:none;cursor:pointer;" onchange="updateStatusField(${idx}, 'color', this.value)">
                         <input type="text" value="${escapeHtml(st.name)}" style="flex-grow:1;" onchange="updateStatusField(${idx}, 'name', this.value)">
                         <button class="btn" style="background:#dc3545;min-height:24px;padding:2px 6px;" onclick="deleteStatus(${idx})">✕</button>
                     `;
+                    row.addEventListener('dragstart', handleStatusChildDragStart);
+                    row.addEventListener('dragover', handleStatusChildDragOver);
+                    row.addEventListener('dragleave', handleStatusChildDragLeave);
+                    row.addEventListener('drop', handleStatusChildDrop);
+                    row.addEventListener('dragend', handleStatusChildDragEnd);
                     childList.appendChild(row);
                 });
             }
@@ -3351,42 +3396,44 @@ html[data-theme="dark"] #statusManagerModal #statusManageList [id^="statusGroupC
     }
 
 
-    function renderStatusPickerHtml(busId, selectedId) {
+    function renderStatusPickerHtml(busId, selectedId, scope='card') {
         const groups = Array.isArray(appData.statusGroups) ? appData.statusGroups : [];
         const statuses = Array.isArray(appData.statuses) ? appData.statuses : [];
         const selected = statuses.find(st => st.id === selectedId);
         const selectedGroup = selected && selected.groupId ? groups.find(g => g.id === selected.groupId) : null;
         const label = selected ? (selectedGroup ? selectedGroup.name + ' / ' : '') + selected.name : '請選擇進度';
-        let html = `<div class="status-picker" data-bus-id="${busId}">
-            <button type="button" class="status-picker-button" onclick="event.stopPropagation();toggleStatusPicker('${busId}')">${escapeHtml(label)} <span>▾</span></button>
-            <div class="status-picker-menu" id="statusPicker_${busId}" style="display:none;">`;
+        const key = `${scope}_${busId}`;
+        let html = `<div class="status-picker" data-bus-id="${busId}" data-picker-scope="${scope}" data-picker-key="${key}">
+            <button type="button" class="status-picker-button" onclick="event.stopPropagation();toggleStatusPicker('${busId}','${scope}')">${escapeHtml(label)} <span>▾</span></button>
+            <div class="status-picker-menu" id="statusPicker_${key}" style="display:none;">`;
         groups.forEach(g => {
             const children = statuses.filter(st => st.groupId === g.id);
             if (!children.length) return;
             html += `<div class="status-picker-group">
-                <button type="button" class="status-picker-group-title" onclick="event.stopPropagation();toggleStatusPickerGroup('${busId}','${g.id}')">▶ 📁 ${escapeHtml(g.name)} <span>${children.length}</span></button>
-                <div id="statusPickerGroup_${busId}_${g.id}" class="status-picker-children" style="display:none;">`;
+                <button type="button" class="status-picker-group-title" onclick="event.stopPropagation();toggleStatusPickerGroup('${busId}','${g.id}','${scope}')">▶ 📁 ${escapeHtml(g.name)} <span>${children.length}</span></button>
+                <div id="statusPickerGroup_${key}_${g.id}" class="status-picker-children" style="display:none;">`;
             children.forEach(st => {
-                html += `<button type="button" class="status-picker-option ${st.id === selectedId ? 'selected' : ''}" onclick="event.stopPropagation();selectStatusFromPicker('${busId}','${st.id}')">${escapeHtml(st.name)}</button>`;
+                html += `<button type="button" class="status-picker-option ${st.id === selectedId ? 'selected' : ''}" onclick="event.stopPropagation();selectStatusFromPicker('${busId}','${st.id}','${scope}')">${escapeHtml(st.name)}</button>`;
             });
             html += `</div></div>`;
         });
         statuses.filter(st => !st.groupId || !groups.some(g => g.id === st.groupId)).forEach(st => {
-            html += `<button type="button" class="status-picker-option ${st.id === selectedId ? 'selected' : ''}" onclick="event.stopPropagation();selectStatusFromPicker('${busId}','${st.id}')">${escapeHtml(st.name)}</button>`;
+            html += `<button type="button" class="status-picker-option ${st.id === selectedId ? 'selected' : ''}" onclick="event.stopPropagation();selectStatusFromPicker('${busId}','${st.id}','${scope}')">${escapeHtml(st.name)}</button>`;
         });
         html += `</div></div>`;
         return html;
     }
 
-    function toggleStatusPicker(busId) {
+    function toggleStatusPicker(busId, scope='card') {
+        const targetId = 'statusPicker_' + scope + '_' + busId;
         document.querySelectorAll('.status-picker-menu').forEach(m => {
-            if (m.id !== 'statusPicker_' + busId) {
+            if (m.id !== targetId) {
                 m.style.display = 'none';
                 const otherCard = m.closest('.bus-card');
                 if (otherCard) otherCard.classList.remove('status-picker-open');
             }
         });
-        const menu = document.getElementById('statusPicker_' + busId);
+        const menu = document.getElementById(targetId);
         const picker = menu ? menu.closest('.status-picker') : null;
         const button = picker ? picker.querySelector('.status-picker-button') : null;
         if (!menu || !button) return;
@@ -3412,8 +3459,9 @@ html[data-theme="dark"] #statusManagerModal #statusManageList [id^="statusGroupC
         menu.style.display = 'block';
     }
 
-    function toggleStatusPickerGroup(busId, groupId) {
-        const el = document.getElementById(`statusPickerGroup_${busId}_${groupId}`);
+    function toggleStatusPickerGroup(busId, groupId, scope='card') {
+        const key = `${scope}_${busId}`;
+        const el = document.getElementById(`statusPickerGroup_${key}_${groupId}`);
         if (!el) return;
         const btn = el.previousElementSibling;
         const open = el.style.display !== 'none';
@@ -3421,8 +3469,8 @@ html[data-theme="dark"] #statusManagerModal #statusManageList [id^="statusGroupC
         if (btn) btn.firstChild.textContent = (open ? '▶' : '▼') + ' 📁 ';
     }
 
-    function selectStatusFromPicker(busId, statusId) {
-        const menu = document.getElementById('statusPicker_' + busId);
+    function selectStatusFromPicker(busId, statusId, scope='card') {
+        const menu = document.getElementById('statusPicker_' + scope + '_' + busId);
         if (menu) {
             menu.style.display = 'none';
             const card = menu.closest('.bus-card');
@@ -3430,6 +3478,30 @@ html[data-theme="dark"] #statusManagerModal #statusManageList [id^="statusGroupC
         }
         updateBusZoneStatus(busId, 'statusId', statusId);
     }
+
+    // 重新定位目前開啟中的進度選單；以 picker 的唯一 key 尋找按鈕，避免總表與車輛方塊同一台車互相抓錯。
+    function repositionOpenStatusPickers() {
+        document.querySelectorAll('.status-picker-menu').forEach(menu => {
+            if (menu.style.display !== 'block') return;
+            const picker = menu.closest('.status-picker');
+            const button = picker ? picker.querySelector('.status-picker-button') : null;
+            if (!button) { menu.style.display = 'none'; return; }
+            const rect = button.getBoundingClientRect();
+            const gap = 3, pad = 8;
+            const menuHeight = Math.min(320, Math.max(120, window.innerHeight - pad * 2));
+            let top = rect.bottom + gap;
+            if (top + menuHeight > window.innerHeight - pad) {
+                top = Math.max(pad, rect.top - Math.min(menuHeight, 320) - gap);
+            }
+            const width = Math.min(rect.width, window.innerWidth - pad * 2);
+            menu.style.left = Math.max(pad, Math.min(rect.left, window.innerWidth - width - pad)) + 'px';
+            menu.style.width = width + 'px';
+            menu.style.top = top + 'px';
+        });
+    }
+
+    window.addEventListener('scroll', repositionOpenStatusPickers, true);
+    window.addEventListener('resize', repositionOpenStatusPickers);
 
     document.addEventListener('click', (event) => {
         if (event.target.closest('.status-picker')) return;
@@ -3467,6 +3539,69 @@ html[data-theme="dark"] #statusManagerModal #statusManageList [id^="statusGroupC
     // capture scroll：重新定位，但絕不自動關閉選單。
     document.addEventListener('scroll', repositionOpenStatusPickers, true);
     window.addEventListener('resize', repositionOpenStatusPickers);
+
+    let statusChildDragId = null;
+
+    function handleStatusChildDragStart(event) {
+        const row = event.currentTarget;
+        statusChildDragId = row.dataset.statusId || null;
+        row.classList.add('dragging');
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', statusChildDragId || '');
+    }
+
+    function handleStatusChildDragOver(event) {
+        event.preventDefault();
+        const target = event.currentTarget;
+        if (!statusChildDragId || target.dataset.statusId === statusChildDragId) return;
+        if (target.dataset.groupId !== document.querySelector(`[data-status-id="${CSS.escape(statusChildDragId)}"]`)?.dataset.groupId) return;
+        target.classList.add('drag-over');
+        event.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleStatusChildDragLeave(event) {
+        event.currentTarget.classList.remove('drag-over');
+    }
+
+    function handleStatusChildDrop(event) {
+        event.preventDefault();
+        const target = event.currentTarget;
+        target.classList.remove('drag-over');
+        const sourceId = statusChildDragId || event.dataTransfer.getData('text/plain');
+        const targetId = target.dataset.statusId;
+        const groupId = target.dataset.groupId;
+        if (!sourceId || !targetId || sourceId === targetId) return;
+        const source = appData.statuses.find(st => st.id === sourceId);
+        const targetStatus = appData.statuses.find(st => st.id === targetId);
+        if (!source || !targetStatus || source.groupId !== groupId || targetStatus.groupId !== groupId) return;
+
+        const childIds = appData.statuses.filter(st => st.groupId === groupId).map(st => st.id);
+        const from = childIds.indexOf(sourceId);
+        const to = childIds.indexOf(targetId);
+        if (from < 0 || to < 0) return;
+        childIds.splice(from, 1);
+        childIds.splice(to, 0, sourceId);
+
+        // 只重排同一分類的子進度；其他分類／一般進度的相對位置不變。
+        let cursor = 0;
+        const reordered = childIds.map(id => appData.statuses.find(st => st.id === id));
+        const nextStatuses = [];
+        appData.statuses.forEach(st => {
+            if (st.groupId === groupId) nextStatuses.push(reordered[cursor++]);
+            else nextStatuses.push(st);
+        });
+        appData.statuses = nextStatuses;
+        autoSaveCloud();
+        renderStatusManageList();
+        renderApp();
+    }
+
+    function handleStatusChildDragEnd() {
+        statusChildDragId = null;
+        document.querySelectorAll('.status-child-row.dragging,.status-child-row.drag-over').forEach(el => {
+            el.classList.remove('dragging', 'drag-over');
+        });
+    }
 
     function toggleStatusGroup(groupId) {
         if (!window.statusGroupCollapsed) window.statusGroupCollapsed = {};
