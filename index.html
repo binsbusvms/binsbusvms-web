@@ -1866,6 +1866,14 @@ html[data-theme="dark"] .area-nav-btn.active {
     visibility: hidden !important;
 }
 </style>
+
+<style id="announcement-latest-sort-fix">
+/* 最新新增公告提示：只標示最後新增的真實公告 */
+.chat-card.latest-announcement-card {
+    border: 2px solid #e53935 !important;
+    box-shadow: 0 0 0 3px rgba(229,57,53,.10) !important;
+}
+</style>
 </head>
 <body>
 
@@ -2869,9 +2877,38 @@ html[data-theme="dark"] .area-nav-btn.active {
     let announcementAlertLatestId = null;
     let announcementDataReady = false;
 
+    function announcementTime(item) {
+        if (!item) return 0;
+        const candidates = [
+            item.created_at, item.createdAt, item.sent_at, item.sentAt,
+            item.updated_at, item.updatedAt, item.timestamp, item.time
+        ];
+        for (const value of candidates) {
+            if (value === null || value === undefined || value === '') continue;
+            const t = Date.parse(value);
+            if (!Number.isNaN(t)) return t;
+            if (typeof value === 'number') return value;
+        }
+        return 0;
+    }
+
     function getLatestAnnouncement() {
         const list = Array.isArray(appData.schedules) ? appData.schedules : [];
-        return list.length ? list[0] : null;
+        if (!list.length) return null;
+
+        // 優先使用建立/發布時間判斷最後新增；若資料沒有時間欄位，
+        // 才退回目前同步資料的順序（通常最新在最前）。
+        let latest = list[0];
+        let latestTime = announcementTime(latest);
+
+        for (let i = 1; i < list.length; i++) {
+            const t = announcementTime(list[i]);
+            if (t > latestTime) {
+                latest = list[i];
+                latestTime = t;
+            }
+        }
+        return latest;
     }
 
     function getAnnouncementId(item) {
@@ -2881,7 +2918,8 @@ html[data-theme="dark"] .area-nav-btn.active {
             (item.dateGroup || '') + '|' +
             (item.taskType || '') + '|' +
             (item.scheduleTime || '') + '|' +
-            (item.sentTime || '')
+            (item.sentTime || '') + '|' +
+            (item.created_at || item.createdAt || '')
         );
     }
 
@@ -2977,7 +3015,8 @@ html[data-theme="dark"] .area-nav-btn.active {
         box.classList.remove('announcement-no-data');
         if (container) {
             container.innerHTML = '';
-            const latestItems = [schedules[0]];
+            const latestAnnouncement = getLatestAnnouncement();
+            const latestItems = latestAnnouncement ? [latestAnnouncement] : [];
             latestItems.forEach((item, index) => {
 
             const card = document.createElement('div');
