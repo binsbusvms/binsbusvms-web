@@ -1944,6 +1944,20 @@ html[data-theme="dark"] .area-nav-btn.active {
     }
 }
 </style>
+
+<style id="announcement-no-data-alert-hard-stop">
+.line-schedule-box.announcement-no-data,
+.line-schedule-box.announcement-no-data.new-announcement-alert {
+    display: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    animation: none !important;
+}
+.line-schedule-box.announcement-no-data .chat-container,
+.line-schedule-box.announcement-no-data .chat-card {
+    display: none !important;
+}
+</style>
 </head>
 <body>
 
@@ -2475,26 +2489,7 @@ html[data-theme="dark"] .area-nav-btn.active {
 
     let appData = {
         announcementImg: "", 
-        schedules: [
-            {
-                "id": "sched_1",
-                "sender": "小游",
-                "dateGroup": "8月24日(一)",
-                "taskType": "汽車美容",
-                "scheduleTime": "8/25星期二下午四點",
-                "vehicles": "曹圓圓(F)7465145",
-                "sentTime": "下午 4:57"
-            },
-            {
-                "id": "sched_2",
-                "sender": "小游",
-                "dateGroup": "昨天",
-                "taskType": "滅火系統",
-                "scheduleTime": "8/27星期四",
-                "vehicles": "F簡伯瑞7464222, F蔡志興7465141",
-                "sentTime": "上午 9:59"
-            }
-        ],
+        schedules: [],
         zones: [
             {"id":"B1_1","name":"【B1】麥克內裝區","color":"#2c3e50","textColor":"#ffffff"},
             {"id":"B2","name":"【B2】麥克板金區","color":"#2c3e50","textColor":"#ffffff"},
@@ -2782,11 +2777,42 @@ html[data-theme="dark"] .area-nav-btn.active {
             }
             setSyncStatus('error', '離線模式');
         }
+        const hadLegacyDemoAnnouncements = Array.isArray(appData.schedules) &&
+            appData.schedules.some(item => item && (item.id === 'sched_1' || item.id === 'sched_2'));
         sanitizeData();
         renderApp();
+        if (hadLegacyDemoAnnouncements && isAuthed()) {
+            autoSaveCloud().catch(err => console.warn('清理舊示範公告同步失敗：', err));
+        }
+    }
+
+    // 清除舊版程式內建的兩筆「示範公告」。它們不是使用者真正發布的公告，
+    // 不應觸發「新公告」紅框；真正新增的公告仍會正常保留。
+    function removeLegacyDemoAnnouncements() {
+        if (!Array.isArray(appData.schedules)) {
+            appData.schedules = [];
+            return false;
+        }
+        const before = appData.schedules.length;
+        appData.schedules = appData.schedules.filter(item => {
+            if (!item) return false;
+            const isDemo1 = item.id === 'sched_1' &&
+                item.sender === '小游' &&
+                item.taskType === '汽車美容' &&
+                item.scheduleTime === '8/25星期二下午四點' &&
+                item.vehicles === '曹圓圓(F)7465145';
+            const isDemo2 = item.id === 'sched_2' &&
+                item.sender === '小游' &&
+                item.taskType === '滅火系統' &&
+                item.scheduleTime === '8/27星期四' &&
+                item.vehicles === 'F簡伯瑞7464222, F蔡志興7465141';
+            return !(isDemo1 || isDemo2);
+        });
+        return appData.schedules.length !== before;
     }
 
     function sanitizeData() {
+        removeLegacyDemoAnnouncements();
         if (!appData.archivedBuses) appData.archivedBuses = [];
         if (!appData.auditLogs) appData.auditLogs = [];
         if (!appData.announcementImg) appData.announcementImg = "";
@@ -2999,7 +3025,15 @@ html[data-theme="dark"] .area-nav-btn.active {
     function refreshAnnouncementAlert(forceNew = false) {
         const box = document.querySelector('.line-schedule-box');
         if (!box || !Array.isArray(appData.schedules) || !appData.schedules.length) {
-            if (box) box.classList.add('announcement-no-data');
+            if (box) {
+                box.classList.add('announcement-no-data');
+                box.classList.remove('new-announcement-alert');
+                box.querySelectorAll('.latest-announcement-card').forEach(function(card) {
+                    card.classList.remove('latest-announcement-card');
+                });
+            }
+            announcementAlertLatestId = null;
+            announcementAlertDismissed = true;
             return;
         }
         box.classList.remove('announcement-no-data');
