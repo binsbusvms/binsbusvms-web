@@ -2776,9 +2776,9 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
     <img id="lightboxImg" class="lightbox-img" src="" alt="大圖" onpointerdown="announcementPointerDown(event)" onpointermove="announcementPointerMove(event)" onpointerup="announcementPointerUp(event)" onpointercancel="announcementPointerUp(event)" onwheel="announcementWheel(event)" ondblclick="resetAnnouncementZoom()">
     <div id="lightboxZoomLabel" class="lightbox-zoom-label">100%</div>
     <div class="lightbox-zoom-controls">
-      <button type="button" onclick="zoomAnnouncement(-0.25)">−</button>
+      <button type="button" onclick="zoomAnnouncement(-0.05)">−</button>
       <button type="button" onclick="resetAnnouncementZoom()">100%</button>
-      <button type="button" onclick="zoomAnnouncement(0.25)">＋</button>
+      <button type="button" onclick="zoomAnnouncement(0.05)">＋</button>
     </div>
 </div>
 
@@ -4570,6 +4570,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
     }
 
     let announcementZoom=1, announcementPanX=0, announcementPanY=0, announcementDrag=null;
+    let announcementPointers=new Map(), announcementPinchStartDist=0, announcementPinchStartZoom=1;
     function updateAnnouncementZoom(){
         const img=document.getElementById('lightboxImg'), label=document.getElementById('lightboxZoomLabel');
         if(!img)return;
@@ -4577,28 +4578,48 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         img.classList.toggle('zoomed',announcementZoom>1);
         if(label)label.textContent=Math.round(announcementZoom*100)+'%';
     }
-    function setAnnouncementZoom(v){ announcementZoom=Math.max(1,Math.min(5,v)); if(announcementZoom===1){announcementPanX=0;announcementPanY=0;} updateAnnouncementZoom(); }
+    function setAnnouncementZoom(v){ announcementZoom=Math.max(1,Math.min(5,Math.round(v*100)/100)); if(announcementZoom===1){announcementPanX=0;announcementPanY=0;} updateAnnouncementZoom(); }
     function zoomAnnouncement(delta){ setAnnouncementZoom(announcementZoom+delta); }
-    function resetAnnouncementZoom(){setAnnouncementZoom(1);}
+    function resetAnnouncementZoom(){setAnnouncementZoom(1); announcementPointers.clear(); announcementDrag=null;}
     function showLightbox(imgUrl) {
         document.getElementById('lightboxImg').src = imgUrl;
         document.getElementById('lightboxModal').classList.add('active');
         resetAnnouncementZoom();
     }
     function announcementPointerDown(e){
-        if(announcementZoom<=1)return;
-        announcementDrag={x:e.clientX,y:e.clientY,px:announcementPanX,py:announcementPanY};
-        e.currentTarget.style.cursor='grabbing';
-        e.currentTarget.setPointerCapture?.(e.pointerId);
+        const img=e.currentTarget;
+        img.setPointerCapture?.(e.pointerId);
+        announcementPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+        if(announcementPointers.size===2){
+            const pts=[...announcementPointers.values()];
+            announcementPinchStartDist=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+            announcementPinchStartZoom=announcementZoom;
+            announcementDrag=null;
+        }else if(announcementPointers.size===1 && announcementZoom>1){
+            announcementDrag={x:e.clientX,y:e.clientY,px:announcementPanX,py:announcementPanY};
+            img.style.cursor='grabbing';
+        }
     }
     function announcementPointerMove(e){
+        if(announcementPointers.has(e.pointerId)) announcementPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+        if(announcementPointers.size>=2){
+            const pts=[...announcementPointers.values()];
+            const dist=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+            if(announcementPinchStartDist>0) setAnnouncementZoom(announcementPinchStartZoom*(dist/announcementPinchStartDist));
+            return;
+        }
         if(!announcementDrag)return;
         announcementPanX=announcementDrag.px+(e.clientX-announcementDrag.x);
         announcementPanY=announcementDrag.py+(e.clientY-announcementDrag.y);
         updateAnnouncementZoom();
     }
-    function announcementPointerUp(e){announcementDrag=null;if(e.currentTarget)e.currentTarget.style.cursor=announcementZoom>1?'grab':'grab';}
-    function announcementWheel(e){e.preventDefault();zoomAnnouncement(e.deltaY<0?0.25:-0.25);}
+    function announcementPointerUp(e){
+        announcementPointers.delete(e.pointerId);
+        if(announcementPointers.size<2) announcementPinchStartDist=0;
+        announcementDrag=null;
+        if(e.currentTarget)e.currentTarget.style.cursor='grab';
+    }
+    function announcementWheel(e){e.preventDefault();zoomAnnouncement(e.deltaY<0?0.05:-0.05);}
     
 
     function renderPhotoGrid(bus) {
@@ -6087,18 +6108,39 @@ async function checkWorkOrderFile(busId,plate){
 }
 let workOrderPhotoObjectUrl='';
 let workOrderZoom=1, workOrderPanX=0, workOrderPanY=0, workOrderDrag=null;
+let workOrderPointers=new Map(), workOrderPinchStartDist=0, workOrderPinchStartZoom=1;
 function updateWorkOrderZoom(){
   const img=document.getElementById('workOrderLightboxImg'),label=document.getElementById('workOrderZoomLabel'); if(!img)return;
   img.style.transform=`translate(${workOrderPanX}px,${workOrderPanY}px) scale(${workOrderZoom})`;
   img.classList.toggle('zoomed',workOrderZoom>1); if(label)label.textContent=Math.round(workOrderZoom*100)+'%';
 }
-function setWorkOrderZoom(v){workOrderZoom=Math.max(1,Math.min(5,v));if(workOrderZoom===1){workOrderPanX=0;workOrderPanY=0;}updateWorkOrderZoom();}
+function setWorkOrderZoom(v){workOrderZoom=Math.max(1,Math.min(5,Math.round(v*100)/100));if(workOrderZoom===1){workOrderPanX=0;workOrderPanY=0;}updateWorkOrderZoom();}
 function zoomWorkOrder(delta){setWorkOrderZoom(workOrderZoom+delta);}
-function resetWorkOrderZoom(){setWorkOrderZoom(1);}
-function workOrderPointerDown(e){if(workOrderZoom<=1)return;workOrderDrag={x:e.clientX,y:e.clientY,px:workOrderPanX,py:workOrderPanY};e.currentTarget.style.cursor='grabbing';e.currentTarget.setPointerCapture?.(e.pointerId);}
-function workOrderPointerMove(e){if(!workOrderDrag)return;workOrderPanX=workOrderDrag.px+(e.clientX-workOrderDrag.x);workOrderPanY=workOrderDrag.py+(e.clientY-workOrderDrag.y);updateWorkOrderZoom();}
-function workOrderPointerUp(e){workOrderDrag=null;if(e.currentTarget)e.currentTarget.style.cursor='grab';}
-function workOrderWheel(e){e.preventDefault();zoomWorkOrder(e.deltaY<0?0.25:-0.25);}
+function resetWorkOrderZoom(){setWorkOrderZoom(1);workOrderPointers.clear();workOrderDrag=null;}
+function workOrderPointerDown(e){
+  const img=e.currentTarget; img.setPointerCapture?.(e.pointerId);
+  workOrderPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(workOrderPointers.size===2){
+    const pts=[...workOrderPointers.values()];
+    workOrderPinchStartDist=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+    workOrderPinchStartZoom=workOrderZoom; workOrderDrag=null;
+  }else if(workOrderPointers.size===1 && workOrderZoom>1){
+    workOrderDrag={x:e.clientX,y:e.clientY,px:workOrderPanX,py:workOrderPanY}; img.style.cursor='grabbing';
+  }
+}
+function workOrderPointerMove(e){
+  if(workOrderPointers.has(e.pointerId)) workOrderPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(workOrderPointers.size>=2){
+    const pts=[...workOrderPointers.values()];
+    const dist=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+    if(workOrderPinchStartDist>0) setWorkOrderZoom(workOrderPinchStartZoom*(dist/workOrderPinchStartDist));
+    return;
+  }
+  if(!workOrderDrag)return;
+  workOrderPanX=workOrderDrag.px+(e.clientX-workOrderDrag.x); workOrderPanY=workOrderDrag.py+(e.clientY-workOrderDrag.y); updateWorkOrderZoom();
+}
+function workOrderPointerUp(e){workOrderPointers.delete(e.pointerId);if(workOrderPointers.size<2)workOrderPinchStartDist=0;workOrderDrag=null;if(e.currentTarget)e.currentTarget.style.cursor='grab';}
+function workOrderWheel(e){e.preventDefault();zoomWorkOrder(e.deltaY<0?0.05:-0.05);}
 async function openWorkOrderPhoto(encodedName){
   const base=workOrderServiceUrl(); if(!base)return;
   const img=document.getElementById('workOrderLightboxImg'); const box=document.getElementById('workOrderLightbox'); if(!img||!box)return;
@@ -6378,7 +6420,7 @@ if(qualityIsMobile()){const h=document.getElementById('qualityServiceHint');cons
  <img id="workOrderLightboxImg" src="" alt="工單照片原圖" onpointerdown="workOrderPointerDown(event)" onpointermove="workOrderPointerMove(event)" onpointerup="workOrderPointerUp(event)" onpointercancel="workOrderPointerUp(event)" onwheel="workOrderWheel(event)" ondblclick="resetWorkOrderZoom()">
  <div id="workOrderZoomLabel" class="work-order-zoom-label">100%</div>
  <div class="work-order-zoom-controls">
-  <button type="button" onclick="zoomWorkOrder(-0.25)">−</button><button type="button" onclick="resetWorkOrderZoom()">100%</button><button type="button" onclick="zoomWorkOrder(0.25)">＋</button>
+  <button type="button" onclick="zoomWorkOrder(-0.05)">−</button><button type="button" onclick="resetWorkOrderZoom()">100%</button><button type="button" onclick="zoomWorkOrder(0.05)">＋</button>
  </div>
 </div>
 <div id="qualityPhotoModal" class="quality-modal-overlay" onclick="if(event.target===this)closeQualityPhotoLibrary()">
