@@ -243,7 +243,11 @@
 
         .lightbox-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:3000; justify-content:center; align-items:center; }
         .lightbox-modal.active { display: flex; }
-        .lightbox-img { max-width: 92%; max-height: 85vh; border-radius: 4px; box-shadow: 0 0 20px rgba(0,0,0,0.5); object-fit: contain; }
+        .lightbox-img { max-width: 92%; max-height: 85vh; border-radius: 4px; box-shadow: 0 0 20px rgba(0,0,0,0.5); object-fit: contain; cursor: grab; transform-origin: center center; user-select:none; -webkit-user-drag:none; touch-action:none; }
+        .lightbox-img.zoomed { max-width:none; max-height:none; }
+        .lightbox-zoom-controls,.work-order-zoom-controls{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:8px;z-index:3005;}
+        .lightbox-zoom-controls button,.work-order-zoom-controls button{border:0;background:rgba(0,0,0,.62);color:#fff;border-radius:9px;min-width:44px;height:40px;font-size:18px;cursor:pointer;padding:0 12px;}
+        .lightbox-zoom-label,.work-order-zoom-label{position:fixed;left:50%;bottom:66px;transform:translateX(-50%);color:#fff;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:999px;font-size:13px;z-index:3005;pointer-events:none;}
 
         .timeline-list { list-style: none; margin-top: 8px; padding-left: 10px; border-left: 2px solid #1f4e78; font-size: 0.75rem; font-variant-numeric: tabular-nums; }
         .timeline-item { position: relative; margin-bottom: 8px; padding-left: 10px; }
@@ -2227,7 +2231,8 @@ html[data-theme="dark"] .area-nav-btn.active {
 .work-order-loading{text-align:center;padding:20px;color:var(--text-sub);}
 .work-order-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:100200;display:none;align-items:center;justify-content:center;padding:18px;overflow:auto;}
 .work-order-lightbox.show{display:flex;}
-.work-order-lightbox img{max-width:96vw;max-height:94vh;object-fit:contain;cursor:zoom-in;box-shadow:0 12px 50px rgba(0,0,0,.45);}
+.work-order-lightbox img{max-width:96vw;max-height:94vh;object-fit:contain;cursor:grab;box-shadow:0 12px 50px rgba(0,0,0,.45);transform-origin:center center;user-select:none;-webkit-user-drag:none;touch-action:none;}
+.work-order-lightbox img.zoomed{max-width:none;max-height:none;}
 .work-order-lightbox-close{position:fixed;right:18px;top:12px;border:0;background:rgba(0,0,0,.45);color:#fff;font-size:1.5rem;border-radius:8px;width:42px;height:42px;cursor:pointer;z-index:100201;}
 </style>
 <style id="quality-photo-library-css">
@@ -2266,7 +2271,8 @@ html[data-theme="dark"] .area-nav-btn.active {
 </style>
 <style id="announcement-lightbox-v17">
 #lightboxModal{align-items:center;justify-content:center;padding:12px;}
-#lightboxModal img,#lightboxImg{max-width:96vw !important;max-height:92vh !important;width:auto !important;height:auto !important;object-fit:contain !important;cursor:zoom-in;}
+#lightboxModal img,#lightboxImg{max-width:96vw !important;max-height:92vh !important;width:auto !important;height:auto !important;object-fit:contain !important;cursor:grab;}
+#lightboxModal img.zoomed,#lightboxImg.zoomed{max-width:none !important;max-height:none !important;}
 </style>
 
 <style id="elderly-mode-v25">
@@ -2766,8 +2772,14 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
     </div>
 </div>
 
-<div class="lightbox-modal" id="lightboxModal" onclick="closeModal('lightboxModal')">
-    <img id="lightboxImg" class="lightbox-img" src="" alt="大圖">
+<div class="lightbox-modal" id="lightboxModal" onclick="if(event.target===this)closeModal('lightboxModal')">
+    <img id="lightboxImg" class="lightbox-img" src="" alt="大圖" onpointerdown="announcementPointerDown(event)" onpointermove="announcementPointerMove(event)" onpointerup="announcementPointerUp(event)" onpointercancel="announcementPointerUp(event)" onwheel="announcementWheel(event)" ondblclick="resetAnnouncementZoom()">
+    <div id="lightboxZoomLabel" class="lightbox-zoom-label">100%</div>
+    <div class="lightbox-zoom-controls">
+      <button type="button" onclick="zoomAnnouncement(-0.25)">−</button>
+      <button type="button" onclick="resetAnnouncementZoom()">100%</button>
+      <button type="button" onclick="zoomAnnouncement(0.25)">＋</button>
+    </div>
 </div>
 
 <div class="modal" id="archiveModal">
@@ -4557,10 +4569,37 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         openBusModal(currentGalleryBusId);
     }
 
+    let announcementZoom=1, announcementPanX=0, announcementPanY=0, announcementDrag=null;
+    function updateAnnouncementZoom(){
+        const img=document.getElementById('lightboxImg'), label=document.getElementById('lightboxZoomLabel');
+        if(!img)return;
+        img.style.transform=`translate(${announcementPanX}px,${announcementPanY}px) scale(${announcementZoom})`;
+        img.classList.toggle('zoomed',announcementZoom>1);
+        if(label)label.textContent=Math.round(announcementZoom*100)+'%';
+    }
+    function setAnnouncementZoom(v){ announcementZoom=Math.max(1,Math.min(5,v)); if(announcementZoom===1){announcementPanX=0;announcementPanY=0;} updateAnnouncementZoom(); }
+    function zoomAnnouncement(delta){ setAnnouncementZoom(announcementZoom+delta); }
+    function resetAnnouncementZoom(){setAnnouncementZoom(1);}
     function showLightbox(imgUrl) {
         document.getElementById('lightboxImg').src = imgUrl;
         document.getElementById('lightboxModal').classList.add('active');
+        resetAnnouncementZoom();
     }
+    function announcementPointerDown(e){
+        if(announcementZoom<=1)return;
+        announcementDrag={x:e.clientX,y:e.clientY,px:announcementPanX,py:announcementPanY};
+        e.currentTarget.style.cursor='grabbing';
+        e.currentTarget.setPointerCapture?.(e.pointerId);
+    }
+    function announcementPointerMove(e){
+        if(!announcementDrag)return;
+        announcementPanX=announcementDrag.px+(e.clientX-announcementDrag.x);
+        announcementPanY=announcementDrag.py+(e.clientY-announcementDrag.y);
+        updateAnnouncementZoom();
+    }
+    function announcementPointerUp(e){announcementDrag=null;if(e.currentTarget)e.currentTarget.style.cursor=announcementZoom>1?'grab':'grab';}
+    function announcementWheel(e){e.preventDefault();zoomAnnouncement(e.deltaY<0?0.25:-0.25);}
+    
 
     function renderPhotoGrid(bus) {
         const grid = document.getElementById('modalPhotoGrid');
@@ -6047,30 +6086,32 @@ async function checkWorkOrderFile(busId,plate){
   }catch(e){el.innerHTML=`<div><b>無法確認工單照片</b><div class="work-order-file-hint">${escapeHtml(e.message)}</div></div>`;}
 }
 let workOrderPhotoObjectUrl='';
+let workOrderZoom=1, workOrderPanX=0, workOrderPanY=0, workOrderDrag=null;
+function updateWorkOrderZoom(){
+  const img=document.getElementById('workOrderLightboxImg'),label=document.getElementById('workOrderZoomLabel'); if(!img)return;
+  img.style.transform=`translate(${workOrderPanX}px,${workOrderPanY}px) scale(${workOrderZoom})`;
+  img.classList.toggle('zoomed',workOrderZoom>1); if(label)label.textContent=Math.round(workOrderZoom*100)+'%';
+}
+function setWorkOrderZoom(v){workOrderZoom=Math.max(1,Math.min(5,v));if(workOrderZoom===1){workOrderPanX=0;workOrderPanY=0;}updateWorkOrderZoom();}
+function zoomWorkOrder(delta){setWorkOrderZoom(workOrderZoom+delta);}
+function resetWorkOrderZoom(){setWorkOrderZoom(1);}
+function workOrderPointerDown(e){if(workOrderZoom<=1)return;workOrderDrag={x:e.clientX,y:e.clientY,px:workOrderPanX,py:workOrderPanY};e.currentTarget.style.cursor='grabbing';e.currentTarget.setPointerCapture?.(e.pointerId);}
+function workOrderPointerMove(e){if(!workOrderDrag)return;workOrderPanX=workOrderDrag.px+(e.clientX-workOrderDrag.x);workOrderPanY=workOrderDrag.py+(e.clientY-workOrderDrag.y);updateWorkOrderZoom();}
+function workOrderPointerUp(e){workOrderDrag=null;if(e.currentTarget)e.currentTarget.style.cursor='grab';}
+function workOrderWheel(e){e.preventDefault();zoomWorkOrder(e.deltaY<0?0.25:-0.25);}
 async function openWorkOrderPhoto(encodedName){
   const base=workOrderServiceUrl(); if(!base)return;
-  const img=document.getElementById('workOrderLightboxImg');
-  const box=document.getElementById('workOrderLightbox');
-  if(!img||!box)return;
-  box.classList.add('show');
-  img.removeAttribute('src');
-  img.alt='工單照片載入中';
+  const img=document.getElementById('workOrderLightboxImg'); const box=document.getElementById('workOrderLightbox'); if(!img||!box)return;
+  box.classList.add('show'); img.removeAttribute('src'); img.alt='工單照片載入中'; resetWorkOrderZoom();
   try{
     const filename=decodeURIComponent(encodedName||'');
     const r=await fetch(`${base}/api/work-order/file?filename=${encodeURIComponent(filename)}&key=${encodeURIComponent(qualityServiceKey())}`,{cache:'no-store'});
     if(!r.ok) throw new Error(`照片讀取失敗（HTTP ${r.status}）`);
-    const blob=await r.blob();
-    if(workOrderPhotoObjectUrl) URL.revokeObjectURL(workOrderPhotoObjectUrl);
-    workOrderPhotoObjectUrl=URL.createObjectURL(blob);
-    img.src=workOrderPhotoObjectUrl;
-    img.alt=filename;
-  }catch(e){
-    img.alt='工單照片載入失敗';
-    alert('工單照片無法開啟：'+(e.message||e));
-    box.classList.remove('show');
-  }
+    const blob=await r.blob(); if(workOrderPhotoObjectUrl)URL.revokeObjectURL(workOrderPhotoObjectUrl);
+    workOrderPhotoObjectUrl=URL.createObjectURL(blob); img.src=workOrderPhotoObjectUrl; img.alt=filename;
+  }catch(e){img.alt='工單照片載入失敗';alert('工單照片無法開啟：'+(e.message||e));box.classList.remove('show');}
 }
-function closeWorkOrderLightbox(){const el=document.getElementById('workOrderLightbox');el?.classList.remove('show');const img=document.getElementById('workOrderLightboxImg');if(img)img.removeAttribute('src');if(workOrderPhotoObjectUrl){URL.revokeObjectURL(workOrderPhotoObjectUrl);workOrderPhotoObjectUrl='';}}
+function closeWorkOrderLightbox(){const el=document.getElementById('workOrderLightbox');el?.classList.remove('show');const img=document.getElementById('workOrderLightboxImg');if(img){img.removeAttribute('src');img.style.transform='';}if(workOrderPhotoObjectUrl){URL.revokeObjectURL(workOrderPhotoObjectUrl);workOrderPhotoObjectUrl='';}resetWorkOrderZoom();}
 
 /* ===== 品管照片庫：與原本車輛/公告照片完全分離 ===== */
 const QUALITY_DEFAULT_PATH='C:\\Users\\KC\\Desktop\\SCAN\\待分類照片';
@@ -6334,7 +6375,11 @@ if(qualityIsMobile()){const h=document.getElementById('qualityServiceHint');cons
 </div>
 <div id="workOrderLightbox" class="work-order-lightbox" onclick="if(event.target===this)closeWorkOrderLightbox()">
  <button class="work-order-lightbox-close" onclick="closeWorkOrderLightbox()">✕</button>
- <img id="workOrderLightboxImg" src="" alt="工單照片原圖">
+ <img id="workOrderLightboxImg" src="" alt="工單照片原圖" onpointerdown="workOrderPointerDown(event)" onpointermove="workOrderPointerMove(event)" onpointerup="workOrderPointerUp(event)" onpointercancel="workOrderPointerUp(event)" onwheel="workOrderWheel(event)" ondblclick="resetWorkOrderZoom()">
+ <div id="workOrderZoomLabel" class="work-order-zoom-label">100%</div>
+ <div class="work-order-zoom-controls">
+  <button type="button" onclick="zoomWorkOrder(-0.25)">−</button><button type="button" onclick="resetWorkOrderZoom()">100%</button><button type="button" onclick="zoomWorkOrder(0.25)">＋</button>
+ </div>
 </div>
 <div id="qualityPhotoModal" class="quality-modal-overlay" onclick="if(event.target===this)closeQualityPhotoLibrary()">
  <div class="quality-modal">
