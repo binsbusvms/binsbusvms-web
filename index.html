@@ -499,7 +499,7 @@
             .dashboard-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
             .kpi-card { min-width:0; }
             .line-schedule-box { max-width:100%; }
-            .map-container { grid-template-columns:repeat(4,minmax(0,1fr)); }
+            .map-container { grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); min-width:0; }
             .zone { min-height:155px; }
         }
 
@@ -1689,8 +1689,11 @@ html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
 .bus-card .bus-meta-btn.paint-meta{font-size:.68rem;}
 .bus-card .status-picker{min-width:0;}
 .bus-card .status-picker-button{min-height:34px;font-size:.76rem;}
-.bus-card .bus-bottom-row{display:grid;grid-template-columns:minmax(0,1fr) 92px 118px;gap:5px;align-items:center;margin-top:5px;}
-.bus-card .bus-bottom-row .photo-badge{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;justify-content:center;}
+.bus-card .bus-bottom-row{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,.72fr) minmax(0,.72fr) minmax(92px,1.45fr);gap:5px;align-items:stretch;margin-top:5px;}
+.bus-card .bus-bottom-row .photo-badge{display:flex;min-width:0;width:100%;height:100%;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;justify-content:center;align-items:center;}
+.bus-card .bus-bottom-row .bus-badge-container{min-width:0;display:flex;}
+.bus-card .bus-bottom-row .bus-meta-btn{width:100%;min-width:0;}
+.bus-card .bus-bottom-row .delivery-date-btn{font-size:.68rem;padding-left:3px;padding-right:3px;}
 .bus-card .bus-date-row{display:flex;gap:4px;}
 .bus-card .bus-date-group{min-width:0;flex:1;}
 .vehicle-meta-modal .modal-content{max-width:520px;}
@@ -1706,7 +1709,7 @@ html[data-theme="dark"] .status-drag-handle { color:#8fa5b5; }
 @media (max-width:600px){
   .bus-card .bus-meta-row{grid-template-columns:minmax(0,1fr) 70px 82px;gap:4px;}
   .bus-card .bus-meta-btn{font-size:.64rem;padding:4px 4px;}
-  .bus-card .bus-bottom-row{grid-template-columns:minmax(0,1fr) 82px 100px;gap:4px;}
+  .bus-card .bus-bottom-row{grid-template-columns:minmax(0,.82fr) minmax(0,.68fr) minmax(0,.68fr) minmax(92px,1.45fr);gap:4px;}
   .vehicle-meta-modal .modal-content{width:min(94vw,520px);}
 
 }
@@ -2212,6 +2215,148 @@ html[data-theme="dark"] .area-nav-btn.active {
     }
 }
 </style>
+<style id="work-order-ui-v16">
+.work-order-path-row{display:flex;align-items:center;gap:8px;padding:9px 10px;border:1px solid var(--border-color);border-radius:9px;background:var(--bg-input);margin:8px 0;min-width:0}.work-order-path-hint{font-size:.72rem;color:var(--text-sub);min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.work-order-path-row button{flex:0 0 auto;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-card);color:var(--text-main);padding:7px 9px;font-weight:700;cursor:pointer;font-size:.72rem}.work-order-btn,.paint-quick-btn{flex:0 0 auto;width:24px;height:22px;min-width:24px;padding:0;border:1px solid var(--border-color);border-radius:5px;background:var(--bg-bus-card);color:var(--text-main);font-size:.62rem;font-weight:900;cursor:pointer;line-height:20px;text-align:center;}
+.work-order-btn:hover,.paint-quick-btn:hover{border-color:var(--primary);filter:brightness(1.06);}
+.work-order-modal{width:min(560px,100%);}
+.work-order-status{padding:14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-input);margin:10px 0;}
+.work-order-file{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-card);cursor:pointer;}
+.work-order-file:hover{border-color:var(--primary);background:var(--bg-input);}
+.work-order-file-name{font-weight:800;word-break:break-all;}
+.work-order-file-hint{font-size:.72rem;color:var(--text-sub);margin-top:4px;}
+.work-order-loading{text-align:center;padding:20px;color:var(--text-sub);}
+.work-order-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:100200;display:none;align-items:center;justify-content:center;padding:18px;overflow:auto;}
+.work-order-lightbox.show{display:flex;}
+.work-order-lightbox img{max-width:96vw;max-height:94vh;object-fit:contain;cursor:zoom-in;box-shadow:0 12px 50px rgba(0,0,0,.45);}
+.work-order-lightbox-close{position:fixed;right:18px;top:12px;border:0;background:rgba(0,0,0,.45);color:#fff;font-size:1.5rem;border-radius:8px;width:42px;height:42px;cursor:pointer;z-index:100201;}
+</style>
+<style id="quality-photo-library-css">
+/* ===== 品管照片庫：六大類集中操作 ===== */
+.quality-photo-btn{flex:0 0 auto;width:24px;height:22px;min-width:24px;padding:0;border:1px solid var(--border-color);border-radius:5px;background:var(--bg-bus-card);color:var(--text-main);font-size:.62rem;font-weight:900;cursor:pointer;line-height:20px;text-align:center;}
+.quality-photo-btn:hover{border-color:var(--primary);}
+.quality-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.52);display:none;align-items:center;justify-content:center;z-index:100050;padding:12px;}
+.quality-modal-overlay.show{display:flex;}
+.quality-modal{width:min(980px,100%);max-height:90vh;overflow:auto;background:var(--bg-card);color:var(--text-main);border:1px solid var(--border-color);border-radius:16px;box-shadow:0 20px 70px rgba(0,0,0,.3);padding:18px;}
+.quality-upload-progress{display:none;margin:8px 0 12px;padding:10px 12px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-input)}.quality-upload-progress.show{display:block}.quality-progress-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.quality-progress-percent{font-size:1.05rem;font-weight:900;min-width:48px;text-align:right}.quality-progress-track{height:9px;border-radius:99px;background:var(--border-color);overflow:hidden;margin:7px 0}.quality-progress-fill{height:100%;width:0;background:#1f4e78;border-radius:99px;transition:width .2s ease}.quality-progress-text,.quality-progress-current{font-size:.76rem;color:var(--text-sub);word-break:break-all}.quality-photo-card{cursor:pointer}.quality-photo-card img{cursor:zoom-in;width:100%;height:100%;object-fit:contain}.quality-photo-loading{display:flex;align-items:center;justify-content:center;min-height:170px;color:var(--text-sub)}.quality-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.quality-head h2{margin:0;font-size:1.15rem}.quality-close{border:0;background:transparent;color:var(--text-main);font-size:1.25rem;cursor:pointer}.quality-status{padding:8px 10px;border-radius:9px;background:var(--bg-input);font-size:.78rem;margin-bottom:10px}.quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.quality-category{border:1px solid var(--border-color);border-radius:12px;background:var(--bg-input);padding:12px;display:flex;flex-direction:column;gap:7px;min-height:135px}.quality-category-title{font-weight:800;font-size:.98rem}.quality-count{font-size:.75rem;color:var(--text-sub)}.quality-path{font-size:.7rem;color:var(--text-sub);line-height:1.45;min-height:2.9em;word-break:break-all;overflow-wrap:anywhere}.quality-actions{display:flex;gap:7px;margin-top:auto;flex-wrap:wrap}.quality-actions button{flex:1;min-width:105px;min-height:34px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-card);color:var(--text-main);cursor:pointer;font-weight:700}.quality-actions .quality-upload-btn{background:#1f4e78;color:#fff !important;border-color:#1f4e78 !important;-webkit-text-fill-color:#fff !important}.quality-photo-card{border:1px solid var(--border-color);border-radius:9px;overflow:hidden;background:var(--bg-card)}.quality-photo-card{position:relative}.quality-photo-loading{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:4/3;color:var(--text-sub);font-size:.82rem;background:var(--bg-input)}.quality-photo-card img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;cursor:pointer}.quality-photo-name{font-size:.65rem;padding:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.quality-empty{text-align:center;color:var(--text-sub);padding:35px 10px}.quality-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:100080;background:#1f2937;color:#fff;padding:10px 16px;border-radius:10px;box-shadow:0 8px 25px rgba(0,0,0,.25);font-size:.85rem;font-weight:700;display:none}.quality-toast.show{display:block}
+@media(max-width:600px){.quality-modal{padding:13px}.quality-grid{grid-template-columns:1fr}.quality-actions button{min-width:0}}
+</style>
+
+<style id="quality-service-v153">
+.quality-service-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;padding:8px 10px;border:1px solid var(--border-color);border-radius:9px;background:var(--bg-input);font-size:.72rem}.quality-service-row button{border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-main);border-radius:7px;padding:6px 9px;cursor:pointer;font-weight:700}.quality-service-row button:hover{border-color:var(--primary)}
+@media(max-width:640px){.quality-service-row{align-items:stretch;flex-direction:column}.quality-service-row button{width:100%;min-height:36px}}
+</style>
+
+<style id="vehicle-card-layout-v17">
+.bus-card .bus-header{display:grid;grid-template-columns:minmax(0,1fr) 24px 24px 24px auto;gap:4px;align-items:center;}
+.bus-card .bus-plate-input{min-width:0;width:auto;flex-grow:0;padding:3px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bus-card .bus-date-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;width:100%;}
+.bus-card .bus-date-group{min-width:0;width:100%;}
+.bus-card .bus-date-input{width:100%;min-width:0;box-sizing:border-box;font-size:.72rem;}
+.bus-card .bus-date-text{display:block;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.70rem;}
+.bus-card .vehicle-card-meta-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px;margin-top:5px;}
+.bus-card .vehicle-card-meta-row .bus-meta-btn{width:100%;}
+@media(max-width:600px){
+ .bus-card .bus-header{grid-template-columns:minmax(0,1fr) 24px 24px 24px auto;gap:3px;}
+ .bus-card .bus-date-row{gap:5px;}
+ .bus-card .bus-date-input{font-size:.68rem;padding-left:3px;padding-right:3px;}
+ .bus-card .vehicle-card-meta-row{gap:4px;}
+ .bus-card .vehicle-card-meta-row .bus-meta-btn{font-size:.64rem;padding:4px 3px;}
+ .bus-card .bus-bottom-row .bus-meta-btn{font-size:.64rem;padding:4px 3px;}
+}
+</style>
+<style id="announcement-lightbox-v17">
+#lightboxModal{align-items:center;justify-content:center;padding:12px;}
+#lightboxModal img,#lightboxImg{max-width:96vw !important;max-height:92vh !important;width:auto !important;height:auto !important;object-fit:contain !important;cursor:zoom-in;}
+</style>
+
+<style id="elderly-mode-v25">
+#elderlyModeBtn{display:none;border:1px solid #1f4e78;background:#fff;color:#1f4e78;border-radius:8px;padding:6px 10px;font-weight:900;cursor:pointer;white-space:nowrap;}
+.elderly-mode-panel{display:none;max-width:760px;margin:12px auto 30px;padding:14px;background:#fff;color:#111;border:2px solid #222;border-radius:14px;box-sizing:border-box;}
+.elderly-top-title{font-size:2rem;font-weight:900;text-align:center;padding:10px 0 16px;border-bottom:3px solid #222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.elderly-search-wrap{margin-top:14px;}
+.elderly-label{font-size:1.35rem;font-weight:900;margin-bottom:8px;white-space:nowrap;}
+.elderly-search-input{display:block;width:100%;box-sizing:border-box;border:3px solid #222;border-radius:12px;background:#fff;color:#111;padding:16px 16px;font-size:1.35rem;font-weight:900;outline:none;}
+.elderly-search-input:focus{border-color:#1f4e78;box-shadow:0 0 0 3px rgba(31,78,120,.15);}
+.elderly-search-results{display:flex;flex-direction:column;gap:7px;margin-top:8px;}
+.elderly-search-item{width:100%;box-sizing:border-box;text-align:left;border:3px solid #333;border-radius:11px;background:#f4f4f4;color:#111;padding:13px 14px;font-size:1.25rem;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}
+.elderly-vehicle-info{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.elderly-block{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;box-sizing:border-box;min-height:66px;padding:13px 16px;border:3px solid #222;border-radius:12px;background:#fafafa;color:#111;font-size:1.25rem;font-weight:900;white-space:nowrap;overflow:hidden;}
+.elderly-block>span:first-child{flex:0 0 auto;font-size:1.05rem;font-weight:800;opacity:.72;white-space:nowrap;}
+.elderly-block .elderly-value{min-width:0;overflow:hidden;text-overflow:ellipsis;text-align:right;font-size:1.38rem;font-weight:950;white-space:nowrap;}
+.elderly-block.vehicle-title{background:#eee;font-size:1.25rem;min-height:74px;}
+.elderly-block.vehicle-title .elderly-value{background:#222;color:#fff;padding:7px 11px;border-radius:8px;font-size:1.55rem;}
+.elderly-empty{padding:22px 12px;text-align:center;border:3px dashed #555;border-radius:12px;font-size:1.25rem;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.elderly-common-title{font-size:1.45rem;font-weight:950;margin:22px 0 10px;white-space:nowrap;}
+.elderly-common-grid{display:flex;flex-direction:column;gap:10px;}
+.elderly-info-block{display:flex;align-items:center;justify-content:space-between;gap:18px;width:100%;min-height:66px;padding:13px 16px;box-sizing:border-box;border:3px solid #222;border-radius:12px;background:#fff;color:#111;text-decoration:none;font-size:1.35rem;font-weight:900;white-space:nowrap;overflow:hidden;cursor:pointer;}
+.elderly-info-block .elderly-info-label{flex:0 0 auto;font-size:1.12rem;font-weight:800;opacity:.72;white-space:nowrap;}
+.elderly-info-block>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:1.38rem;font-weight:950;text-align:right;white-space:nowrap;}
+.elderly-info-block span{min-width:0;overflow:hidden;text-overflow:ellipsis;}
+.elderly-common-detail{margin-top:8px;}
+.elderly-detail-card{border:3px solid #222;border-radius:12px;background:#f7f7f7;padding:14px;font-size:1.25rem;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.elderly-young-btn{display:block;width:100%;margin-top:20px;min-height:68px;border:3px solid #1f4e78;border-radius:12px;background:#1f4e78;color:#fff;font-size:1.4rem;font-weight:950;cursor:pointer;white-space:nowrap;}
+.elderly-block.note-block{min-height:150px;align-items:flex-start;}
+.elderly-block.note-block>span:first-child{padding-top:3px;}
+.elderly-block.note-block .elderly-value{white-space:normal;overflow:visible;text-overflow:clip;text-align:left;line-height:1.55;word-break:break-word;}
+.delivery-photo-card{padding:12px;white-space:normal;overflow:visible;text-overflow:clip;}
+.elderly-detail-caption{font-size:1.3rem;font-weight:950;margin-bottom:8px;white-space:nowrap;}
+.elderly-delivery-photo-btn{display:block;width:100%;border:0;background:#eee;border-radius:10px;padding:0;overflow:hidden;cursor:pointer;}
+.elderly-delivery-photo-btn img{display:block;width:100%;height:auto;max-height:55vh;object-fit:contain;background:#eee;}
+.elderly-photo-open-btn{display:block;width:100%;margin-top:8px;min-height:54px;border:2px solid #222;border-radius:10px;background:#fff;color:#111;font-size:1.2rem;font-weight:950;cursor:pointer;white-space:nowrap;}
+.schedule-detail{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.65;}
+body.elderly-mode{background:#fff !important;color:#111 !important;}
+body.elderly-mode #elderlyModePanel{display:block;}
+body.elderly-mode .header{display:block;}
+body.elderly-mode .header .header-title-box{display:flex;}
+body.elderly-mode .header h1{justify-content:center;}
+body.elderly-mode .header h1>div:last-child{display:none !important;}
+body.elderly-mode .company-info-bar,
+body.elderly-mode .dashboard-grid,
+body.elderly-mode .line-schedule-box,
+body.elderly-mode .announcement-box,
+body.elderly-mode .sort-bar,
+body.elderly-mode .nav-tabs,
+body.elderly-mode .tabs,
+body.elderly-mode .tab-nav,
+body.elderly-mode #tab-map,
+body.elderly-mode #tab-table,
+body.elderly-mode #tab-logs,
+body.elderly-mode #mapContainer,
+body.elderly-mode #tableContainer,
+body.elderly-mode .audit-section,
+body.elderly-mode .admin-only{display:none !important;}
+body.elderly-mode #themeToggleBtn{display:none !important;}
+@media(max-width:768px){
+  #elderlyModeBtn{display:inline-flex;align-items:center;justify-content:center;}
+}
+@media(min-width:769px){#elderlyModePanel{display:none !important;}}
+@media(max-width:600px){
+  .elderly-mode-panel{margin:8px 6px 22px;padding:12px;border-radius:14px;}
+  .elderly-top-title{font-size:1.65rem;}
+  .elderly-search-input{font-size:1.3rem;min-height:58px;}
+  .elderly-block,.elderly-info-block{min-height:64px;}
+  .elderly-block .elderly-value,.elderly-info-block>span:last-child{font-size:1.3rem;}
+  .elderly-block.vehicle-title{font-size:1.25rem;}
+  .elderly-block.vehicle-title .elderly-value{font-size:1.45rem;}
+}
+/* v28：老人專用模式自適應系統大字 */
+@media(max-width:900px){
+ body.elderly-mode{font-size:clamp(16px,4.2vw,24px);}
+ body.elderly-mode #elderlyModePanel{width:calc(100% - 12px);max-width:none;margin:6px auto 20px;padding:clamp(10px,2.5vw,18px);}
+ body.elderly-mode .elderly-top-title{font-size:clamp(1.7rem,7vw,2.6rem);}
+ body.elderly-mode .elderly-label,body.elderly-mode .elderly-common-title{font-size:clamp(1.25rem,5.4vw,2rem);}
+ body.elderly-mode .elderly-search-input{font-size:clamp(1.2rem,5vw,1.8rem);min-height:clamp(58px,14vw,82px);}
+ body.elderly-mode .elderly-search-item{font-size:clamp(1.15rem,4.7vw,1.7rem);min-height:clamp(58px,13vw,78px);}
+ body.elderly-mode .elderly-block,body.elderly-mode .elderly-info-block{min-height:clamp(64px,15vw,88px);padding:clamp(11px,2.8vw,18px);gap:clamp(8px,2vw,18px);}
+ body.elderly-mode .elderly-block>span:first-child,body.elderly-mode .elderly-info-block .elderly-info-label{font-size:clamp(.95rem,3.7vw,1.35rem);}
+ body.elderly-mode .elderly-block .elderly-value,body.elderly-mode .elderly-info-block>span:last-child{font-size:clamp(1.15rem,4.6vw,1.75rem);}
+ body.elderly-mode .elderly-block.vehicle-title .elderly-value{font-size:clamp(1.3rem,5.5vw,2rem);}
+ body.elderly-mode .elderly-block.note-block{min-height:clamp(130px,30vw,210px);}
+ body.elderly-mode .elderly-detail-card{font-size:clamp(1.1rem,4.3vw,1.65rem);}
+ body.elderly-mode .elderly-young-btn{min-height:clamp(62px,15vw,86px);font-size:clamp(1.2rem,5vw,1.8rem);}
+}
+@media(min-width:901px){body.elderly-mode #elderlyModePanel{display:none!important;}}
+</style>
 </head>
 <body>
 
@@ -2234,6 +2379,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             <div id="authBar" class="auth-bar">
                 <span id="authStatusText">👁️ 唯讀模式</span>
                 <button id="authBtn" class="btn-auth" onclick="toggleAuth()">🔑 登入編輯</button>
+                <button id="elderlyModeBtn" class="elderly-mode-btn" onclick="enterElderlyMode()">👴 老人模式</button>
             </div>
             <span class="autosave-badge admin-only" id="syncStatusBadge"><span class="dot success" id="syncDot"></span><span id="syncText">已連線</span></span>
         </div>
@@ -2263,7 +2409,31 @@ html[data-theme="dark"] .area-nav-btn.active {
     </div>
 </div>
 
-<input type="file" id="globalDirectPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handleDirectPhotoUpload(event)">
+<!-- 老人簡易顯示版：僅手機、未登入時顯示 -->
+<div id="elderlyModePanel" class="elderly-mode-panel" aria-hidden="true">
+    <div class="elderly-top-title">👴 老人專用模式</div>
+    <div class="elderly-search-wrap">
+        <div class="elderly-label">🔍 找車輛</div>
+        <input id="elderlyVehicleSearch" class="elderly-search-input" type="text" autocomplete="off" placeholder="請輸入車號或車輛名稱" oninput="elderlySearchVehicle(this.value)">
+        <div id="elderlySearchResults" class="elderly-search-results"></div>
+    </div>
+    <div id="elderlyVehicleInfo" class="elderly-vehicle-info">
+        <div class="elderly-empty">請先輸入車號或車輛名稱</div>
+    </div>
+    <div class="elderly-common-title">📌 常用資訊</div>
+    <div class="elderly-common-grid">
+        <button class="elderly-info-block" type="button" onclick="elderlyShowDelivery()"><span class="elderly-info-label">🚌 交車公告</span><span>查看資訊</span></button>
+        <button class="elderly-info-block" type="button" onclick="elderlyShowSchedule()"><span class="elderly-info-label">📅 排程</span><span>查看最新</span></button>
+        <a class="elderly-info-block" href="https://lin.ee/8k22Jwf" target="_blank" rel="noopener noreferrer"><span class="elderly-info-label">💬 LINE</span><span>客服帳號</span></a>
+        <a class="elderly-info-block" href="https://www.lbbsbus.com.tw/" target="_blank" rel="noopener noreferrer"><span class="elderly-info-label">🌐 官網</span><span>柏昇官網</span></a>
+        <a class="elderly-info-block" href="https://www.google.com/maps/search/?api=1&query=%E6%A1%83%E5%9C%92%E5%B8%82%E6%96%B0%E5%B1%8B%E5%8D%80%E6%9D%B1%E7%A6%8F%E8%B7%AF908%E5%B7%B750%E8%99%9F" target="_blank" rel="noopener noreferrer"><span class="elderly-info-label">📍 地址</span><span>桃園市新屋區東福路908巷50號</span></a>
+        <button class="elderly-info-block" type="button" onclick="openCompanyPhone()"><span class="elderly-info-label">📞 電話</span><span>03-4766788</span></button>
+    </div>
+    <div id="elderlyCommonDetail" class="elderly-common-detail"></div>
+    <button class="elderly-young-btn" type="button" onclick="exitElderlyMode()">👨 年輕人模式</button>
+</div>
+
+<input type="file" id="globalDirectPhotoInput" class="hidden-file-input" accept="image/*" multiple onchange="handleDirectPhotoUpload(event)">
 <input type="file" id="announcementFileInput" class="hidden-file-input" accept="image/*" onchange="handleAnnouncementPhotoUpload(event)">
 
 <!-- KPI 看板 -->
@@ -2472,6 +2642,7 @@ html[data-theme="dark"] .area-nav-btn.active {
       <div><label>組別</label><select id="addBusGroupSelect"></select></div>
       <div><label>車輛型號</label><select id="addBusModelSelect"></select></div>
       <div><label>噴漆組別</label><select id="addBusPaintSelect"></select></div>
+      <div><label>彩繪廣告</label><select id="addBusColorSelect"></select></div>
     </div>
     <div style="margin-top:10px;"><label style="font-size:.8rem;font-weight:700;">進度</label><select id="addBusStatusSelect"></select></div>
     <div class="modal-footer"><button class="btn btn-archive" type="button" onclick="closeModal('addBusModal')">取消</button><button class="btn" type="button" onclick="saveNewBus()">💾 新增車輛</button></div>
@@ -2527,6 +2698,9 @@ html[data-theme="dark"] .area-nav-btn.active {
         <label style="font-size:0.8rem; font-weight:bold;">車輛編號 / 車號：</label>
         <input type="text" id="modalBusTitle" style="margin-top:2px; margin-bottom:8px;">
 
+        <label style="font-size:0.8rem; font-weight:bold;">車輛所在區域：</label>
+        <select id="modalBusZoneSelect" style="margin-top:2px; margin-bottom:8px;"></select>
+
         <div style="display:flex; gap:8px; margin-bottom:8px;">
             <div style="flex:1;">
                 <label style="font-size:0.8rem; font-weight:bold;">進場日期：</label>
@@ -2555,7 +2729,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <label style="font-size:0.8rem; font-weight:bold;">📷 施工瑕疵 / 現場照片：</label>
                 <button class="btn btn-zone" style="min-height:24px; padding:2px 8px; font-size:0.7rem;" onclick="triggerPhotoUpload()">📸 上傳照片</button>
-                <input type="file" id="busPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handlePhotoUpload(event)">
+                <input type="file" id="busPhotoInput" class="hidden-file-input" accept="image/*" multiple onchange="handlePhotoUpload(event)">
             </div>
             <div class="photo-grid" id="modalPhotoGrid"></div>
         </div>
@@ -2585,7 +2759,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             <div id="galleryAdminControls" class="admin-only" style="display:none; gap:8px; flex:1; flex-wrap:wrap;">
                 <button class="btn btn-zone" type="button" onclick="triggerGalleryPhotoUpload()">📸 新增照片</button>
                 <button class="btn" type="button" onclick="editGalleryBus()">✏️ 編輯車輛</button>
-                <input type="file" id="galleryPhotoInput" class="hidden-file-input" accept="image/*" capture="environment" multiple onchange="handleGalleryPhotoUpload(event)">
+                <input type="file" id="galleryPhotoInput" class="hidden-file-input" accept="image/*" multiple onchange="handleGalleryPhotoUpload(event)">
             </div>
             <button class="btn" type="button" onclick="closeModal('photoGalleryModal')">關閉</button>
         </div>
@@ -2765,6 +2939,9 @@ html[data-theme="dark"] .area-nav-btn.active {
         paintGroups: [
             {"id":"PG_gui","name":"貴"},
             {"id":"PG_jun","name":"駿"}
+        ],
+        colorGroups: [
+            {"id":"CG_default","name":"彩繪"}
         ],
         statuses: [
             {"id":"pending","name":"待施工","color":"#78909C","groupId":""},
@@ -3019,20 +3196,21 @@ html[data-theme="dark"] .area-nav-btn.active {
     async function loadCloudData() {
         setSyncStatus('syncing', '同步雲端中...');
         try {
-            if (!supabaseClient) throw new Error("Supabase 未能初始化");
-            const { data, error } = await supabaseClient.from('app_data').select('content').eq('id', 'main_data').single();
+            if (!supabaseClient) throw new Error('Supabase 未能初始化');
+            const result = await Promise.race([
+                supabaseClient.from('app_data').select('content').eq('id', 'main_data').single(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('雲端載入逾時')), 8000))
+            ]);
+            const { data, error } = result;
             if (error) throw error;
-            if (data && data.content) {
-                appData = data.content;
-                setSyncStatus('success', '已連線');
-            }
-        } catch(err) {
-            console.warn("載入雲端失敗，嘗試讀取本機數據：", err);
+            if (!data || !data.content) throw new Error('雲端沒有取得 main_data');
+            appData = data.content;
+            setSyncStatus('success', '已連線');
+        } catch (err) {
+            console.warn('載入雲端失敗，使用本機備份：', err);
             const local = localStorage.getItem('bus_manage_data_v2');
-            if (local) {
-                try { appData = JSON.parse(local); } catch(e){}
-            }
-            setSyncStatus('error', '離線模式');
+            if (local) { try { appData = JSON.parse(local); } catch(e) {} }
+            setSyncStatus('error', '雲端載入失敗，已使用本機資料');
         }
         const hadLegacyDemoAnnouncements = Array.isArray(appData.schedules) &&
             appData.schedules.some(item => item && (item.id === 'sched_1' || item.id === 'sched_2'));
@@ -3085,9 +3263,12 @@ html[data-theme="dark"] .area-nav-btn.active {
         if (!Array.isArray(appData.vehicleModels)) appData.vehicleModels = [];
         if (!Array.isArray(appData.paintGroups)) appData.paintGroups = [];
         if (!appData.paintGroups.length) appData.paintGroups = [{id:'PG_gui', name:'貴'}, {id:'PG_jun', name:'駿'}];
+        if (!Array.isArray(appData.colorGroups)) appData.colorGroups = [];
+        if (!appData.colorGroups.length) appData.colorGroups = [{id:'CG_default', name:'彩繪'}];
         appData.vehicleGroups.forEach(g => { if (!g.id) g.id='VG_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); if (typeof g.name!=='string') g.name='未命名組別'; });
         appData.vehicleModels.forEach(g => { if (!g.id) g.id='VM_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); if (typeof g.name!=='string') g.name='未命名車型'; });
         appData.paintGroups.forEach(g => { if (!g.id) g.id='PG_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); if (typeof g.name!=='string') g.name='未命名'; });
+        appData.colorGroups.forEach(g => { if (!g.id) g.id='CG_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); if (typeof g.name!=='string') g.name='未命名彩繪'; });
         if (!Array.isArray(appData.statuses)) appData.statuses = [];
         appData.statusGroups.forEach(g => {
             if (!g.id) g.id = 'SG_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
@@ -3105,6 +3286,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             if (b.groupId == null) b.groupId = '';
             if (b.modelId == null) b.modelId = '';
             if (b.paintGroupId == null) b.paintGroupId = '';
+            if (b.colorGroupId == null) b.colorGroupId = '';
             if (b.deliveryDate == null) b.deliveryDate = '';
             if (!b.bg) b.bg = '#8c5d5d';
             if (!b.color) b.color = '#ffffff';
@@ -3129,43 +3311,26 @@ html[data-theme="dark"] .area-nav-btn.active {
         if (!isAuthed()) return false;
         if (isSaving) return false;
         isSaving = true;
-
         try {
-            localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData));
-        } catch (e) {
-            console.warn("localStorage 容量上限，跳過本地備份。", e);
-        }
-
-        setSyncStatus('syncing', '儲存同步中...');
-        let success = false;
-
-        try {
-            if (!supabaseClient) throw new Error("Supabase 未初始化");
-
-            const payloadContent = {
-                ...appData,
-                auditLogs: Array.isArray(appData.auditLogs) ? appData.auditLogs.slice(0, 50) : []
-            };
-
-            const { data, error } = await supabaseClient
-                .from('app_data')
-                .upsert({ 
-                    id: 'main_data', 
-                    content: payloadContent,
-                    updated_at: new Date().toISOString() 
-                });
-
-            if (error) throw error;
-            
+            try { localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData)); }
+            catch (e) { console.warn('localStorage 容量上限，跳過本地備份。', e); }
+            setSyncStatus('syncing', '儲存同步中...');
+            if (!supabaseClient) throw new Error('Supabase 未初始化');
+            const payloadContent = { ...appData, auditLogs: Array.isArray(appData.auditLogs) ? appData.auditLogs.slice(0, 50) : [] };
+            const result = await Promise.race([
+                supabaseClient.from('app_data').upsert({ id:'main_data', content:payloadContent, updated_at:new Date().toISOString() }),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('雲端儲存逾時')), 6000))
+            ]);
+            if (result.error) throw result.error;
             setSyncStatus('success', '已同步雲端');
-            success = true;
+            return true;
         } catch (err) {
-            console.error("Cloud Save Error:", err);
-            setSyncStatus('error', `同步失敗`);
+            console.error('Cloud Save Error:', err);
+            setSyncStatus('error', '同步失敗');
+            return false;
         } finally {
             isSaving = false;
         }
-        return success;
     }
 
     function setSyncStatus(type, text) {
@@ -3925,15 +4090,18 @@ html[data-theme="dark"] .area-nav-btn.active {
                 const groupName = appData.vehicleGroups.find(x=>x.id===bus.groupId)?.name || '組別';
                 const modelName = appData.vehicleModels.find(x=>x.id===bus.modelId)?.name || '車型';
                 const paintName = appData.paintGroups.find(x=>x.id===bus.paintGroupId)?.name || '噴漆';
+                const colorName = appData.colorGroups.find(x=>x.id===bus.colorGroupId)?.name || '彩繪';
                 const deliveryDate = bus.deliveryDate || '';
 
                 busCard.innerHTML = `
                     <div class="bus-header">
                         <div class="bus-plate-input" style="background:${bus.bg || '#8c5d5d'}; color:${bus.color || '#ffffff'};" onclick="handleBusPlateClick('${bus.id}')">
-                            ${bus.plate}
+                            ${escapeHtml(bus.plate)}
                         </div>
+                        <button type="button" class="work-order-btn" title="工單照片" onclick="event.stopPropagation();openWorkOrderModal('${bus.id}')">工</button>
                         <button type="button" class="bus-note-btn ${bus.note ? 'has-note' : ''}" title="${bus.note ? '查看／編輯備註' : '新增備註'}" onclick="event.stopPropagation();openBusNoteModal('${bus.id}')">註</button>
-                        ${authed ? `<button style="background:#ff4d4f;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:0.65rem;" onclick="deleteBus('${bus.id}')">✕</button>` : ''}
+                        ${isQualityUser() ? `<button type="button" class="quality-photo-btn" title="品管照片庫" onclick="event.stopPropagation();openQualityPhotoLibrary('${bus.id}')">品</button>` : ''}
+                        ${authed ? `<button style="background:#ff4d4f;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:0.65rem;" onclick="event.stopPropagation();deleteBus('${bus.id}')">✕</button>` : ''}
                     </div>
                     <div class="bus-meta-row">
                         <div class="status-picker-wrap">${authed ? renderStatusPickerHtml(bus.id, bus.statusId) : `<div class="status-picker readonly"><button type="button" class="status-picker-button" disabled>${escapeHtml((appData.statuses.find(st=>st.id===bus.statusId)||{}).name || '請選擇進度')}</button></div>`}</div>
@@ -3947,14 +4115,17 @@ html[data-theme="dark"] .area-nav-btn.active {
                     ${dateHtml}
                     <div class="bus-bottom-row">
                         <div class="bus-badge-container">
-                            <span class="photo-badge" onclick="openPhotoGallery('${bus.id}')">📷 照片 (${photoCount})${authed ? ' · 管理' : ''}</span>
+                            <span class="photo-badge" onclick="openPhotoGallery('${bus.id}')">📷 照片 (${photoCount})</span>
                         </div>
                         ${authed
-                            ? `<button type="button" class="bus-meta-btn paint-meta" title="點擊編輯噴漆組別" onclick="openVehicleMetaManager('${bus.id}','paint')">${escapeHtml(paintName)}</button>`
-                            : `<button type="button" class="bus-meta-btn paint-meta meta-readonly" title="登入後可編輯" disabled>${escapeHtml(paintName)}</button>`}
+                            ? `<button type="button" class="bus-meta-btn" title="編輯噴漆組別" onclick="openVehicleMetaManager('${bus.id}','paint')">${escapeHtml(paintName)}</button>`
+                            : `<button type="button" class="bus-meta-btn meta-readonly" disabled>${escapeHtml(paintName)}</button>`}
                         ${authed
-                            ? `<button type="button" class="bus-meta-btn" title="選擇預定交車日" onclick="editDeliveryDate('${bus.id}')">${deliveryDate ? '交車 '+escapeHtml(deliveryDate) : '預定交車日'}</button>`
-                            : `<button type="button" class="bus-meta-btn meta-readonly" title="登入後可編輯" disabled>${deliveryDate ? '交車 '+escapeHtml(deliveryDate) : '預定交車日'}</button>`}
+                            ? `<button type="button" class="bus-meta-btn" title="編輯彩繪廣告" onclick="openVehicleMetaManager('${bus.id}','color')">${escapeHtml(colorName)}</button>`
+                            : `<button type="button" class="bus-meta-btn meta-readonly" disabled>${escapeHtml(colorName)}</button>`}
+                        ${authed
+                            ? `<button type="button" class="bus-meta-btn delivery-date-btn" title="選擇預定交車日" onclick="editDeliveryDate('${bus.id}')">${deliveryDate ? '交車 '+escapeHtml(deliveryDate) : '預定交車日'}</button>`
+                            : `<button type="button" class="bus-meta-btn meta-readonly delivery-date-btn" title="登入後可編輯" disabled>${deliveryDate ? '交車 '+escapeHtml(deliveryDate) : '預定交車日'}</button>`}
                     </div>
                 `;
 
@@ -4010,6 +4181,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             const groupName = appData.vehicleGroups.find(x=>x.id===bus.groupId)?.name || '組別';
             const modelName = appData.vehicleModels.find(x=>x.id===bus.modelId)?.name || '型號';
             const paintName = appData.paintGroups.find(x=>x.id===bus.paintGroupId)?.name || '噴漆';
+            const colorName = appData.colorGroups.find(x=>x.id===bus.colorGroupId)?.name || '彩繪';
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding:4px; border:1px solid var(--border-color); text-align:center;">
@@ -4024,6 +4196,9 @@ html[data-theme="dark"] .area-nav-btn.active {
                         ${authed
                             ? `<button type="button" onclick="openVehicleMetaManager('${bus.id}','paint')">${escapeHtml(paintName)}</button>`
                             : `<button type="button" class="meta-readonly" title="登入後可編輯" disabled>${escapeHtml(paintName)}</button>`}
+                        ${authed
+                            ? `<button type="button" onclick="openVehicleMetaManager('${bus.id}','color')">${escapeHtml(colorName)}</button>`
+                            : `<button type="button" class="meta-readonly" title="登入後可編輯" disabled>${escapeHtml(colorName)}</button>`}
                     </div>
                 </td>
                 <td class="table-zone-cell" style="padding:4px; border:1px solid var(--border-color);">
@@ -4078,7 +4253,8 @@ html[data-theme="dark"] .area-nav-btn.active {
     const vehicleMetaConfig = {
         group: { title:'🧩 編輯組別', help:'組別可新增、修改名稱、刪除；點選名稱即可套用到目前車輛。', listKey:'vehicleGroups', field:'groupId', empty:'尚未建立組別', addText:'請輸入新的組別名稱：' },
         model: { title:'🚍 編輯車輛型號', help:'車輛型號可新增、修改名稱、刪除；點選名稱即可套用到目前車輛。', listKey:'vehicleModels', field:'modelId', empty:'尚未建立車輛型號', addText:'請輸入新的車輛型號：' },
-        paint: { title:'🎨 編輯噴漆組別', help:'噴漆組別目前預設「貴／駿」，也可以自行新增、修改或刪除。點選名稱即可套用。', listKey:'paintGroups', field:'paintGroupId', empty:'尚未建立噴漆組別', addText:'請輸入新的噴漆組別名稱（例如：貴、駿）：' }
+        paint: { title:'🎨 編輯噴漆組別', help:'噴漆組別獨立管理；可以新增、修改或刪除，點選名稱即可套用到目前車輛。', listKey:'paintGroups', field:'paintGroupId', empty:'尚未建立噴漆組別', addText:'請輸入新的噴漆組別名稱（例如：貴、駿）：' },
+        color: { title:'🖌️ 編輯彩繪廣告', help:'彩繪廣告獨立管理，與噴漆組別完全分開；點選名稱即可套用到目前車輛。', listKey:'colorGroups', field:'colorGroupId', empty:'尚未建立彩繪廣告', addText:'請輸入新的彩繪廣告名稱：' }
     };
     let currentVehicleMeta = { busId:null, type:null };
 
@@ -4141,7 +4317,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             const name = prompt(cfg.addText);
             if (!name || !name.trim()) return;
             const key = cfg.listKey;
-            const prefix = currentVehicleMeta.type === 'group' ? 'VG_' : currentVehicleMeta.type === 'model' ? 'VM_' : 'PG_';
+            const prefix = currentVehicleMeta.type === 'group' ? 'VG_' : currentVehicleMeta.type === 'model' ? 'VM_' : currentVehicleMeta.type === 'paint' ? 'PG_' : 'CG_';
             appData[key].push({ id: prefix + Date.now() + '_' + Math.random().toString(36).slice(2,6), name:name.trim() });
             autoSaveCloud();
             renderVehicleMetaList();
@@ -4163,16 +4339,41 @@ html[data-theme="dark"] .area-nav-btn.active {
         });
     }
 
+    let pendingVehicleMetaDelete = null;
     function deleteVehicleMetaOption(idx) {
         requireAuth(() => {
             const cfg = vehicleMetaConfig[currentVehicleMeta.type];
             const item = appData[cfg.listKey]?.[idx];
             if (!item) return;
-            const used = appData.buses.filter(b => b[cfg.field] === item.id).length;
-            if (used > 0) {
-                alert(`「${item.name}」目前有 ${used} 台車正在使用，請先把這些車輛改到其他選項後再刪除。`);
+            const usedBuses = appData.buses.filter(b => b[cfg.field] === item.id);
+
+            // 有車正在使用時：第一次點擊先列出使用中的車輛；再次點擊同一個刪除按鈕才真正刪除。
+            if (usedBuses.length > 0) {
+                const pendingKey = `${currentVehicleMeta.type}|${item.id}`;
+                if (pendingVehicleMetaDelete === pendingKey) {
+                    if (!confirm(`「${item.name}」目前有 ${usedBuses.length} 台車正在使用。\n\n確定仍要刪除這個選項嗎？\n\n刪除後，這些車輛的「${cfg.title.replace(/^\S+ /,'')}」將會變成未設定。`)) {
+                        pendingVehicleMetaDelete = null;
+                        return;
+                    }
+                    appData[cfg.listKey].splice(idx, 1);
+                    pendingVehicleMetaDelete = null;
+                    autoSaveCloud();
+                    renderVehicleMetaList();
+                    renderApp();
+                    return;
+                }
+
+                pendingVehicleMetaDelete = pendingKey;
+                const vehicleNames = usedBuses.map((b, i) => {
+                    const plate = b.plate || '未設定車牌';
+                    const name = b.name || b.vehicleName || '';
+                    return `${i + 1}. ${name ? name + '｜' : ''}${plate}`;
+                }).join('\n');
+                alert(`「${item.name}」目前有 ${usedBuses.length} 台車正在使用：\n\n${vehicleNames}\n\n若確定要刪除，請再點一次這個刪除按鈕。`);
                 return;
             }
+
+            pendingVehicleMetaDelete = null;
             if (!confirm(`確定刪除「${item.name}」？`)) return;
             appData[cfg.listKey].splice(idx,1);
             autoSaveCloud();
@@ -4245,6 +4446,8 @@ html[data-theme="dark"] .area-nav-btn.active {
             if (!bus) return;
 
             document.getElementById('modalBusTitle').value = bus.plate;
+            const zoneSelect = document.getElementById('modalBusZoneSelect');
+            if (zoneSelect) { zoneSelect.innerHTML = (appData.zones || []).map(z => `<option value="${escapeHtml(z.id)}">${escapeHtml(z.name)}</option>`).join(''); zoneSelect.value = bus.zoneId || ''; }
             document.getElementById('modalBusStartDate').value = bus.startDate || '';
             document.getElementById('modalBusEndDate').value = bus.endDate || '';
             document.getElementById('modalBusNote').value = bus.note || '';
@@ -4501,6 +4704,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             const newStartDate = document.getElementById('modalBusStartDate').value;
             const newEndDate = document.getElementById('modalBusEndDate').value;
             const newNote = document.getElementById('modalBusNote').value;
+            const newZoneId = document.getElementById('modalBusZoneSelect')?.value || bus.zoneId || '';
             
             if (bus.plate !== newPlate) {
                 addAuditLog(newPlate, `車號更名為 ${newPlate}`);
@@ -4512,6 +4716,8 @@ html[data-theme="dark"] .area-nav-btn.active {
             bus.startDate = newStartDate;
             bus.endDate = newEndDate;
             bus.note = newNote;
+            if (bus.zoneId !== newZoneId) { const zName = appData.zones.find(z=>z.id===newZoneId)?.name || ''; addAuditLog(bus.plate, `編輯視窗變更區域：${zName}`); }
+            bus.zoneId = newZoneId;
 
             await autoSaveCloud();
             renderApp();
@@ -4964,15 +5170,39 @@ html[data-theme="dark"] .area-nav-btn.active {
         });
     }
 
+    let pendingStatusDelete = null;
     function deleteStatus(idx) {
         requireAuth(() => {
             const status = appData.statuses[idx];
             if (!status) return;
-            const usedBy = appData.buses.filter(b => b.statusId === status.id).length;
-            if (usedBy > 0) {
-                alert(`「${status.name}」目前有 ${usedBy} 台車正在使用，請先把這些車輛改到其他進度後再刪除。`);
+            const usedBuses = appData.buses.filter(b => b.statusId === status.id);
+
+            if (usedBuses.length > 0) {
+                const pendingKey = status.id;
+                if (pendingStatusDelete === pendingKey) {
+                    if (!confirm(`「${status.name}」目前有 ${usedBuses.length} 台車正在使用。\n\n確定仍要刪除這個進度嗎？\n\n刪除後，這些車輛將會變成未設定進度。`)) {
+                        pendingStatusDelete = null;
+                        return;
+                    }
+                    appData.statuses.splice(idx, 1);
+                    pendingStatusDelete = null;
+                    autoSaveCloud();
+                    renderStatusManageList();
+                    renderApp();
+                    return;
+                }
+
+                pendingStatusDelete = pendingKey;
+                const vehicleNames = usedBuses.map((b, i) => {
+                    const plate = b.plate || '未設定車牌';
+                    const name = b.name || b.vehicleName || '';
+                    return `${i + 1}. ${name ? name + '｜' : ''}${plate}`;
+                }).join('\n');
+                alert(`「${status.name}」目前有 ${usedBuses.length} 台車正在使用：\n\n${vehicleNames}\n\n若確定要刪除，請再點一次這個刪除按鈕。`);
                 return;
             }
+
+            pendingStatusDelete = null;
             if (confirm(`確定刪除進度「${status.name}」？`)) {
                 appData.statuses.splice(idx, 1);
                 autoSaveCloud();
@@ -5010,7 +5240,7 @@ html[data-theme="dark"] .area-nav-btn.active {
         list.forEach(b => {
             const zName = appData.zones.find(z => z.id === b.zoneId)?.name || '';
             const sName = appData.statuses.find(s => s.id === b.statusId)?.name || '';
-            csvContent += `"${b.plate}","${zName}","${sName}","${b.startDate||''}","${b.endDate||''}","${appData.vehicleGroups.find(x=>x.id===b.groupId)?.name||''}","${appData.vehicleModels.find(x=>x.id===b.modelId)?.name||''}","${appData.paintGroups.find(x=>x.id===b.paintGroupId)?.name||''}","${b.deliveryDate||''}","${b.note||''}"\n`;
+            csvContent += `"${b.plate}","${zName}","${sName}","${b.startDate||''}","${b.endDate||''}","${appData.vehicleGroups.find(x=>x.id===b.groupId)?.name||''}","${appData.vehicleModels.find(x=>x.id===b.modelId)?.name||''}","${appData.paintGroups.find(x=>x.id===b.paintGroupId)?.name||''}","${appData.colorGroups.find(x=>x.id===b.colorGroupId)?.name||''}","${b.deliveryDate||''}","${b.note||''}"\n`;
         });
 
         const encodedUri = encodeURI(csvContent);
@@ -5092,6 +5322,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             const group = document.getElementById('addBusGroupSelect');
             const model = document.getElementById('addBusModelSelect');
             const paint = document.getElementById('addBusPaintSelect');
+            const color = document.getElementById('addBusColorSelect');
             const status = document.getElementById('addBusStatusSelect');
             if (!modal || !plate) return;
             const fill = (el, arr, placeholder) => {
@@ -5100,9 +5331,10 @@ html[data-theme="dark"] .area-nav-btn.active {
             fill(group, appData.vehicleGroups, '未指定組別');
             fill(model, appData.vehicleModels, '未指定車型');
             fill(paint, appData.paintGroups, '未指定噴漆組別');
+            fill(color, appData.colorGroups, '未指定彩繪廣告');
             status.innerHTML = renderStatusOptionsHtml(appData.statuses[0]?.id || '');
             const defaultZone = appData.zones.find(z => /後方底盤區/.test(z.name)) || appData.zones.find(z => /後方空地底盤區/.test(z.name)) || appData.zones[0];
-            plate.value=''; group.value=''; model.value=''; paint.value='';
+            plate.value=''; group.value=''; model.value=''; paint.value=''; color.value='';
             if (status.options.length) status.value = appData.statuses[0]?.id || '';
             modal.dataset.defaultZoneId = defaultZone?.id || '';
             modal.classList.add('active');
@@ -5124,6 +5356,7 @@ html[data-theme="dark"] .area-nav-btn.active {
             groupId: document.getElementById('addBusGroupSelect')?.value || '',
             modelId: document.getElementById('addBusModelSelect')?.value || '',
             paintGroupId: document.getElementById('addBusPaintSelect')?.value || '',
+            colorGroupId: document.getElementById('addBusColorSelect')?.value || '',
             deliveryDate:'', note:'', photos:[], logs:[]
         };
         appData.buses.push(newBus);
@@ -5657,6 +5890,39 @@ function reloadAfterAnnouncementSync() {
 </script>
 
 
+<style id="responsive-window-layout-v24">
+html, body { max-width:100%; overflow-x:hidden; }
+.container, .card, .zone, .zone-body, .bus-card { min-width:0; max-width:100%; box-sizing:border-box; }
+.bus-card .bus-header, .bus-card .bus-meta-row, .bus-card .bus-bottom-row { min-width:0; }
+
+/* 桌面：大視窗維持原本穩定的四區配置，避免最大化後自動塞入過多區域而讓車輛方塊過窄。
+   視窗縮小時才自動減少欄數。 */
+@media (min-width:1401px) {
+  .map-container { width:100%; min-width:0; grid-template-columns:repeat(4,minmax(0,1fr)) !important; }
+}
+@media (min-width:901px) and (max-width:1400px) {
+  .map-container { width:100%; min-width:0; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)) !important; }
+}
+
+/* 第二行：進度加寬，組別／車型縮窄；所有文字強制單行，避免把卡片撐破。 */
+.bus-card .bus-meta-row { grid-template-columns:minmax(0,1.35fr) minmax(54px,.58fr) minmax(62px,.66fr); gap:4px; }
+.bus-card .status-picker-button,
+.bus-card .bus-meta-row .bus-meta-btn { min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* 手機：維持單欄，讓進度文字有足夠空間。 */
+@media (max-width:640px) {
+  .map-container { grid-template-columns:1fr !important; }
+  .bus-card .bus-meta-row { grid-template-columns:minmax(0,1.38fr) minmax(52px,.52fr) minmax(60px,.60fr); gap:4px; }
+  .bus-card .status-picker-button { white-space:nowrap !important; overflow:hidden !important; text-overflow:ellipsis !important; }
+  .bus-card .bus-bottom-row { grid-template-columns:minmax(0,.82fr) minmax(0,.68fr) minmax(0,.68fr) minmax(92px,1.45fr); gap:4px; }
+  .bus-card .bus-bottom-row .delivery-date-btn { font-size:.66rem; white-space:nowrap; }
+}
+@media (max-width:380px) {
+  .bus-card .bus-meta-row { grid-template-columns:minmax(0,1.45fr) minmax(0,.50fr) minmax(0,.55fr); gap:3px; }
+  .bus-card .bus-bottom-row { grid-template-columns:minmax(0,.78fr) minmax(0,.62fr) minmax(0,.62fr) minmax(92px,1.5fr); gap:3px; }
+  .bus-card .bus-bottom-row .bus-meta-btn, .bus-card .bus-bottom-row .photo-badge { font-size:.60rem; padding-left:2px; padding-right:2px; }
+}
+</style>
 <style id="final-table-date-control-theme">
 /* 手機全廠總表：所有可選／可編輯欄位與車輛方塊日期欄使用同一套底色。 */
 @media (max-width:600px) {
@@ -5710,7 +5976,374 @@ html[data-theme="dark"] #addScheduleModal input[type="datetime-local"],
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', forceAnnouncementRender);
   else forceAnnouncementRender();
 })();
+
+/* ===== v35 工單照片：數字比對＋原圖可開啟（正式推送版） ===== */
+const WORK_ORDER_DEFAULT_PATH='C:\\Users\\KC\\Desktop\\SCAN\\工單照片';
+let workOrderCurrentBusId=null;
+let workOrderPath=WORK_ORDER_DEFAULT_PATH;
+function workOrderServiceUrl(){return qualityServiceUrl();}
+async function loadWorkOrderPath(){
+  const base=workOrderServiceUrl();
+  if(!base) return workOrderPath;
+  try{
+    const r=await fetch(`${base}/api/work-order-config`,{headers:{'X-BinsBus-Key':qualityServiceKey()},cache:'no-store'});
+    const d=await r.json();
+    if(r.ok && d.path) workOrderPath=String(d.path);
+  }catch(e){ console.warn('讀取工單照片路徑失敗：',e); }
+  return workOrderPath;
+}
+async function configureWorkOrderPath(){
+  if(!isQualityUser()){alert('此功能僅限品管帳號');return;}
+  const base=workOrderServiceUrl();
+  if(!base){alert('尚未設定照片服務網址。');return;}
+  const current=workOrderPath||WORK_ORDER_DEFAULT_PATH;
+  const p=prompt('設定「所有車輛共用的工單照片」儲存位置\n\n請輸入 Windows 資料夾完整路徑（可用 S:\\ 或 \\\NAS\\...）：',current);
+  if(p===null)return;
+  const pathValue=p.trim()||WORK_ORDER_DEFAULT_PATH;
+  try{
+    const r=await fetch(`${base}/api/config/work-order`,{method:'POST',headers:qualityHeaders(),body:JSON.stringify({path:pathValue})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error||'儲存工單照片路徑失敗');
+    workOrderPath=d.path||pathValue;
+    const hint=document.getElementById('workOrderPathHint');
+    if(hint) hint.textContent=`📁 ${workOrderPath}`;
+    qualityToast('✅ 工單照片儲存位置已更新');
+    const b=appData.buses.find(x=>x.id===workOrderCurrentBusId);
+    await checkWorkOrderFile(workOrderCurrentBusId,b?.plate||workOrderCurrentBusId);
+  }catch(e){alert('無法儲存工單照片路徑：'+e.message);}
+}
+async function openWorkOrderModal(busId){
+  workOrderCurrentBusId=busId;
+  const b=appData.buses.find(x=>x.id===busId);
+  const plate=b?.plate||busId;
+  document.getElementById('workOrderVehicleTitle').textContent=`車號：${plate}${b?.name?' '+b.name:''}`;
+  const pathHint=document.getElementById('workOrderPathHint');
+  const pathBtn=document.getElementById('workOrderPathBtn');
+  if(pathHint) pathHint.textContent=`📁 ${workOrderPath||WORK_ORDER_DEFAULT_PATH}`;
+  if(pathBtn) pathBtn.style.display=isQualityUser()?'':'none';
+  document.getElementById('workOrderModal').classList.add('show');
+  await loadWorkOrderPath();
+  if(pathHint) pathHint.textContent=`📁 ${workOrderPath||WORK_ORDER_DEFAULT_PATH}`;
+  checkWorkOrderFile(busId,plate);
+}
+function closeWorkOrderModal(){document.getElementById('workOrderModal')?.classList.remove('show');}
+async function checkWorkOrderFile(busId,plate){
+  const el=document.getElementById('workOrderResult');
+  el.innerHTML='<div class="work-order-loading">正在確認是否有工單照片…</div>';
+  const base=workOrderServiceUrl();
+  if(!base){el.innerHTML='<div class="work-order-loading">尚未設定照片服務，暫時無法查詢工單照片。</div>';return;}
+  try{
+    const r=await fetch(`${base}/api/work-order?plate=${encodeURIComponent(plate)}`,{headers:{'X-BinsBus-Key':qualityServiceKey()},cache:'no-store'});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||`HTTP ${r.status}`);
+    if(!d.exists){el.innerHTML='<div><b>無工單照片</b><div class="work-order-file-hint">系統已確認「所有車輛共用的工單照片資料夾」內沒有這台車的照片。</div></div>';return;}
+    const fileName=d.filename||`${plate}.jpg`;
+    el.innerHTML=`<div class="work-order-file" onclick="openWorkOrderPhoto('${encodeURIComponent(fileName)}')"><div><div class="work-order-file-name">📄 ${escapeHtml(fileName)}</div><div class="work-order-file-hint">點擊檔名查看高解析原圖</div></div><span>🔍</span></div>`;
+  }catch(e){el.innerHTML=`<div><b>無法確認工單照片</b><div class="work-order-file-hint">${escapeHtml(e.message)}</div></div>`;}
+}
+let workOrderPhotoObjectUrl='';
+async function openWorkOrderPhoto(encodedName){
+  const base=workOrderServiceUrl(); if(!base)return;
+  const img=document.getElementById('workOrderLightboxImg');
+  const box=document.getElementById('workOrderLightbox');
+  if(!img||!box)return;
+  box.classList.add('show');
+  img.removeAttribute('src');
+  img.alt='工單照片載入中';
+  try{
+    const filename=decodeURIComponent(encodedName||'');
+    const r=await fetch(`${base}/api/work-order/file?filename=${encodeURIComponent(filename)}`,{headers:{'X-BinsBus-Key':qualityServiceKey()},cache:'no-store'});
+    if(!r.ok) throw new Error(`照片讀取失敗（HTTP ${r.status}）`);
+    const blob=await r.blob();
+    if(workOrderPhotoObjectUrl) URL.revokeObjectURL(workOrderPhotoObjectUrl);
+    workOrderPhotoObjectUrl=URL.createObjectURL(blob);
+    img.src=workOrderPhotoObjectUrl;
+    img.alt=filename;
+  }catch(e){
+    img.alt='工單照片載入失敗';
+    alert('工單照片無法開啟：'+(e.message||e));
+    box.classList.remove('show');
+  }
+}
+function closeWorkOrderLightbox(){const el=document.getElementById('workOrderLightbox');el?.classList.remove('show');const img=document.getElementById('workOrderLightboxImg');if(img)img.removeAttribute('src');if(workOrderPhotoObjectUrl){URL.revokeObjectURL(workOrderPhotoObjectUrl);workOrderPhotoObjectUrl='';}}
+
+/* ===== 品管照片庫：與原本車輛/公告照片完全分離 ===== */
+const QUALITY_DEFAULT_PATH='C:\\Users\\KC\\Desktop\\SCAN\\待分類照片';
+const QUALITY_CATEGORIES=[
+ {id:'vehicleExterior',name:'車輛外觀'},
+ {id:'defect',name:'缺失照片'},
+ {id:'skeleton',name:'骨架照片'},
+ {id:'redprimer',name:'紅丹車照片'},
+ {id:'sheetmetal',name:'鈑金照片'},
+ {id:'finished',name:'完成車外觀照片'}
+];
+let qualityCurrentBusId=null,qualityCurrentCategory='vehicleExterior',qualityPhotos={},qualityCategoryPaths={};
+function qualityUserEmail(){return String(currentSession?.user?.email||'').toLowerCase();}
+function isQualityUser(){const e=qualityUserEmail();return !!e && (e.startsWith('quality@')||e.startsWith('qc@')||e.startsWith('品管@'));}
+function qualityIsMobile(){return /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent)||window.innerWidth<=640;}
+function qualityServiceUrl(){
+  if(qualityIsMobile()){
+    const cloudUrl=String(appData?.qualityServiceUrl||'').trim().replace(/\/+$/,'');
+    if(cloudUrl) return cloudUrl;
+    return (localStorage.getItem('binsbus_quality_mobile_service')||'').replace(/\/+$/,'');
+  }
+  return 'http://127.0.0.1:8790';
+}
+function qualityServiceKey(){return 'binsbus-photo-demo-2026';}
+function qualityHeaders(){return {'Content-Type':'application/json','X-BinsBus-Key':qualityServiceKey()};}
+function qualityToast(message){const t=document.getElementById('qualityToast');if(!t)return;t.textContent=message;t.classList.add('show');clearTimeout(window.__qualityToastTimer);window.__qualityToastTimer=setTimeout(()=>t.classList.remove('show'),2600);}
+async function qualityMobileServiceSettings(){
+  if(!isQualityUser()) return;
+  const current=String(appData?.qualityServiceUrl||localStorage.getItem('binsbus_quality_mobile_service')||'').trim();
+  const v=prompt('手機照片服務網址\n\n請輸入目前電腦上 Cloudflare Quick Tunnel 產生的 HTTPS 網址。\n此設定會儲存到雲端，所有手機都會自動使用。',current);
+  if(v===null)return false;
+  const url=v.trim().replace(/\/+$/,'');
+  if(!/^https:\/\//i.test(url)){alert('請使用 Cloudflare 的 HTTPS 網址。');return false;}
+  appData.qualityServiceUrl=url;
+  try{localStorage.setItem('binsbus_quality_mobile_service',url);}catch(_){}
+  const saved=await autoSaveCloud();
+  if(saved){
+    qualityToast('✅ 照片服務網址已同步雲端，所有手機會自動使用');
+    if(qualityCurrentBusId) qualityRefreshPhotos();
+  }else{
+    qualityToast('⚠️ 網址已暫存本機，但雲端同步失敗');
+  }
+  return saved;
+}
+function openQualityPhotoLibrary(busId){if(!isQualityUser())return;qualityCurrentBusId=busId;const b=appData.buses.find(x=>x.id===busId);document.getElementById('qualityVehicleTitle').textContent=`車號：${b?.plate||busId}${b?.name?' '+b.name:''}`;document.getElementById('qualityPhotoModal').classList.add('show');qualityConfigureService(true);qualityRefreshPhotos();}
+function closeQualityPhotoLibrary(){document.getElementById('qualityPhotoModal')?.classList.remove('show');}
+function qualityChooseAndUpload(categoryId){if(!isQualityUser()){alert('此功能僅限品管帳號');return;}qualityCurrentCategory=categoryId||qualityCurrentCategory;document.getElementById('qualityFileInput')?.click();}
+async function qualityPickFolder(categoryId){
+  if(!isQualityUser())return;
+  qualityCurrentCategory=categoryId||qualityCurrentCategory;
+  const c=QUALITY_CATEGORIES.find(x=>x.id===qualityCurrentCategory);
+  if(!qualityCurrentBusId){alert('請先選擇車輛。');return;}
+  const base=qualityServiceUrl();
+  if(!base){
+    alert('手機尚未設定電腦照片服務。\n請先設定 Cloudflare HTTPS 網址。');
+    return;
+  }
+  if(qualityIsMobile()){
+    try{
+      const r=await fetch(`${base}/api/photos?vehicleId=${encodeURIComponent(qualityCurrentBusId)}`,{headers:qualityHeaders(),cache:'no-store'});
+      const d=await r.json(); if(!r.ok)throw new Error(d.error||`HTTP ${r.status}`);
+      qualityCategoryPaths=d.categoryPaths||{}; qualityRenderCategories();
+      if(qualityCategoryPaths[qualityCurrentCategory]) qualityToast(`📁 ${c?.name||qualityCurrentCategory} 已使用電腦設定的位置`);
+      else qualityToast(`📁 尚未自訂，將使用預設位置：${QUALITY_DEFAULT_PATH}`);
+    }catch(e){alert('手機目前無法連到電腦照片服務：'+e.message);}
+    return;
+  }
+  // Browser UI: do not open a separate Windows window. The server still validates/writes the exact Windows path.
+  const current=qualityCategoryPaths[qualityCurrentCategory]||QUALITY_DEFAULT_PATH;
+  const p=prompt(`設定「${c?.name||qualityCurrentCategory}」儲存位置\n\n請輸入 Windows 資料夾完整路徑：`,current);
+  if(p===null)return;
+  const pathValue=p.trim()||QUALITY_DEFAULT_PATH;
+  try{
+    const r=await fetch(`${base}/api/config/category`,{method:'POST',headers:qualityHeaders(),body:JSON.stringify({vehicleId:qualityCurrentBusId,category:qualityCurrentCategory,path:pathValue})});
+    const d=await r.json(); if(!r.ok)throw new Error(d.error||'儲存資料夾設定失敗');
+    qualityCategoryPaths[qualityCurrentCategory]=d.path;
+    localStorage.setItem('binsbus_quality_paths',JSON.stringify(qualityCategoryPaths));
+    qualityToast(`✅ ${c?.name||qualityCurrentCategory} 儲存位置已更新`);
+    await qualityRefreshPhotos();
+  }catch(e){alert('無法儲存資料夾：'+e.message);}
+}
+async function qualityConfigureService(skipPrompt=false){
+  if(!isQualityUser()) return;
+  const configured=String(appData?.qualityServiceUrl||'').trim();
+  if(skipPrompt){
+    document.getElementById('qualityStatus').textContent=qualityIsMobile()
+      ? (configured?`📡 手機使用：${configured}`:'⚠️ 尚未設定手機照片服務網址')
+      : '電腦版固定使用 http://127.0.0.1:8790';
+    return;
+  }
+  const ok=await qualityMobileServiceSettings();
+  if(ok) return;
+  if(!qualityIsMobile()){
+    try{const r=await fetch('http://127.0.0.1:8790/api/health',{headers:{'X-BinsBus-Key':qualityServiceKey()},cache:'no-store'});const d=await r.json();if(!r.ok)throw new Error(d.error||`HTTP ${r.status}`);document.getElementById('qualityStatus').textContent=`✅ 電腦本機照片服務正常｜${d.root||''}`;}catch(e){document.getElementById('qualityStatus').textContent='❌ 電腦本機照片服務尚未啟動：'+e.message;}
+  }
+}
+async function qualityRefreshPhotos(){if(!qualityCurrentBusId)return;const el=document.getElementById('qualityStatus');try{const r=await fetch(`${qualityServiceUrl()}/api/photos?vehicleId=${encodeURIComponent(qualityCurrentBusId)}`,{headers:{'X-BinsBus-Key':qualityServiceKey()}});const d=await r.json();if(!r.ok)throw new Error(d.error||`HTTP ${r.status}`);qualityPhotos=d.categories||{};qualityCategoryPaths=d.categoryPaths||d.paths||qualityCategoryPaths||{};try{Object.assign(qualityCategoryPaths,JSON.parse(localStorage.getItem('binsbus_quality_paths')||'{}'));}catch(_){};localStorage.setItem('binsbus_quality_paths',JSON.stringify(qualityCategoryPaths));el.textContent=`照片服務正常｜共 ${d.total||0} 張`;qualityRenderCategories();}catch(e){el.textContent='尚未連線照片服務：'+e.message;qualityPhotos={};qualityRenderCategories();}}
+function qualityRenderCategories(){const el=document.getElementById('qualityCategories');if(!el)return;const mobile=!!(window.matchMedia&&window.matchMedia('(pointer:coarse)').matches);el.innerHTML=QUALITY_CATEGORIES.map(c=>{const n=(qualityPhotos[c.id]||[]).length;const path=qualityCategoryPaths[c.id]||QUALITY_DEFAULT_PATH;const folderBtn=mobile?`<button type="button" onclick="qualityPickFolder('${c.id}')">📁 查看電腦儲存位置</button>`:`<button type="button" onclick="qualityPickFolder('${c.id}')">📁 選擇儲存位置</button>`;return `<div class="quality-category"><div class="quality-category-title">${escapeHtml(c.name)}</div><div class="quality-count">${n} 張照片</div><div class="quality-path" title="${escapeHtml(path)}">📁 ${escapeHtml(path)}</div><div class="quality-actions">${folderBtn}<button class="quality-upload-btn" onclick="qualityChooseAndUpload('${c.id}')">📷 上傳照片</button></div></div>`}).join('');}
+function qualityShowUploadProgress(done,total,current,status){
+  const box=document.getElementById('qualityUploadProgress');if(!box)return;
+  const pct=total?Math.round(done/total*100):0;
+  box.classList.add('show');
+  box.querySelector('.quality-progress-fill').style.width=pct+'%';
+  box.querySelector('.quality-progress-percent').textContent=pct+'%';
+  box.querySelector('.quality-progress-text').textContent=status||`正在上傳 ${done}/${total}`;
+  box.querySelector('.quality-progress-current').textContent=current?`目前：${current}`:'';
+}
+function qualityHideUploadProgress(){document.getElementById('qualityUploadProgress')?.classList.remove('show');}
+async function qualityUploadFiles(files){
+  const arr=Array.from(files||[]).filter(f=>f.type&&f.type.startsWith('image/'));if(!arr.length)return;
+  let success=0,failed=[];const total=arr.length;
+  qualityShowUploadProgress(0,total,'','準備上傳…');
+  try{
+    for(let i=0;i<arr.length;i++){
+      const file=arr[i];
+      qualityShowUploadProgress(i,total,file.name,`正在上傳第 ${i+1} / ${total} 張`);
+      try{
+        const data=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=()=>rej(new Error('讀取照片失敗'));fr.readAsDataURL(file)});
+        const r=await fetch(`${qualityServiceUrl()}/api/photos/upload`,{method:'POST',headers:qualityHeaders(),body:JSON.stringify({vehicleId:qualityCurrentBusId,vehiclePlate:(appData.buses.find(b=>b.id===qualityCurrentBusId)||{}).plate||qualityCurrentBusId,category:qualityCurrentCategory,filename:file.name,data})});
+        const d=await r.json();if(!r.ok)throw new Error(d.error||`HTTP ${r.status}`);success++;
+      }catch(err){failed.push(`${file.name}: ${err.message}`);}
+      qualityShowUploadProgress(i+1,total,i+1<total?arr[i+1].name:'',`已完成 ${i+1} / ${total} 張`);
+    }
+    await qualityRefreshPhotos();
+    if(success)qualityToast(`✅ 上傳完成：成功 ${success} 張${failed.length?`，失敗 ${failed.length} 張`:''}`);
+    if(failed.length)alert(`上傳完成：成功 ${success} 張，失敗 ${failed.length} 張\n\n${failed.join('\n')}`);
+  }catch(e){alert('品管照片上傳失敗：'+e.message)}
+  finally{document.getElementById('qualityFileInput').value='';setTimeout(qualityHideUploadProgress,1200);}
+}
+
+if(qualityIsMobile()){const h=document.getElementById('qualityServiceHint');const b=document.getElementById('qualityServiceBtnText');if(h)h.textContent='手機端：網址由雲端自動取得，不需要每支手機個別設定。';if(b)b.textContent='修改手機連線網址';}
+
+    // ===== v25-v28 老人專用模式 =====
+    let elderlyModeActive = false;
+    let elderlySelectedBusId = null;
+
+    function elderlyVehicleLabel(bus){
+        if (!bus) return '';
+        return String(bus.plate || bus.name || bus.vehicleName || bus.note || '未命名車輛');
+    }
+    function elderlyVehicleSearchText(bus){
+        const group = appData.vehicleGroups?.find(x=>x.id===bus.groupId)?.name || '';
+        const model = appData.vehicleModels?.find(x=>x.id===bus.modelId)?.name || '';
+        const paint = appData.paintGroups?.find(x=>x.id===bus.paintGroupId)?.name || '';
+        const color = appData.colorGroups?.find(x=>x.id===bus.colorGroupId)?.name || '';
+        return [bus.plate,bus.name,bus.vehicleName,bus.note,group,model,paint,color].filter(Boolean).join(' ').toLowerCase();
+    }
+    function elderlyFindBuses(keyword){
+        const q=String(keyword||'').trim().toLowerCase();
+        if(!q) return [];
+        return (appData.buses||[]).filter(b=>elderlyVehicleSearchText(b).includes(q));
+    }
+    function elderlyRenderVehicle(bus){
+        const box=document.getElementById('elderlyVehicleInfo');
+        if(!box) return;
+        if(!bus){ box.innerHTML='<div class="elderly-empty">請先輸入車號或車輛名稱</div>'; return; }
+        elderlySelectedBusId=bus.id;
+        const group=appData.vehicleGroups?.find(x=>x.id===bus.groupId)?.name || '未設定';
+        const model=appData.vehicleModels?.find(x=>x.id===bus.modelId)?.name || '未設定';
+        const paint=appData.paintGroups?.find(x=>x.id===bus.paintGroupId)?.name || '噴漆';
+        const color=appData.colorGroups?.find(x=>x.id===bus.colorGroupId)?.name || '彩繪';
+        const status=appData.statuses?.find(x=>x.id===bus.statusId)?.name || '未設定';
+        const zone=appData.zones?.find(x=>x.id===bus.zoneId)?.name || '未設定';
+        const note=bus.note || '無備註';
+        const delivery=bus.deliveryDate || '未定';
+        const row=(label,value)=>`<div class="elderly-block ${label.includes('備註')?'note-block':''}"><span>${label}</span><span class="elderly-value">${escapeHtml(value)}</span></div>`;
+        box.innerHTML=`
+          <div class="elderly-block vehicle-title"><span>🚌 車輛</span><span class="elderly-value">${escapeHtml(elderlyVehicleLabel(bus))}</span></div>
+          ${row('📍 區域',zone)}
+          ${row('🚦 目前進度',status)}
+          ${row('👥 組別',group)}
+          ${row('🚍 車輛型號',model)}
+          ${row('🎨 噴漆組別',paint)}
+          ${row('🖌️ 彩繪組別',color)}
+          ${row('📅 預定交車日',delivery)}
+          ${row('📝 備註',note)}
+        `;
+    }
+    function elderlySearchVehicle(value){
+        if(!elderlyModeActive) return;
+        const results=document.getElementById('elderlySearchResults');
+        if(!results) return;
+        const matches=elderlyFindBuses(value);
+        results.innerHTML='';
+        if(!String(value||'').trim()){ elderlySelectedBusId=null; elderlyRenderVehicle(null); return; }
+        if(matches.length===1){
+            elderlyRenderVehicle(matches[0]);
+            return;
+        }
+        matches.slice(0,12).forEach(bus=>{
+            const b=document.createElement('button');
+            b.type='button'; b.className='elderly-search-item';
+            const group=appData.vehicleGroups?.find(x=>x.id===bus.groupId)?.name || '';
+            const model=appData.vehicleModels?.find(x=>x.id===bus.modelId)?.name || '';
+            b.textContent=`🚌 ${elderlyVehicleLabel(bus)}${group?'　'+group:''}${model?'　'+model:''}`;
+            b.onclick=()=>{ document.getElementById('elderlyVehicleSearch').value=elderlyVehicleLabel(bus); results.innerHTML=''; elderlyRenderVehicle(bus); };
+            results.appendChild(b);
+        });
+        if(!matches.length) results.innerHTML='<div class="elderly-empty">找不到這台車</div>';
+    }
+    function elderlyShowSchedule(){
+        const box=document.getElementById('elderlyCommonDetail');
+        if(!box) return;
+        const latest=getLatestAnnouncement?.();
+        if(!latest){box.innerHTML='<div class="elderly-detail-card">📅 目前沒有排程公告</div>';return;}
+        const date=getAnnouncementDisplayDate?.(latest)||'';
+        const task=latest.taskType||'一般作業';
+        const vehicles=latest.vehicles||'未指定車輛';
+        const note=latest.note||latest.remark||'';
+        box.innerHTML=`<div class="elderly-detail-card schedule-detail"><div>📅 ${escapeHtml(date)}</div><div>📌 ${escapeHtml(task)}</div><div>🚌 ${escapeHtml(vehicles)}</div>${note?`<div>📝 ${escapeHtml(note)}</div>`:''}</div>`;
+    }
+    function elderlyShowDelivery(){
+        if(appData.announcementImg){
+            viewAnnouncementImg();
+        }else{
+            const box=document.getElementById('elderlyCommonDetail');
+            if(box) box.innerHTML='<div class="elderly-detail-card">🚌 目前沒有交車公告照片</div>';
+        }
+    }
+    function enterElderlyMode(){
+        if(isAuthed()) return;
+        elderlyModeActive=true;
+        document.body.classList.add('elderly-mode');
+        document.documentElement.removeAttribute('data-theme');
+        const panel=document.getElementById('elderlyModePanel');
+        if(panel) panel.setAttribute('aria-hidden','false');
+        const input=document.getElementById('elderlyVehicleSearch');
+        if(input){input.value=''; setTimeout(()=>input.focus(),50);}
+        elderlySelectedBusId=null;
+        elderlyRenderVehicle(null);
+        window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function exitElderlyMode(){
+        elderlyModeActive=false;
+        document.body.classList.remove('elderly-mode');
+        const panel=document.getElementById('elderlyModePanel');
+        if(panel) panel.setAttribute('aria-hidden','true');
+        elderlySelectedBusId=null;
+        renderApp();
+        window.scrollTo({top:0,behavior:'smooth'});
+    }
+    // 未登入才顯示入口；登入後自動關閉老人模式。
+    const elderlyOriginalUpdateAuthUI=updateAuthUI;
+    updateAuthUI=function(){
+        elderlyOriginalUpdateAuthUI();
+        const btn=document.getElementById('elderlyModeBtn');
+        const authed=isAuthed();
+        if(btn) btn.style.display=authed ? 'none' : '';
+        if(authed && elderlyModeActive) exitElderlyMode();
+    };
+
 </script>
+
+<div id="workOrderModal" class="quality-modal-overlay" onclick="if(event.target===this)closeWorkOrderModal()">
+ <div class="quality-modal work-order-modal">
+  <div class="quality-head"><div><h2>🧾 工單照片</h2><div id="workOrderVehicleTitle" class="quality-note"></div></div><button class="quality-close" onclick="closeWorkOrderModal()">✕</button></div>
+  <div class="quality-status">先確認工單照片檔名，不載入照片；點擊檔名後才開啟原始高解析照片。<br><b>📁 所有車輛共用同一個工單照片資料夾</b></div>
+  <div class="work-order-path-row"><div id="workOrderPathHint" class="work-order-path-hint">📁 C:\Users\KC\Desktop\SCAN\工單照片</div><button type="button" id="workOrderPathBtn" onclick="configureWorkOrderPath()" style="display:none">📁 設定共用工單照片路徑</button></div>
+  <div id="workOrderResult" class="work-order-status"><div class="work-order-loading">正在確認工單照片…</div></div>
+ </div>
+</div>
+<div id="workOrderLightbox" class="work-order-lightbox" onclick="if(event.target===this)closeWorkOrderLightbox()">
+ <button class="work-order-lightbox-close" onclick="closeWorkOrderLightbox()">✕</button>
+ <img id="workOrderLightboxImg" src="" alt="工單照片原圖">
+</div>
+<div id="qualityPhotoModal" class="quality-modal-overlay" onclick="if(event.target===this)closeQualityPhotoLibrary()">
+ <div class="quality-modal">
+  <div class="quality-head"><div><h2>🔎 品管照片庫</h2><div id="qualityVehicleTitle" class="quality-note"></div></div><button class="quality-close" onclick="closeQualityPhotoLibrary()">✕</button></div>
+  <div id="qualityStatus" class="quality-status">電腦版固定使用 http://127.0.0.1:8790</div>
+  <div class="quality-service-row"><span id="qualityServiceHint">品管帳號可在此輸入目前電腦的 Cloudflare HTTPS 網址，儲存後所有手機自動使用。</span><button type="button" onclick="qualityConfigureService()">📡 <span id="qualityServiceBtnText">設定手機連線網址</span></button></div>
+  <input id="qualityFileInput" type="file" accept="image/*" multiple style="display:none" onchange="qualityUploadFiles(this.files)">
+  <div id="qualityUploadProgress" class="quality-upload-progress"><div class="quality-progress-row"><div class="quality-progress-text">準備上傳…</div><div class="quality-progress-percent">0%</div></div><div class="quality-progress-track"><div class="quality-progress-fill"></div></div><div class="quality-progress-current"></div></div>
+  <div id="qualityCategories" class="quality-grid"></div>
+ </div>
+</div>
+<div id="qualityToast" class="quality-toast"></div>
 </body>
 <!-- UI 2.1 integrated: latest functional logic preserved; scroll navigation added. -->
 </html>
+
+<!-- v35 正式推送版：以目前 0902 使用版本為基底，整合最新工單照片、品管照片、老人專用模式、彩繪廣告、區域編輯、刪除二次確認、雲端逾時保護與手機連線設定。 -->
