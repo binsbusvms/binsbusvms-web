@@ -5981,12 +5981,17 @@ html[data-theme="dark"] #addScheduleModal input[type="datetime-local"],
 const WORK_ORDER_DEFAULT_PATH='C:\\Users\\KC\\Desktop\\SCAN\\工單照片';
 let workOrderCurrentBusId=null;
 let workOrderPath=WORK_ORDER_DEFAULT_PATH;
-function workOrderServiceUrl(){return qualityServiceUrl();}
+function workOrderServiceUrl(){
+  // 工單照片改走雲端照片服務，避免桌面瀏覽器直接存取 127.0.0.1 時跳出「允許存取其他應用程式和服務」提示。
+  // 原本桌面 QC 上傳仍維持使用本機服務，不影響既有功能。
+  const cloudUrl=String(appData?.qualityServiceUrl||localStorage.getItem('binsbus_quality_mobile_service')||'').trim().replace(/\/+$/,'');
+  return cloudUrl || 'http://127.0.0.1:8790';
+}
 async function loadWorkOrderPath(){
   const base=workOrderServiceUrl();
   if(!base) return workOrderPath;
   try{
-    const r=await fetch(`${base}/api/work-order-config`,{headers:{'X-BinsBus-Key':qualityServiceKey()},cache:'no-store'});
+    const r=await fetch(`${base}/api/work-order-config?key=${encodeURIComponent(qualityServiceKey())}`,{cache:'no-store'});
     const d=await r.json();
     if(r.ok && d.path) workOrderPath=String(d.path);
   }catch(e){ console.warn('讀取工單照片路徑失敗：',e); }
@@ -6033,7 +6038,7 @@ async function checkWorkOrderFile(busId,plate){
   const base=workOrderServiceUrl();
   if(!base){el.innerHTML='<div class="work-order-loading">尚未設定照片服務，暫時無法查詢工單照片。</div>';return;}
   try{
-    const r=await fetch(`${base}/api/work-order?plate=${encodeURIComponent(plate)}`,{headers:{'X-BinsBus-Key':qualityServiceKey()},cache:'no-store'});
+    const r=await fetch(`${base}/api/work-order?plate=${encodeURIComponent(plate)}&key=${encodeURIComponent(qualityServiceKey())}`,{cache:'no-store'});
     const d=await r.json();
     if(!r.ok)throw new Error(d.error||`HTTP ${r.status}`);
     if(!d.exists){el.innerHTML='<div><b>無工單照片</b><div class="work-order-file-hint">系統已確認「所有車輛共用的工單照片資料夾」內沒有這台車的照片。</div></div>';return;}
@@ -6052,7 +6057,7 @@ async function openWorkOrderPhoto(encodedName){
   img.alt='工單照片載入中';
   try{
     const filename=decodeURIComponent(encodedName||'');
-    const r=await fetch(`${base}/api/work-order/file?filename=${encodeURIComponent(filename)}`,{headers:{'X-BinsBus-Key':qualityServiceKey()},cache:'no-store'});
+    const r=await fetch(`${base}/api/work-order/file?filename=${encodeURIComponent(filename)}&key=${encodeURIComponent(qualityServiceKey())}`,{cache:'no-store'});
     if(!r.ok) throw new Error(`照片讀取失敗（HTTP ${r.status}）`);
     const blob=await r.blob();
     if(workOrderPhotoObjectUrl) URL.revokeObjectURL(workOrderPhotoObjectUrl);
