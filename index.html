@@ -1440,12 +1440,42 @@ html[data-theme="dark"] #statusManagerModal .status-manager-help b {
   .floating-add-status-group { width:58px !important; height:58px !important; right:15px !important; bottom:18px !important; font-size:2.2rem !important; }
 }
 
-/* 進度管理：母分類也可拖曳排序 */
-.status-group-row { cursor: default; }
-.status-group-drag-handle { flex:0 0 22px; width:22px; text-align:center; font-size:1.15rem; color:var(--text-muted); cursor:grab; user-select:none; touch-action:none; }
-.status-group-dragging { opacity:.45; }
-.status-group-drag-over { outline:2px dashed var(--primary); outline-offset:2px; }
-.four-char-search-hit{outline:3px solid var(--primary)!important;box-shadow:0 0 0 5px rgba(0,150,255,.18),0 0 22px rgba(0,180,255,.42)!important;}
+/* ===== 公告完整歷史紀錄 UI 修正版 ===== */
+.announcement-history-card{
+    position:relative;
+    margin-bottom:8px;
+    padding:9px 11px !important;
+    border:1px solid var(--border-color,#ddd) !important;
+    border-radius:8px !important;
+    background:var(--card-bg,#fff) !important;
+    min-height:58px;
+}
+.announcement-history-card .chat-sender{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:8px !important;
+}
+.announcement-history-actions{display:flex;gap:4px;flex-shrink:0;}
+.announcement-edit-btn,.announcement-delete-btn{
+    border:none;border-radius:4px;padding:3px 7px;font-size:.68rem;cursor:pointer;color:#fff;font-weight:700;
+}
+.announcement-edit-btn{background:#17a2b8;}
+.announcement-delete-btn{background:#dc3545;}
+.announcement-history-note{
+    margin-top:5px;padding:5px 7px;border-radius:5px;
+    background:var(--bg-input,#f6f6f6);color:var(--text-main,#333);font-size:.76rem;
+    white-space:pre-wrap;word-break:break-word;
+}
+.announcement-history-card.latest-announcement-card{box-shadow:0 0 0 2px rgba(220,53,69,.12);}
+@media(max-width:640px){
+  .announcement-history-card{padding:10px !important;}
+  .announcement-history-card .chat-sender{align-items:flex-start !important;}
+  .announcement-history-actions button{font-size:.62rem;padding:3px 6px;}
+  .announcement-history-card .chat-body{font-size:.86rem !important;}
+  .announcement-history-card .chat-vehicles,.announcement-history-note{font-size:.78rem !important;}
+}
+
 </style>
 
 <style id="natural-status-palette-fix">
@@ -2370,6 +2400,30 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
 }
 @media(min-width:901px){body.elderly-mode #elderlyModePanel{display:none!important;}}
 </style>
+
+<style id="factory-amusement-map-test-css">
+#factoryMapMode{display:none;position:fixed;inset:0;z-index:99990;background:#06121b;color:#eaf8ff;font-family:inherit;overflow:hidden}
+#factoryMapMode.show{display:block}
+.fam-top{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid rgba(75,210,255,.35);background:linear-gradient(180deg,#071d2c,#06121b);box-shadow:0 0 28px rgba(0,190,255,.12)}
+.fam-title{font-weight:900;font-size:1.15rem;letter-spacing:.04em}.fam-title small{display:block;color:#65d9ff;font-size:.68rem;margin-top:2px}
+.fam-actions{display:flex;gap:8px}.fam-btn{border:1px solid #197eab;background:#09283b;color:#dff7ff;border-radius:9px;padding:8px 12px;font-weight:800;cursor:pointer}.fam-btn:hover{background:#0d3b54}
+.fam-layout{height:calc(100vh - 64px);display:grid;grid-template-columns:245px 1fr 285px;gap:10px;padding:10px}
+.fam-panel{background:linear-gradient(180deg,rgba(9,34,49,.96),rgba(5,20,29,.96));border:1px solid rgba(57,192,236,.3);border-radius:14px;box-shadow:0 0 24px rgba(0,180,255,.08);overflow:auto}
+.fam-panel h3{margin:0;padding:13px 14px;border-bottom:1px solid rgba(90,210,255,.18);font-size:.95rem}
+.fam-zone-list{padding:8px}.fam-zone-item{display:flex;align-items:center;gap:9px;width:100%;padding:11px 10px;margin-bottom:6px;background:rgba(10,43,61,.72);border:1px solid rgba(80,205,250,.14);border-radius:9px;color:#e8f8ff;cursor:pointer;text-align:left}.fam-zone-item:hover{border-color:#35cfff;transform:translateX(2px)}.fam-zone-dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff}.fam-zone-count{margin-left:auto;color:#72e4ff;font-weight:900}
+.fam-map{position:relative;min-width:0;border:1px solid rgba(60,210,255,.3);border-radius:16px;overflow:hidden;background:#071822;box-shadow:inset 0 0 80px rgba(0,180,255,.08)}
+.fam-map-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(62,194,229,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(62,194,229,.08) 1px,transparent 1px);background-size:34px 34px}
+.fam-map-road{position:absolute;background:#263841;border:2px solid #50646d;box-shadow:inset 0 0 20px #10191e}
+.fam-road-h{height:34px;left:4%;right:4%;top:49%}.fam-road-v{width:34px;top:4%;bottom:4%;left:49%}.fam-road-h2{height:28px;left:4%;right:4%;top:23%}.fam-road-v2{width:28px;top:4%;bottom:4%;left:76%}
+.fam-zone{position:absolute;border:2px solid rgba(255,255,255,.72);border-radius:15px;background:linear-gradient(145deg,rgba(26,108,145,.8),rgba(9,38,54,.9));box-shadow:0 0 20px rgba(0,200,255,.12),inset 0 0 25px rgba(255,255,255,.04);cursor:pointer;transition:.18s;overflow:hidden}.fam-zone:hover{transform:scale(1.012);z-index:10;box-shadow:0 0 30px rgba(60,220,255,.4)}.fam-zone.sel{outline:3px solid #72e9ff;box-shadow:0 0 35px rgba(75,220,255,.55)}
+.fam-zone-label{position:absolute;top:8px;left:8px;padding:6px 9px;border-radius:8px;background:rgba(2,16,24,.82);border:1px solid rgba(255,255,255,.28);font-weight:900;font-size:.85rem}.fam-zone-label b{color:#7deaff;margin-right:4px}.fam-zone-mini{position:absolute;right:7px;top:7px;background:rgba(0,0,0,.38);border-radius:999px;padding:4px 7px;font-size:.68rem;font-weight:900}
+.fam-slot{position:absolute;width:28px;height:52px;border:1px solid rgba(190,240,255,.65);border-radius:6px;background:linear-gradient(180deg,#dfeff2,#4b6671);box-shadow:0 2px 7px #000;display:grid;place-items:center;font-size:8px;color:#06202d;font-weight:900;cursor:pointer}.fam-slot:hover{transform:scale(1.12);z-index:5}.fam-slot.empty{opacity:.22}.fam-slot.in{background:linear-gradient(180deg,#4fe1ff,#11698d);color:white}.fam-slot.work{background:linear-gradient(180deg,#ffb04a,#a94e09);color:#fff}.fam-slot.done{background:linear-gradient(180deg,#6be27c,#1d7130);color:#fff}
+.fam-hint{padding:12px;font-size:.75rem;line-height:1.65;color:#b6d9e6}.fam-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:10px}.fam-stat{padding:10px;border:1px solid rgba(100,220,255,.16);border-radius:9px;background:rgba(10,42,57,.65)}.fam-stat span{display:block;color:#8eb9c9;font-size:.7rem}.fam-stat strong{display:block;font-size:1.35rem;color:#72e4ff;margin-top:3px}
+.fam-detail{padding:12px}.fam-detail-empty{color:#91afbb;font-size:.8rem;line-height:1.7}.fam-detail-card{border:1px solid rgba(90,220,255,.24);border-radius:11px;background:rgba(8,31,43,.8);padding:11px}.fam-detail-card .plate{font-size:1.15rem;font-weight:900;color:#72e4ff}.fam-detail-card .line{font-size:.76rem;margin-top:7px;color:#c7e0e9}.fam-detail-card .tag{display:inline-block;margin-top:8px;padding:4px 7px;border-radius:999px;background:#123e52;color:#8ee9ff;font-size:.68rem;font-weight:800}
+.fam-modal{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.7);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:20px}.fam-modal.show{display:flex}.fam-modal-box{width:min(900px,96vw);max-height:90vh;background:#071925;border:1px solid #35cfff;border-radius:16px;box-shadow:0 0 55px rgba(0,210,255,.25);overflow:auto}.fam-modal-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid rgba(80,210,255,.2)}.fam-modal-head strong{font-size:1.05rem}.fam-close{background:none;border:0;color:#cceeff;font-size:1.4rem;cursor:pointer}.fam-yard{position:relative;margin:14px;height:500px;border-radius:12px;background:linear-gradient(#27363c,#1d2b31);border:2px solid #5c737d;overflow:hidden}.fam-yard:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 52px,rgba(255,255,255,.07) 52px 54px)}.fam-yard-title{position:absolute;left:15px;top:12px;font-weight:900;color:#7eeaff}.fam-parking-row{position:absolute;left:12%;right:12%;top:18%;bottom:12%;display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.fam-parking-slot{position:relative;border:1px dashed rgba(220,245,255,.35);border-radius:7px;display:grid;place-items:center}.fam-car{width:68%;height:78%;border-radius:9px;background:linear-gradient(180deg,#ecf7f9,#718b96);border:2px solid #d5f5ff;color:#09212c;font-weight:900;font-size:.72rem;cursor:pointer;box-shadow:0 5px 12px #081117;writing-mode:vertical-rl;display:grid;place-items:center}.fam-car:hover{transform:scale(1.08);outline:2px solid #72eaff}.fam-car.work{background:linear-gradient(180deg,#ffc069,#a95c12);color:white}.fam-car.done{background:linear-gradient(180deg,#78e88a,#237334);color:white}.fam-car.empty{opacity:.18;cursor:default}
+@media(max-width:1000px){.fam-layout{grid-template-columns:190px 1fr}.fam-right{display:none}}
+@media(max-width:680px){.fam-top{height:56px;padding:0 10px}.fam-title{font-size:.95rem}.fam-layout{height:calc(100vh - 56px);grid-template-columns:1fr;padding:6px}.fam-left{display:none}.fam-map{min-height:calc(100vh - 70px)}.fam-zone-label{font-size:.65rem;padding:4px 6px}.fam-zone-mini{font-size:.58rem}.fam-slot{width:20px;height:38px;font-size:6px}.fam-modal{padding:7px}.fam-yard{height:58vh;margin:8px}.fam-modal-box{width:98vw}}
+</style>
 </head>
 <body>
 
@@ -2522,6 +2576,8 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         </select>
     </div>
 </div>
+
+<div style="display:flex;justify-content:flex-end;margin:0 0 8px;gap:6px;"><button type="button" class="tab-btn" style="flex:0 0 auto;background:#0b3144;color:#0b6fa0;border:1px solid #1d8db8;" onclick="openFactoryAmusementMap()">🎢 遊樂園地圖模式</button></div>
 
 <div class="nav-tabs">
     <button class="tab-btn active" data-tab="tab-map">📍 廠區動態圖</button>
@@ -2983,72 +3039,6 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
     const presetTextColors = ['#ffffff', '#000000', '#212529', '#f8f9fa', '#ffc107', '#dc3545', '#17a2b8'];
 
     let currentEditBusId = null;
-let immediateBusSaveTimer = null;
-let immediateBusSaveQueued = false;
-function queueImmediateBusSave(delay=420) {
-    clearTimeout(immediateBusSaveTimer);
-    immediateBusSaveTimer = setTimeout(async () => {
-        if (!isAuthed()) return;
-        if (immediateBusSaveQueued) return;
-        immediateBusSaveQueued = true;
-        try {
-            const ok = await autoSaveCloud();
-            // autoSaveCloud 可能因上一筆尚在儲存而略過；這裡補一次，避免最後修改遺失。
-            if (!ok) {
-                setTimeout(() => queueImmediateBusSave(180), 220);
-            }
-        } finally {
-            immediateBusSaveQueued = false;
-        }
-    }, delay);
-}
-function syncOpenBusField(field, value, auditLabel='') {
-    const bus = appData.buses.find(b => b.id === currentEditBusId);
-    if (!bus) return;
-    const oldValue = bus[field] ?? '';
-    const nextValue = String(value ?? '');
-    if (oldValue === nextValue) return;
-    bus[field] = nextValue;
-    if (auditLabel) addAuditLog(bus.plate, auditLabel);
-    // 畫面立即同步；雲端延遲一小段時間，避免每個字元都發一次請求。
-    renderApp();
-    queueImmediateBusSave();
-}
-function bindImmediateBusModalFields() {
-    const title = document.getElementById('modalBusTitle');
-    const start = document.getElementById('modalBusStartDate');
-    const end = document.getElementById('modalBusEndDate');
-    const note = document.getElementById('modalBusNote');
-    const zone = document.getElementById('modalBusZoneSelect');
-    if (title && title.dataset.immediateBound !== '1') {
-        title.dataset.immediateBound = '1';
-        title.addEventListener('input', e => syncOpenBusField('plate', e.target.value));
-        title.addEventListener('change', e => syncOpenBusField('plate', e.target.value));
-    }
-    if (start && start.dataset.immediateBound !== '1') {
-        start.dataset.immediateBound = '1';
-        start.addEventListener('change', e => syncOpenBusField('startDate', e.target.value));
-    }
-    if (end && end.dataset.immediateBound !== '1') {
-        end.dataset.immediateBound = '1';
-        end.addEventListener('change', e => syncOpenBusField('endDate', e.target.value));
-    }
-    if (note && note.dataset.immediateBound !== '1') {
-        note.dataset.immediateBound = '1';
-        note.addEventListener('input', e => syncOpenBusField('note', e.target.value));
-        note.addEventListener('change', e => syncOpenBusField('note', e.target.value));
-    }
-    if (zone && zone.dataset.immediateBound !== '1') {
-        zone.dataset.immediateBound = '1';
-        zone.addEventListener('change', e => syncOpenBusField('zoneId', e.target.value));
-    }
-}
-function flushImmediateBusSave() {
-    clearTimeout(immediateBusSaveTimer);
-    immediateBusSaveTimer = null;
-    if (isAuthed()) autoSaveCloud();
-}
-
     let targetUploadBusId = null;
     let currentGalleryBusId = null;
     let isSaving = false;
@@ -3634,36 +3624,7 @@ function flushImmediateBusSave() {
         }
     }
 
-    
-let lastAutoJumpQuery = '';
-function autoJumpToFourCharVehicle() {
-    const input = document.getElementById('searchInput');
-    const raw = String(input?.value || '').trim();
-    if (!raw) { lastAutoJumpQuery=''; return; }
-    const compact = raw.replace(/\s/g,'');
-    const digitQuery = (raw.match(/\d/g) || []).join('');
-    let matches = [];
-    if (digitQuery.length === 4 && compact.length >= 4) {
-        matches = appData.buses.filter(b => ((String(b.plate || '').match(/\d/g) || []).join('')).includes(digitQuery));
-    } else if (compact.length === 4) {
-        const q = compact.toLowerCase();
-        matches = appData.buses.filter(b => String(b.plate || '').toLowerCase().includes(q) || String(b.note || '').toLowerCase().includes(q));
-    } else return;
-    if (matches.length !== 1) return;
-    const bus = matches[0];
-    if (lastAutoJumpQuery === raw) return;
-    lastAutoJumpQuery = raw;
-    setTimeout(() => {
-        const mapEl = document.querySelector(`.bus-card[data-bus-id="${CSS.escape(bus.id)}"]`);
-        const tableEl = document.querySelector(`#busTableBody [data-bus-id="${CSS.escape(bus.id)}"]`);
-        const target = mapEl || tableEl;
-        if (!target) return;
-        target.scrollIntoView({behavior:'smooth', block:'center', inline:'nearest'});
-        target.classList.add('four-char-search-hit');
-        setTimeout(() => target.classList.remove('four-char-search-hit'), 1200);
-    }, 60);
-}
-function renderApp() {
+    function renderApp() {
         const scrollY = window.scrollY;
         updateDashboard();
         renderSchedules();
@@ -3672,7 +3633,6 @@ function renderApp() {
         renderTable();
         renderAuditTrail();
         window.scrollTo(0, scrollY);
-        autoJumpToFourCharVehicle();
     }
 
     function bindAnnouncementAlert() {
@@ -3796,29 +3756,61 @@ function renderApp() {
         box.classList.remove('announcement-no-data');
         if (!container) return;
 
+        // 顯示「全部」真實公告，不再只顯示最後一筆。
+        // 新增公告通常在陣列最前面；若有建立時間則依建立時間由新到舊排序。
+        const indexed = schedules.map(item => ({
+            item,
+            sourceIndex: Array.isArray(appData.schedules) ? appData.schedules.indexOf(item) : -1
+        }));
+        indexed.sort((a,b) => {
+            const ta = announcementTime(a.item);
+            const tb = announcementTime(b.item);
+            if (ta !== tb) return tb - ta;
+            return b.sourceIndex - a.sourceIndex;
+        });
+
         container.innerHTML = '';
         const latest = getLatestAnnouncement();
-        if (!latest) return;
-        const sourceIndex = Array.isArray(appData.schedules) ? appData.schedules.indexOf(latest) : -1;
-        const card = document.createElement('div');
-        card.className = 'chat-card';
-        card.innerHTML = `
-            <div class="chat-sender">
-                <span>👤 ${escapeHtml(latest.sender || '同事')} <span class="chat-meta">(${escapeHtml(formatAnnouncementDate(latest.dateGroup))})</span> <span class="chat-meta">${escapeHtml(latest.sentTime || '')}</span></span>
-                <div>
-                    ${authed ? `
-                        <button style="background:#17a2b8; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:6px;" onclick="editSchedule(${sourceIndex})">✏️ 編輯</button>
-                        <button style="background:#dc3545; color:white; border:none; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; margin-left:2px;" onclick="deleteSchedule(${sourceIndex})">✕ 刪除</button>
-                    ` : ''}
+        const latestId = getAnnouncementId(latest);
+
+        indexed.forEach(({item, sourceIndex}, displayIndex) => {
+            const card = document.createElement('div');
+            card.className = 'chat-card announcement-history-card';
+            if (latest && getAnnouncementId(item) === latestId && !announcementAlertDismissed) {
+                card.classList.add('latest-announcement-card');
+            }
+
+            const displayDate = getAnnouncementDisplayDate(item);
+            const sentTime = item.sentTime || '';
+            const createdText = formatAnnouncementDate(item.dateGroup);
+            const task = item.taskType || item.title || item.message || item.content || '一般作業';
+            const vehicles = item.vehicles || '';
+            const note = item.note || item.remark || item.description || '';
+
+            card.innerHTML = `
+                <div class="chat-sender">
+                    <span>👤 ${escapeHtml(item.sender || '同事')}
+                        <span class="chat-meta">(${escapeHtml(createdText)})</span>
+                        ${sentTime ? `<span class="chat-meta">${escapeHtml(sentTime)}</span>` : ''}
+                    </span>
+                    <div class="announcement-history-actions">
+                        ${authed ? `
+                            <button class="announcement-edit-btn" onclick="editSchedule(${sourceIndex})">✏️ 編輯</button>
+                            <button class="announcement-delete-btn" onclick="deleteSchedule(${sourceIndex})">✕ 刪除</button>
+                        ` : ''}
+                    </div>
                 </div>
-            </div>
-            <div class="chat-body">
-                ${getAnnouncementDisplayDate(latest) ? `<span class="announcement-date-prefix">${escapeHtml(getAnnouncementDisplayDate(latest))}</span> ` : ''}
-                📌 <b>${escapeHtml(latest.taskType || '排程作業')}</b>
-            </div>
-            ${latest.vehicles ? `<div class="chat-vehicles">🚌 相關車輛：${escapeHtml(latest.vehicles)}</div>` : ''}
-        `;
-        container.appendChild(card);
+                <div class="chat-body">
+                    ${displayDate ? `<span class="announcement-date-prefix">${escapeHtml(displayDate)}</span> ` : ''}
+                    📌 <b>${escapeHtml(task)}</b>
+                </div>
+                ${vehicles ? `<div class="chat-vehicles">🚌 相關車輛：${escapeHtml(vehicles)}</div>` : ''}
+                ${note ? `<div class="announcement-history-note">📝 ${escapeHtml(note)}</div>` : ''}
+            `;
+
+            container.appendChild(card);
+        });
+
         refreshAnnouncementAlert();
     }
 
@@ -4573,14 +4565,14 @@ function renderApp() {
                 const swatch = document.createElement('div');
                 swatch.className = `color-swatch ${(bus.bg === c) ? 'selected' : ''}`;
                 swatch.style.background = c;
-                swatch.onclick = () => { bus.bg = c; queueImmediateBusSave(); renderApp(); openBusModal(busId); };
+                swatch.onclick = () => { bus.bg = c; openBusModal(busId); renderApp(); };
                 bgPalette.appendChild(swatch);
             });
             const bgPicker = document.createElement('input');
             bgPicker.type = 'color';
             bgPicker.value = bus.bg || '#8c5d5d';
             bgPicker.style.cssText = 'width:28px; height:28px; border-radius:50%; border:none; cursor:pointer; padding:0; background:none;';
-            bgPicker.onchange = (e) => { bus.bg = e.target.value; queueImmediateBusSave(); renderApp(); };
+            bgPicker.onchange = (e) => { bus.bg = e.target.value; renderApp(); };
             bgPalette.appendChild(bgPicker);
 
             const textColorPalette = document.getElementById('busTextColorPalette');
@@ -4589,17 +4581,16 @@ function renderApp() {
                 const swatch = document.createElement('div');
                 swatch.className = `color-swatch ${(bus.color === c) ? 'selected' : ''}`;
                 swatch.style.background = c;
-                swatch.onclick = () => { bus.color = c; queueImmediateBusSave(); renderApp(); openBusModal(busId); };
+                swatch.onclick = () => { bus.color = c; openBusModal(busId); renderApp(); };
                 textColorPalette.appendChild(swatch);
             });
             const textPicker = document.createElement('input');
             textPicker.type = 'color';
             textPicker.value = bus.color || '#ffffff';
             textPicker.style.cssText = 'width:28px; height:28px; border-radius:50%; border:none; cursor:pointer; padding:0; background:none;';
-            textPicker.onchange = (e) => { bus.color = e.target.value; queueImmediateBusSave(); renderApp(); };
+            textPicker.onchange = (e) => { bus.color = e.target.value; renderApp(); };
             textColorPalette.appendChild(textPicker);
 
-            bindImmediateBusModalFields();
             renderPhotoGrid(bus);
             renderModalTimeline(bus);
 
@@ -4863,12 +4854,29 @@ function renderApp() {
 
     async function saveBusModal() {
         const bus = appData.buses.find(b => b.id === currentEditBusId);
-        if (!bus) return closeModal('busModal');
-        // 所有可編輯欄位在輸入／選擇時就已即時更新；此按鈕僅保留為「立即同步」捷徑。
-        clearTimeout(immediateBusSaveTimer);
-        immediateBusSaveTimer = null;
-        await autoSaveCloud();
-        renderApp();
+        if (bus) {
+            const newPlate = document.getElementById('modalBusTitle').value;
+            const newStartDate = document.getElementById('modalBusStartDate').value;
+            const newEndDate = document.getElementById('modalBusEndDate').value;
+            const newNote = document.getElementById('modalBusNote').value;
+            const newZoneId = document.getElementById('modalBusZoneSelect')?.value || bus.zoneId || '';
+            
+            if (bus.plate !== newPlate) {
+                addAuditLog(newPlate, `車號更名為 ${newPlate}`);
+            } else {
+                addAuditLog(newPlate, `更新車輛詳細資料與備註`);
+            }
+
+            bus.plate = newPlate;
+            bus.startDate = newStartDate;
+            bus.endDate = newEndDate;
+            bus.note = newNote;
+            if (bus.zoneId !== newZoneId) { const zName = appData.zones.find(z=>z.id===newZoneId)?.name || ''; addAuditLog(bus.plate, `編輯視窗變更區域：${zName}`); }
+            bus.zoneId = newZoneId;
+
+            await autoSaveCloud();
+            renderApp();
+        }
         closeModal('busModal');
     }
 
@@ -4973,15 +4981,13 @@ function renderApp() {
         appData.statusGroups.forEach((g, gIdx) => {
             const groupBox = document.createElement('div');
             groupBox.style.cssText = 'border:1px solid var(--border-color);border-radius:10px;padding:10px;margin-bottom:10px;background:var(--bg-card);';
-            groupBox.classList.add('status-group-row');
-            groupBox.dataset.groupId = g.id;
             const children = appData.statuses.filter(st => st.groupId === g.id);
             children.forEach(st => groupedIds.add(st.id));
             const collapsed = !!window.statusGroupCollapsed[g.id];
             groupBox.innerHTML = `
                 <div style="display:flex;align-items:center;gap:7px;margin-bottom:${collapsed ? '0' : '8px'};">
                     <button type="button" class="btn" style="min-height:30px;padding:3px 8px;font-size:1rem;" title="${collapsed ? '展開' : '收摺'}" onclick="toggleStatusGroup('${g.id}')">${collapsed ? '▶' : '▼'}</button>
-                    <span class="status-group-drag-handle" title="拖移母分類排序" aria-label="拖移母分類排序">☷</span><span style="font-size:1rem;">📁</span>
+                    <span style="font-size:1rem;">📁</span>
                     <input type="text" value="${escapeHtml(g.name)}" style="flex:1;font-weight:700;" onchange="updateStatusGroupField(${gIdx}, 'name', this.value)">
                     <span style="font-size:0.72rem;color:var(--text-muted);white-space:nowrap;">${children.length} 項</span>
                     <button class="btn btn-status" style="min-height:28px;padding:3px 8px;" onclick="addChildStatus('${g.id}')">➕ 子進度</button>
@@ -4990,41 +4996,6 @@ function renderApp() {
                 <div style="padding-left:22px;display:${collapsed ? 'none' : 'flex'};flex-direction:column;gap:6px;" id="statusGroupChildren_${g.id}"></div>
             `;
             const childList = groupBox.querySelector(`#statusGroupChildren_${CSS.escape(g.id)}`);
-            const groupHandle = groupBox.querySelector('.status-group-drag-handle');
-            groupHandle.draggable = true;
-            groupHandle.addEventListener('dragstart', event => {
-                statusGroupDragId = g.id;
-                groupBox.classList.add('status-group-dragging');
-                event.dataTransfer.effectAllowed = 'move';
-                event.dataTransfer.setData('text/plain', g.id);
-            });
-            groupHandle.addEventListener('dragend', () => {
-                statusGroupDragId = null;
-                document.querySelectorAll('.status-group-dragging,.status-group-drag-over').forEach(el => el.classList.remove('status-group-dragging','status-group-drag-over'));
-            });
-            groupBox.addEventListener('dragover', event => {
-                if (!statusGroupDragId || statusGroupDragId === g.id) return;
-                event.preventDefault();
-                groupBox.classList.add('status-group-drag-over');
-                event.dataTransfer.dropEffect = 'move';
-            });
-            groupBox.addEventListener('dragleave', () => groupBox.classList.remove('status-group-drag-over'));
-            groupBox.addEventListener('drop', event => {
-                event.preventDefault();
-                groupBox.classList.remove('status-group-drag-over');
-                const sourceId = statusGroupDragId || event.dataTransfer.getData('text/plain');
-                if (!sourceId || sourceId === g.id) return;
-                const from = appData.statusGroups.findIndex(x => x.id === sourceId);
-                const to = appData.statusGroups.findIndex(x => x.id === g.id);
-                if (from < 0 || to < 0) return;
-                const moved = appData.statusGroups.splice(from, 1)[0];
-                appData.statusGroups.splice(to, 0, moved);
-                statusGroupDragId = null;
-                autoSaveCloud();
-                renderStatusManageList();
-                renderApp();
-            });
-
             if (children.length === 0) {
                 const empty = document.createElement('div');
                 empty.style.cssText = 'color:#888;font-size:0.78rem;padding:6px 0;';
@@ -5221,7 +5192,6 @@ function renderApp() {
         });
     });
 
-    let statusGroupDragId = null;
     let statusChildDragId = null;
 
     function handleStatusChildDragStart(event) {
@@ -5500,22 +5470,7 @@ function renderApp() {
         });
     }
 
-    
-function getDefaultNewBusStatusId() {
-    const groups = Array.isArray(appData.statusGroups) ? appData.statusGroups : [];
-    const statuses = Array.isArray(appData.statuses) ? appData.statuses : [];
-    const parent = groups.find(g => String(g.name || '').trim() === '原廠底盤');
-    if (parent) {
-        const child = statuses.find(st => st.groupId === parent.id && String(st.name || '').trim() === '待進廠');
-        if (child) return child.id;
-    }
-    const combined = statuses.find(st => String(st.name || '').replace(/\s+/g,'') === '原廠底盤/待進廠');
-    if (combined) return combined.id;
-    const loose = statuses.find(st => String(st.name || '').trim() === '待進廠');
-    return loose?.id || statuses[0]?.id || '';
-}
-
-function handleAddBus() {
+    function handleAddBus() {
         requireAuth(() => {
             const modal = document.getElementById('addBusModal');
             const plate = document.getElementById('addBusPlateInput');
@@ -5532,10 +5487,10 @@ function handleAddBus() {
             fill(model, appData.vehicleModels, '未指定車型');
             fill(paint, appData.paintGroups, '未指定噴漆組別');
             fill(color, appData.colorGroups, '未指定彩繪廣告');
-            status.innerHTML = renderStatusOptionsHtml(getDefaultNewBusStatusId());
+            status.innerHTML = renderStatusOptionsHtml(appData.statuses[0]?.id || '');
             const defaultZone = appData.zones.find(z => /後方底盤區/.test(z.name)) || appData.zones.find(z => /後方空地底盤區/.test(z.name)) || appData.zones[0];
             plate.value=''; group.value=''; model.value=''; paint.value=''; color.value='';
-            if (status.options.length) status.value = getDefaultNewBusStatusId();
+            if (status.options.length) status.value = appData.statuses[0]?.id || '';
             modal.dataset.defaultZoneId = defaultZone?.id || '';
             modal.classList.add('active');
             setTimeout(() => plate.focus(), 50);
@@ -5550,7 +5505,7 @@ function handleAddBus() {
         const newBus = {
             id:'b_'+Date.now(), plate,
             zoneId: modal?.dataset.defaultZoneId || appData.zones[0]?.id || '',
-            statusId: document.getElementById('addBusStatusSelect')?.value || getDefaultNewBusStatusId(),
+            statusId: document.getElementById('addBusStatusSelect')?.value || appData.statuses[0]?.id || '',
             bg:'#8c5d5d', color:'#ffffff',
             startDate: new Date().toISOString().slice(0,10), endDate:'',
             groupId: document.getElementById('addBusGroupSelect')?.value || '',
@@ -5598,7 +5553,6 @@ function handleAddBus() {
     }
 
     function closeModal(id) {
-        if (id === 'busModal') flushImmediateBusSave();
         if (id === 'statusManagerModal') { const fab = document.getElementById('floatingAddStatusGroup'); if (fab) fab.classList.remove('show'); }
         const modal = document.getElementById(id);
         if (modal) modal.classList.remove('active');
@@ -6498,13 +6452,15 @@ if(qualityIsMobile()){const h=document.getElementById('qualityServiceHint');cons
     function elderlyShowSchedule(){
         const box=document.getElementById('elderlyCommonDetail');
         if(!box) return;
-        const latest=getLatestAnnouncement?.();
-        if(!latest){box.innerHTML='<div class="elderly-detail-card">📅 目前沒有排程公告</div>';return;}
-        const date=getAnnouncementDisplayDate?.(latest)||'';
-        const task=latest.taskType||'一般作業';
-        const vehicles=latest.vehicles||'未指定車輛';
-        const note=latest.note||latest.remark||'';
-        box.innerHTML=`<div class="elderly-detail-card schedule-detail"><div>📅 ${escapeHtml(date)}</div><div>📌 ${escapeHtml(task)}</div><div>🚌 ${escapeHtml(vehicles)}</div>${note?`<div>📝 ${escapeHtml(note)}</div>`:''}</div>`;
+        const list=(getRealAnnouncements?.()||[]).slice().sort((a,b)=>announcementTime(b)-announcementTime(a));
+        if(!list.length){box.innerHTML='<div class="elderly-detail-card">📅 目前沒有排程公告</div>';return;}
+        box.innerHTML=list.map(item=>{
+            const date=getAnnouncementDisplayDate?.(item)||'';
+            const task=item.taskType||item.title||item.message||item.content||'一般作業';
+            const vehicles=item.vehicles||'未指定車輛';
+            const note=item.note||item.remark||item.description||'';
+            return `<div class="elderly-detail-card schedule-detail"><div>📅 ${escapeHtml(date)}</div><div>📌 ${escapeHtml(task)}</div><div>🚌 ${escapeHtml(vehicles)}</div>${note?`<div>📝 ${escapeHtml(note)}</div>`:''}</div>`;
+        }).join('');
     }
     function elderlyShowDelivery(){
         if(appData.announcementImg){
@@ -6575,6 +6531,104 @@ if(qualityIsMobile()){const h=document.getElementById('qualityServiceHint');cons
  </div>
 </div>
 <div id="qualityToast" class="quality-toast"></div>
+
+<div id="factoryMapMode">
+  <div class="fam-top">
+    <div class="fam-title">🏭 柏昇開發工業｜遊樂園地圖模式<small>廠區配置測試版・依手繪配置圖建立互動骨架</small></div>
+    <div class="fam-actions"><button class="fam-btn" onclick="famRender()">↻ 重新整理</button><button class="fam-btn" onclick="closeFactoryAmusementMap()">✕ 離開地圖</button></div>
+  </div>
+  <div class="fam-layout">
+    <aside class="fam-panel fam-left"><h3>🗺️ 廠區區域</h3><div class="fam-zone-list" id="famZoneList"></div><div class="fam-hint">① 點擊區域<br>② 查看該區域車輛位置<br>③ 再點擊車輛查看詳細資料<br><br>正式版可直接套用你提供的完整廠區配置圖，讓每個停車格與實際位置一一對應。</div></aside>
+    <main class="fam-map" id="famMap"></main>
+    <aside class="fam-panel fam-right"><h3>📊 廠區即時概況</h3><div class="fam-stats"><div class="fam-stat"><span>全廠車輛</span><strong id="famTotal">0</strong></div><div class="fam-stat"><span>目前在廠</span><strong id="famIn">0</strong></div><div class="fam-stat"><span>施工中</span><strong id="famWork">0</strong></div><div class="fam-stat"><span>測試空位</span><strong id="famEmpty">0</strong></div></div><h3>🚍 車輛資訊</h3><div class="fam-detail" id="famDetail"><div class="fam-detail-empty">尚未選擇車輛。<br>請點擊中間地圖上的車輛。</div></div></aside>
+  </div>
+</div>
+<div class="fam-modal" id="famZoneModal" onclick="if(event.target===this)famCloseZone()">
+ <div class="fam-modal-box">
+  <div class="fam-modal-head"><strong id="famZoneModalTitle">區域車輛位置</strong><button class="fam-close" onclick="famCloseZone()">✕</button></div>
+  <div class="fam-yard" id="famYard"></div>
+ </div>
+</div>
+
+<script id="factory-amusement-map-test-script">
+(function(){
+'use strict';
+let famSelectedZone='';
+let famSelectedBus='';
+const zoneDefs=[
+ {id:'A',label:'A棟臨停區',color:'#168bd1',x:'3%',y:'28%',w:'20%',h:'42%'},
+ {id:'B1_1',label:'B1 麥克內裝區',color:'#e38a18',x:'25%',y:'29%',w:'22%',h:'25%'},
+ {id:'B2',label:'B2 麥克板金區',color:'#d94d92',x:'25%',y:'58%',w:'22%',h:'25%'},
+ {id:'B3',label:'B3 阿安內裝區',color:'#8051d7',x:'50%',y:'29%',w:'19%',h:'25%'},
+ {id:'B4',label:'B4 阿益骨架區',color:'#16a38d',x:'50%',y:'58%',w:'19%',h:'25%'},
+ {id:'C',label:'C 噴漆補土區',color:'#2f9b42',x:'72%',y:'9%',w:'23%',h:'27%'},
+ {id:'D',label:'D 紅丹區',color:'#b84e39',x:'72%',y:'40%',w:'23%',h:'23%'},
+ {id:'E',label:'E 烤漆爐',color:'#7e55c8',x:'72%',y:'67%',w:'23%',h:'25%'},
+ {id:'F',label:'F 後方空地底盤區',color:'#25a9c8',x:'25%',y:'86%',w:'44%',h:'10%'}
+];
+function famBuses(){return Array.isArray(appData?.buses)?window.appData.buses:[]}
+function famZoneName(id){const z=appData?.zones?.find(x=>x.id===id);return z?.name?.replace(/^【.*?】/,'')||zoneDefs.find(x=>x.id===id)?.label||id}
+function famStatus(bus){const s=appData?.statuses?.find(x=>x.id===bus.statusId);return s?.name||'未設定'}
+function famColor(bus){return bus.bg||'#71808a'}
+function famEsc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function famOpen(){
+ document.getElementById('factoryMapMode').classList.add('show'); document.body.classList.add('fam-lock'); famRender();
+}
+function famClose(){document.getElementById('factoryMapMode').classList.remove('show');document.body.classList.remove('fam-lock');}
+window.openFactoryAmusementMap=famOpen; window.closeFactoryAmusementMap=famClose;
+function famRender(){
+ const buses=famBuses(), map=document.getElementById('famMap'), list=document.getElementById('famZoneList');
+ if(!map||!list)return;
+ const counts={}; zoneDefs.forEach(z=>counts[z.id]=0); buses.forEach(b=>{if(counts[b.zoneId]!==undefined)counts[b.zoneId]++});
+ list.innerHTML=zoneDefs.map(z=>`<button class="fam-zone-item" onclick="famSelectZone('${z.id}')"><span class="fam-zone-dot" style="background:${z.color}">${z.id.replace('B1_1','B1').replace('B1_2','B1')}</span><span>${famEsc(famZoneName(z.id))}</span><span class="fam-zone-count">${counts[z.id]||0}</span></button>`).join('');
+ document.getElementById('famTotal').textContent=buses.length;
+ document.getElementById('famIn').textContent=buses.filter(b=>!['done','repair'].includes(b.statusId)).length;
+ document.getElementById('famWork').textContent=buses.filter(b=>b.statusId==='working').length;
+ document.getElementById('famEmpty').textContent=Math.max(0,zoneDefs.length*10-buses.length);
+ map.innerHTML='<div class="fam-map-grid"></div><div class="fam-map-road fam-road-h"></div><div class="fam-map-road fam-road-v"></div><div class="fam-map-road fam-road-h2"></div><div class="fam-map-road fam-road-v2"></div>';
+ zoneDefs.forEach(z=>{
+  const bs=buses.filter(b=>b.zoneId===z.id);
+  const el=document.createElement('div');el.className='fam-zone'+(famSelectedZone===z.id?' sel':'');el.dataset.id=z.id;
+  Object.assign(el.style,{left:z.x,top:z.y,width:z.w,height:z.h,borderColor:z.color,background:`linear-gradient(145deg,${z.color}55,#092630dd)`});
+  el.onclick=()=>famSelectZone(z.id);
+  el.innerHTML=`<div class="fam-zone-label"><b>${z.id.replace('B1_1','B1').replace('B1_2','B1')}</b>${famEsc(famZoneName(z.id))}</div><div class="fam-zone-mini">${bs.length} 輛</div>`;
+  bs.forEach((b,i)=>{
+    const slot=document.createElement('button');slot.className='fam-slot '+famSlotClass(b);slot.textContent=famDigits(b.plate)||'車';
+    const cols=Math.max(1,Math.ceil(Math.sqrt(Math.min(12,Math.max(1,bs.length))))); const col=i%cols,row=Math.floor(i/cols);
+    slot.style.left=(8+col*(82/cols))+'%';slot.style.top=(28+row*22)+'%';
+    slot.onclick=e=>{e.stopPropagation();famShowBus(b.id)};
+    el.appendChild(slot);
+  });
+  map.appendChild(el);
+ });
+}
+function famDigits(p){const m=String(p||'').match(/\d+/g);return m?m.join(''):''}
+function famSlotClass(b){const s=b.statusId; if(s==='working')return'work'; if(s==='done')return'done'; return'in'}
+window.famSelectZone=function(id){famSelectedZone=id;famSelectedBus='';famRender();famShowZone(id)}
+function famShowZone(id){
+ const z=zoneDefs.find(x=>x.id===id), buses=famBuses().filter(b=>b.zoneId===id), modal=document.getElementById('famZoneModal');
+ document.getElementById('famZoneModalTitle').textContent=(z?.id||id)+'｜'+famZoneName(id);
+ const yard=document.getElementById('famYard');yard.innerHTML=`<div class="fam-yard-title">📍 ${famEsc(famZoneName(id))}　｜　點擊車輛查看詳細資料</div><div class="fam-parking-row" id="famParkingRow"></div>`;
+ const row=document.getElementById('famParkingRow');
+ const slots=Math.max(10,buses.length);
+ for(let i=0;i<slots;i++){
+  const wrap=document.createElement('div');wrap.className='fam-parking-slot';
+  if(buses[i]){const b=buses[i],car=document.createElement('button');car.className='fam-car '+famSlotClass(b);car.textContent=famDigits(b.plate)||b.plate||'車輛';car.onclick=()=>famShowBus(b.id);wrap.appendChild(car)}
+  else {const empty=document.createElement('div');empty.className='fam-car empty';empty.textContent='空位';wrap.appendChild(empty)}
+  row.appendChild(wrap);
+ }
+ modal.classList.add('show');
+}
+window.famCloseZone=function(){document.getElementById('famZoneModal').classList.remove('show')}
+function famShowBus(id){
+ const b=famBuses().find(x=>x.id===id);if(!b)return;famSelectedBus=id;
+ const d=document.getElementById('famDetail');
+ d.innerHTML=`<div class="fam-detail-card"><div class="plate">🚌 ${famEsc(b.plate||id)}</div><div class="line">📍 區域：${famEsc(famZoneName(b.zoneId))}</div><div class="line">🔧 進度：${famEsc(famStatus(b))}</div><div class="line">🎨 噴漆：${famEsc(appData?.paintGroups?.find(x=>x.id===b.paintGroupId)?.name||'未設定')}</div><div class="line">🖌️ 彩繪：${famEsc(appData?.colorGroups?.find(x=>x.id===b.colorGroupId)?.name||'未設定')}</div><div class="line">📝 備註：${famEsc(b.note||'無')}</div><span class="tag">點擊位置圖中的車輛即可查看</span></div>`;
+}
+window.famShowBus=famShowBus;
+window.famRender=famRender;
+})();
+</script>
 </body>
 <!-- UI 2.1 integrated: latest functional logic preserved; scroll navigation added. -->
 </html>
