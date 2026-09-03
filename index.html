@@ -1439,6 +1439,13 @@ html[data-theme="dark"] #statusManagerModal .status-manager-help b {
 @media (max-width:600px) {
   .floating-add-status-group { width:58px !important; height:58px !important; right:15px !important; bottom:18px !important; font-size:2.2rem !important; }
 }
+
+/* 進度管理：母分類也可拖曳排序 */
+.status-group-row { cursor: default; }
+.status-group-drag-handle { flex:0 0 22px; width:22px; text-align:center; font-size:1.15rem; color:var(--text-muted); cursor:grab; user-select:none; touch-action:none; }
+.status-group-dragging { opacity:.45; }
+.status-group-drag-over { outline:2px dashed var(--primary); outline-offset:2px; }
+.four-char-search-hit{outline:3px solid var(--primary)!important;box-shadow:0 0 0 5px rgba(0,150,255,.18),0 0 22px rgba(0,180,255,.42)!important;}
 </style>
 
 <style id="natural-status-palette-fix">
@@ -2976,6 +2983,72 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
     const presetTextColors = ['#ffffff', '#000000', '#212529', '#f8f9fa', '#ffc107', '#dc3545', '#17a2b8'];
 
     let currentEditBusId = null;
+let immediateBusSaveTimer = null;
+let immediateBusSaveQueued = false;
+function queueImmediateBusSave(delay=420) {
+    clearTimeout(immediateBusSaveTimer);
+    immediateBusSaveTimer = setTimeout(async () => {
+        if (!isAuthed()) return;
+        if (immediateBusSaveQueued) return;
+        immediateBusSaveQueued = true;
+        try {
+            const ok = await autoSaveCloud();
+            // autoSaveCloud 可能因上一筆尚在儲存而略過；這裡補一次，避免最後修改遺失。
+            if (!ok) {
+                setTimeout(() => queueImmediateBusSave(180), 220);
+            }
+        } finally {
+            immediateBusSaveQueued = false;
+        }
+    }, delay);
+}
+function syncOpenBusField(field, value, auditLabel='') {
+    const bus = appData.buses.find(b => b.id === currentEditBusId);
+    if (!bus) return;
+    const oldValue = bus[field] ?? '';
+    const nextValue = String(value ?? '');
+    if (oldValue === nextValue) return;
+    bus[field] = nextValue;
+    if (auditLabel) addAuditLog(bus.plate, auditLabel);
+    // 畫面立即同步；雲端延遲一小段時間，避免每個字元都發一次請求。
+    renderApp();
+    queueImmediateBusSave();
+}
+function bindImmediateBusModalFields() {
+    const title = document.getElementById('modalBusTitle');
+    const start = document.getElementById('modalBusStartDate');
+    const end = document.getElementById('modalBusEndDate');
+    const note = document.getElementById('modalBusNote');
+    const zone = document.getElementById('modalBusZoneSelect');
+    if (title && title.dataset.immediateBound !== '1') {
+        title.dataset.immediateBound = '1';
+        title.addEventListener('input', e => syncOpenBusField('plate', e.target.value));
+        title.addEventListener('change', e => syncOpenBusField('plate', e.target.value));
+    }
+    if (start && start.dataset.immediateBound !== '1') {
+        start.dataset.immediateBound = '1';
+        start.addEventListener('change', e => syncOpenBusField('startDate', e.target.value));
+    }
+    if (end && end.dataset.immediateBound !== '1') {
+        end.dataset.immediateBound = '1';
+        end.addEventListener('change', e => syncOpenBusField('endDate', e.target.value));
+    }
+    if (note && note.dataset.immediateBound !== '1') {
+        note.dataset.immediateBound = '1';
+        note.addEventListener('input', e => syncOpenBusField('note', e.target.value));
+        note.addEventListener('change', e => syncOpenBusField('note', e.target.value));
+    }
+    if (zone && zone.dataset.immediateBound !== '1') {
+        zone.dataset.immediateBound = '1';
+        zone.addEventListener('change', e => syncOpenBusField('zoneId', e.target.value));
+    }
+}
+function flushImmediateBusSave() {
+    clearTimeout(immediateBusSaveTimer);
+    immediateBusSaveTimer = null;
+    if (isAuthed()) autoSaveCloud();
+}
+
     let targetUploadBusId = null;
     let currentGalleryBusId = null;
     let isSaving = false;
@@ -3561,7 +3634,36 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         }
     }
 
-    function renderApp() {
+    
+let lastAutoJumpQuery = '';
+function autoJumpToFourCharVehicle() {
+    const input = document.getElementById('searchInput');
+    const raw = String(input?.value || '').trim();
+    if (!raw) { lastAutoJumpQuery=''; return; }
+    const compact = raw.replace(/\s/g,'');
+    const digitQuery = (raw.match(/\d/g) || []).join('');
+    let matches = [];
+    if (digitQuery.length === 4 && compact.length >= 4) {
+        matches = appData.buses.filter(b => ((String(b.plate || '').match(/\d/g) || []).join('')).includes(digitQuery));
+    } else if (compact.length === 4) {
+        const q = compact.toLowerCase();
+        matches = appData.buses.filter(b => String(b.plate || '').toLowerCase().includes(q) || String(b.note || '').toLowerCase().includes(q));
+    } else return;
+    if (matches.length !== 1) return;
+    const bus = matches[0];
+    if (lastAutoJumpQuery === raw) return;
+    lastAutoJumpQuery = raw;
+    setTimeout(() => {
+        const mapEl = document.querySelector(`.bus-card[data-bus-id="${CSS.escape(bus.id)}"]`);
+        const tableEl = document.querySelector(`#busTableBody [data-bus-id="${CSS.escape(bus.id)}"]`);
+        const target = mapEl || tableEl;
+        if (!target) return;
+        target.scrollIntoView({behavior:'smooth', block:'center', inline:'nearest'});
+        target.classList.add('four-char-search-hit');
+        setTimeout(() => target.classList.remove('four-char-search-hit'), 1200);
+    }, 60);
+}
+function renderApp() {
         const scrollY = window.scrollY;
         updateDashboard();
         renderSchedules();
@@ -3570,6 +3672,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         renderTable();
         renderAuditTrail();
         window.scrollTo(0, scrollY);
+        autoJumpToFourCharVehicle();
     }
 
     function bindAnnouncementAlert() {
@@ -4470,14 +4573,14 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
                 const swatch = document.createElement('div');
                 swatch.className = `color-swatch ${(bus.bg === c) ? 'selected' : ''}`;
                 swatch.style.background = c;
-                swatch.onclick = () => { bus.bg = c; openBusModal(busId); renderApp(); };
+                swatch.onclick = () => { bus.bg = c; queueImmediateBusSave(); renderApp(); openBusModal(busId); };
                 bgPalette.appendChild(swatch);
             });
             const bgPicker = document.createElement('input');
             bgPicker.type = 'color';
             bgPicker.value = bus.bg || '#8c5d5d';
             bgPicker.style.cssText = 'width:28px; height:28px; border-radius:50%; border:none; cursor:pointer; padding:0; background:none;';
-            bgPicker.onchange = (e) => { bus.bg = e.target.value; renderApp(); };
+            bgPicker.onchange = (e) => { bus.bg = e.target.value; queueImmediateBusSave(); renderApp(); };
             bgPalette.appendChild(bgPicker);
 
             const textColorPalette = document.getElementById('busTextColorPalette');
@@ -4486,16 +4589,17 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
                 const swatch = document.createElement('div');
                 swatch.className = `color-swatch ${(bus.color === c) ? 'selected' : ''}`;
                 swatch.style.background = c;
-                swatch.onclick = () => { bus.color = c; openBusModal(busId); renderApp(); };
+                swatch.onclick = () => { bus.color = c; queueImmediateBusSave(); renderApp(); openBusModal(busId); };
                 textColorPalette.appendChild(swatch);
             });
             const textPicker = document.createElement('input');
             textPicker.type = 'color';
             textPicker.value = bus.color || '#ffffff';
             textPicker.style.cssText = 'width:28px; height:28px; border-radius:50%; border:none; cursor:pointer; padding:0; background:none;';
-            textPicker.onchange = (e) => { bus.color = e.target.value; renderApp(); };
+            textPicker.onchange = (e) => { bus.color = e.target.value; queueImmediateBusSave(); renderApp(); };
             textColorPalette.appendChild(textPicker);
 
+            bindImmediateBusModalFields();
             renderPhotoGrid(bus);
             renderModalTimeline(bus);
 
@@ -4759,29 +4863,12 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
 
     async function saveBusModal() {
         const bus = appData.buses.find(b => b.id === currentEditBusId);
-        if (bus) {
-            const newPlate = document.getElementById('modalBusTitle').value;
-            const newStartDate = document.getElementById('modalBusStartDate').value;
-            const newEndDate = document.getElementById('modalBusEndDate').value;
-            const newNote = document.getElementById('modalBusNote').value;
-            const newZoneId = document.getElementById('modalBusZoneSelect')?.value || bus.zoneId || '';
-            
-            if (bus.plate !== newPlate) {
-                addAuditLog(newPlate, `車號更名為 ${newPlate}`);
-            } else {
-                addAuditLog(newPlate, `更新車輛詳細資料與備註`);
-            }
-
-            bus.plate = newPlate;
-            bus.startDate = newStartDate;
-            bus.endDate = newEndDate;
-            bus.note = newNote;
-            if (bus.zoneId !== newZoneId) { const zName = appData.zones.find(z=>z.id===newZoneId)?.name || ''; addAuditLog(bus.plate, `編輯視窗變更區域：${zName}`); }
-            bus.zoneId = newZoneId;
-
-            await autoSaveCloud();
-            renderApp();
-        }
+        if (!bus) return closeModal('busModal');
+        // 所有可編輯欄位在輸入／選擇時就已即時更新；此按鈕僅保留為「立即同步」捷徑。
+        clearTimeout(immediateBusSaveTimer);
+        immediateBusSaveTimer = null;
+        await autoSaveCloud();
+        renderApp();
         closeModal('busModal');
     }
 
@@ -4886,13 +4973,15 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         appData.statusGroups.forEach((g, gIdx) => {
             const groupBox = document.createElement('div');
             groupBox.style.cssText = 'border:1px solid var(--border-color);border-radius:10px;padding:10px;margin-bottom:10px;background:var(--bg-card);';
+            groupBox.classList.add('status-group-row');
+            groupBox.dataset.groupId = g.id;
             const children = appData.statuses.filter(st => st.groupId === g.id);
             children.forEach(st => groupedIds.add(st.id));
             const collapsed = !!window.statusGroupCollapsed[g.id];
             groupBox.innerHTML = `
                 <div style="display:flex;align-items:center;gap:7px;margin-bottom:${collapsed ? '0' : '8px'};">
                     <button type="button" class="btn" style="min-height:30px;padding:3px 8px;font-size:1rem;" title="${collapsed ? '展開' : '收摺'}" onclick="toggleStatusGroup('${g.id}')">${collapsed ? '▶' : '▼'}</button>
-                    <span style="font-size:1rem;">📁</span>
+                    <span class="status-group-drag-handle" title="拖移母分類排序" aria-label="拖移母分類排序">☷</span><span style="font-size:1rem;">📁</span>
                     <input type="text" value="${escapeHtml(g.name)}" style="flex:1;font-weight:700;" onchange="updateStatusGroupField(${gIdx}, 'name', this.value)">
                     <span style="font-size:0.72rem;color:var(--text-muted);white-space:nowrap;">${children.length} 項</span>
                     <button class="btn btn-status" style="min-height:28px;padding:3px 8px;" onclick="addChildStatus('${g.id}')">➕ 子進度</button>
@@ -4901,6 +4990,41 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
                 <div style="padding-left:22px;display:${collapsed ? 'none' : 'flex'};flex-direction:column;gap:6px;" id="statusGroupChildren_${g.id}"></div>
             `;
             const childList = groupBox.querySelector(`#statusGroupChildren_${CSS.escape(g.id)}`);
+            const groupHandle = groupBox.querySelector('.status-group-drag-handle');
+            groupHandle.draggable = true;
+            groupHandle.addEventListener('dragstart', event => {
+                statusGroupDragId = g.id;
+                groupBox.classList.add('status-group-dragging');
+                event.dataTransfer.effectAllowed = 'move';
+                event.dataTransfer.setData('text/plain', g.id);
+            });
+            groupHandle.addEventListener('dragend', () => {
+                statusGroupDragId = null;
+                document.querySelectorAll('.status-group-dragging,.status-group-drag-over').forEach(el => el.classList.remove('status-group-dragging','status-group-drag-over'));
+            });
+            groupBox.addEventListener('dragover', event => {
+                if (!statusGroupDragId || statusGroupDragId === g.id) return;
+                event.preventDefault();
+                groupBox.classList.add('status-group-drag-over');
+                event.dataTransfer.dropEffect = 'move';
+            });
+            groupBox.addEventListener('dragleave', () => groupBox.classList.remove('status-group-drag-over'));
+            groupBox.addEventListener('drop', event => {
+                event.preventDefault();
+                groupBox.classList.remove('status-group-drag-over');
+                const sourceId = statusGroupDragId || event.dataTransfer.getData('text/plain');
+                if (!sourceId || sourceId === g.id) return;
+                const from = appData.statusGroups.findIndex(x => x.id === sourceId);
+                const to = appData.statusGroups.findIndex(x => x.id === g.id);
+                if (from < 0 || to < 0) return;
+                const moved = appData.statusGroups.splice(from, 1)[0];
+                appData.statusGroups.splice(to, 0, moved);
+                statusGroupDragId = null;
+                autoSaveCloud();
+                renderStatusManageList();
+                renderApp();
+            });
+
             if (children.length === 0) {
                 const empty = document.createElement('div');
                 empty.style.cssText = 'color:#888;font-size:0.78rem;padding:6px 0;';
@@ -5097,6 +5221,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         });
     });
 
+    let statusGroupDragId = null;
     let statusChildDragId = null;
 
     function handleStatusChildDragStart(event) {
@@ -5375,7 +5500,22 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         });
     }
 
-    function handleAddBus() {
+    
+function getDefaultNewBusStatusId() {
+    const groups = Array.isArray(appData.statusGroups) ? appData.statusGroups : [];
+    const statuses = Array.isArray(appData.statuses) ? appData.statuses : [];
+    const parent = groups.find(g => String(g.name || '').trim() === '原廠底盤');
+    if (parent) {
+        const child = statuses.find(st => st.groupId === parent.id && String(st.name || '').trim() === '待進廠');
+        if (child) return child.id;
+    }
+    const combined = statuses.find(st => String(st.name || '').replace(/\s+/g,'') === '原廠底盤/待進廠');
+    if (combined) return combined.id;
+    const loose = statuses.find(st => String(st.name || '').trim() === '待進廠');
+    return loose?.id || statuses[0]?.id || '';
+}
+
+function handleAddBus() {
         requireAuth(() => {
             const modal = document.getElementById('addBusModal');
             const plate = document.getElementById('addBusPlateInput');
@@ -5392,10 +5532,10 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             fill(model, appData.vehicleModels, '未指定車型');
             fill(paint, appData.paintGroups, '未指定噴漆組別');
             fill(color, appData.colorGroups, '未指定彩繪廣告');
-            status.innerHTML = renderStatusOptionsHtml(appData.statuses[0]?.id || '');
+            status.innerHTML = renderStatusOptionsHtml(getDefaultNewBusStatusId());
             const defaultZone = appData.zones.find(z => /後方底盤區/.test(z.name)) || appData.zones.find(z => /後方空地底盤區/.test(z.name)) || appData.zones[0];
             plate.value=''; group.value=''; model.value=''; paint.value=''; color.value='';
-            if (status.options.length) status.value = appData.statuses[0]?.id || '';
+            if (status.options.length) status.value = getDefaultNewBusStatusId();
             modal.dataset.defaultZoneId = defaultZone?.id || '';
             modal.classList.add('active');
             setTimeout(() => plate.focus(), 50);
@@ -5410,7 +5550,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         const newBus = {
             id:'b_'+Date.now(), plate,
             zoneId: modal?.dataset.defaultZoneId || appData.zones[0]?.id || '',
-            statusId: document.getElementById('addBusStatusSelect')?.value || appData.statuses[0]?.id || '',
+            statusId: document.getElementById('addBusStatusSelect')?.value || getDefaultNewBusStatusId(),
             bg:'#8c5d5d', color:'#ffffff',
             startDate: new Date().toISOString().slice(0,10), endDate:'',
             groupId: document.getElementById('addBusGroupSelect')?.value || '',
@@ -5458,6 +5598,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
     }
 
     function closeModal(id) {
+        if (id === 'busModal') flushImmediateBusSave();
         if (id === 'statusManagerModal') { const fab = document.getElementById('floatingAddStatusGroup'); if (fab) fab.classList.remove('show'); }
         const modal = document.getElementById(id);
         if (modal) modal.classList.remove('active');
