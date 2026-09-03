@@ -222,6 +222,16 @@
 
         .back-to-top { position: fixed; bottom: 20px; right: 20px; background: #1f4e78; color: white; width: 42px; height: 42px; border-radius: 50%; border: none; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; z-index: 99; }
         .back-to-top.show { display: flex; }
+        .bus-card.search-jump-highlight {
+            animation: searchJumpHighlight 1.4s ease-in-out 2;
+            outline: 3px solid #18a7c7;
+            outline-offset: 2px;
+        }
+        @keyframes searchJumpHighlight {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
@@ -2401,29 +2411,6 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
 @media(min-width:901px){body.elderly-mode #elderlyModePanel{display:none!important;}}
 </style>
 
-<style id="factory-amusement-map-test-css">
-#factoryMapMode{display:none;position:fixed;inset:0;z-index:99990;background:#06121b;color:#eaf8ff;font-family:inherit;overflow:hidden}
-#factoryMapMode.show{display:block}
-.fam-top{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid rgba(75,210,255,.35);background:linear-gradient(180deg,#071d2c,#06121b);box-shadow:0 0 28px rgba(0,190,255,.12)}
-.fam-title{font-weight:900;font-size:1.15rem;letter-spacing:.04em}.fam-title small{display:block;color:#65d9ff;font-size:.68rem;margin-top:2px}
-.fam-actions{display:flex;gap:8px}.fam-btn{border:1px solid #197eab;background:#09283b;color:#dff7ff;border-radius:9px;padding:8px 12px;font-weight:800;cursor:pointer}.fam-btn:hover{background:#0d3b54}
-.fam-layout{height:calc(100vh - 64px);display:grid;grid-template-columns:245px 1fr 285px;gap:10px;padding:10px}
-.fam-panel{background:linear-gradient(180deg,rgba(9,34,49,.96),rgba(5,20,29,.96));border:1px solid rgba(57,192,236,.3);border-radius:14px;box-shadow:0 0 24px rgba(0,180,255,.08);overflow:auto}
-.fam-panel h3{margin:0;padding:13px 14px;border-bottom:1px solid rgba(90,210,255,.18);font-size:.95rem}
-.fam-zone-list{padding:8px}.fam-zone-item{display:flex;align-items:center;gap:9px;width:100%;padding:11px 10px;margin-bottom:6px;background:rgba(10,43,61,.72);border:1px solid rgba(80,205,250,.14);border-radius:9px;color:#e8f8ff;cursor:pointer;text-align:left}.fam-zone-item:hover{border-color:#35cfff;transform:translateX(2px)}.fam-zone-dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff}.fam-zone-count{margin-left:auto;color:#72e4ff;font-weight:900}
-.fam-map{position:relative;min-width:0;border:1px solid rgba(60,210,255,.3);border-radius:16px;overflow:hidden;background:#071822;box-shadow:inset 0 0 80px rgba(0,180,255,.08)}
-.fam-map-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(62,194,229,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(62,194,229,.08) 1px,transparent 1px);background-size:34px 34px}
-.fam-map-road{position:absolute;background:#263841;border:2px solid #50646d;box-shadow:inset 0 0 20px #10191e}
-.fam-road-h{height:34px;left:4%;right:4%;top:49%}.fam-road-v{width:34px;top:4%;bottom:4%;left:49%}.fam-road-h2{height:28px;left:4%;right:4%;top:23%}.fam-road-v2{width:28px;top:4%;bottom:4%;left:76%}
-.fam-zone{position:absolute;border:2px solid rgba(255,255,255,.72);border-radius:15px;background:linear-gradient(145deg,rgba(26,108,145,.8),rgba(9,38,54,.9));box-shadow:0 0 20px rgba(0,200,255,.12),inset 0 0 25px rgba(255,255,255,.04);cursor:pointer;transition:.18s;overflow:hidden}.fam-zone:hover{transform:scale(1.012);z-index:10;box-shadow:0 0 30px rgba(60,220,255,.4)}.fam-zone.sel{outline:3px solid #72e9ff;box-shadow:0 0 35px rgba(75,220,255,.55)}
-.fam-zone-label{position:absolute;top:8px;left:8px;padding:6px 9px;border-radius:8px;background:rgba(2,16,24,.82);border:1px solid rgba(255,255,255,.28);font-weight:900;font-size:.85rem}.fam-zone-label b{color:#7deaff;margin-right:4px}.fam-zone-mini{position:absolute;right:7px;top:7px;background:rgba(0,0,0,.38);border-radius:999px;padding:4px 7px;font-size:.68rem;font-weight:900}
-.fam-slot{position:absolute;width:28px;height:52px;border:1px solid rgba(190,240,255,.65);border-radius:6px;background:linear-gradient(180deg,#dfeff2,#4b6671);box-shadow:0 2px 7px #000;display:grid;place-items:center;font-size:8px;color:#06202d;font-weight:900;cursor:pointer}.fam-slot:hover{transform:scale(1.12);z-index:5}.fam-slot.empty{opacity:.22}.fam-slot.in{background:linear-gradient(180deg,#4fe1ff,#11698d);color:white}.fam-slot.work{background:linear-gradient(180deg,#ffb04a,#a94e09);color:#fff}.fam-slot.done{background:linear-gradient(180deg,#6be27c,#1d7130);color:#fff}
-.fam-hint{padding:12px;font-size:.75rem;line-height:1.65;color:#b6d9e6}.fam-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:10px}.fam-stat{padding:10px;border:1px solid rgba(100,220,255,.16);border-radius:9px;background:rgba(10,42,57,.65)}.fam-stat span{display:block;color:#8eb9c9;font-size:.7rem}.fam-stat strong{display:block;font-size:1.35rem;color:#72e4ff;margin-top:3px}
-.fam-detail{padding:12px}.fam-detail-empty{color:#91afbb;font-size:.8rem;line-height:1.7}.fam-detail-card{border:1px solid rgba(90,220,255,.24);border-radius:11px;background:rgba(8,31,43,.8);padding:11px}.fam-detail-card .plate{font-size:1.15rem;font-weight:900;color:#72e4ff}.fam-detail-card .line{font-size:.76rem;margin-top:7px;color:#c7e0e9}.fam-detail-card .tag{display:inline-block;margin-top:8px;padding:4px 7px;border-radius:999px;background:#123e52;color:#8ee9ff;font-size:.68rem;font-weight:800}
-.fam-modal{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.7);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:20px}.fam-modal.show{display:flex}.fam-modal-box{width:min(900px,96vw);max-height:90vh;background:#071925;border:1px solid #35cfff;border-radius:16px;box-shadow:0 0 55px rgba(0,210,255,.25);overflow:auto}.fam-modal-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid rgba(80,210,255,.2)}.fam-modal-head strong{font-size:1.05rem}.fam-close{background:none;border:0;color:#cceeff;font-size:1.4rem;cursor:pointer}.fam-yard{position:relative;margin:14px;height:500px;border-radius:12px;background:linear-gradient(#27363c,#1d2b31);border:2px solid #5c737d;overflow:hidden}.fam-yard:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 52px,rgba(255,255,255,.07) 52px 54px)}.fam-yard-title{position:absolute;left:15px;top:12px;font-weight:900;color:#7eeaff}.fam-parking-row{position:absolute;left:12%;right:12%;top:18%;bottom:12%;display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.fam-parking-slot{position:relative;border:1px dashed rgba(220,245,255,.35);border-radius:7px;display:grid;place-items:center}.fam-car{width:68%;height:78%;border-radius:9px;background:linear-gradient(180deg,#ecf7f9,#718b96);border:2px solid #d5f5ff;color:#09212c;font-weight:900;font-size:.72rem;cursor:pointer;box-shadow:0 5px 12px #081117;writing-mode:vertical-rl;display:grid;place-items:center}.fam-car:hover{transform:scale(1.08);outline:2px solid #72eaff}.fam-car.work{background:linear-gradient(180deg,#ffc069,#a95c12);color:white}.fam-car.done{background:linear-gradient(180deg,#78e88a,#237334);color:white}.fam-car.empty{opacity:.18;cursor:default}
-@media(max-width:1000px){.fam-layout{grid-template-columns:190px 1fr}.fam-right{display:none}}
-@media(max-width:680px){.fam-top{height:56px;padding:0 10px}.fam-title{font-size:.95rem}.fam-layout{height:calc(100vh - 56px);grid-template-columns:1fr;padding:6px}.fam-left{display:none}.fam-map{min-height:calc(100vh - 70px)}.fam-zone-label{font-size:.65rem;padding:4px 6px}.fam-zone-mini{font-size:.58rem}.fam-slot{width:20px;height:38px;font-size:6px}.fam-modal{padding:7px}.fam-yard{height:58vh;margin:8px}.fam-modal-box{width:98vw}}
-</style>
 </head>
 <body>
 
@@ -2577,7 +2564,6 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
     </div>
 </div>
 
-<div style="display:flex;justify-content:flex-end;margin:0 0 8px;gap:6px;"><button type="button" class="tab-btn" style="flex:0 0 auto;background:#0b3144;color:#0b6fa0;border:1px solid #1d8db8;" onclick="openFactoryAmusementMap()">🎢 遊樂園地圖模式</button></div>
 
 <div class="nav-tabs">
     <button class="tab-btn active" data-tab="tab-map">📍 廠區動態圖</button>
@@ -3624,6 +3610,56 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         }
     }
 
+    let lastAutoScrolledSearch = '';
+
+    function scrollToFirstMatchedVehicle() {
+        const input = document.getElementById('searchInput');
+        const keyword = (input?.value || '').trim().toLowerCase();
+
+        // 舊功能：搜尋滿 4 個字元才自動定位，避免輸入過程一直跳動。
+        if (keyword.length < 4) {
+            lastAutoScrolledSearch = '';
+            return;
+        }
+
+        // 同一個搜尋字串只定位一次；繼續修改文字後再重新定位。
+        if (keyword === lastAutoScrolledSearch) return;
+
+        const map = document.getElementById('mapContainer');
+        if (!map) return;
+
+        const matched = Array.from(map.querySelectorAll('.bus-card')).find(card => {
+            const busId = card.dataset.busId;
+            const bus = appData.buses.find(b => b.id === busId);
+            if (!bus) return false;
+            return (bus.plate || '').toLowerCase().includes(keyword) ||
+                   (bus.note || '').toLowerCase().includes(keyword);
+        });
+
+        if (!matched) return;
+
+        lastAutoScrolledSearch = keyword;
+
+        // 先找到車輛所在區域，再捲到車輛本身。
+        const zone = matched.closest('.zone');
+        if (zone) {
+            const rect = zone.getBoundingClientRect();
+            const y = rect.top + window.pageYOffset - 12;
+            const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+            window.scrollTo({
+                top: Math.min(Math.max(0, y), maxY),
+                left: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        setTimeout(() => {
+            matched.classList.remove('search-jump-highlight');
+            void matched.offsetWidth;
+            matched.classList.add('search-jump-highlight');
+        }, 120);
+    }
+
     function renderApp() {
         const scrollY = window.scrollY;
         updateDashboard();
@@ -3633,6 +3669,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         renderTable();
         renderAuditTrail();
         window.scrollTo(0, scrollY);
+        setTimeout(scrollToFirstMatchedVehicle, 0);
     }
 
     function bindAnnouncementAlert() {
@@ -6532,103 +6569,6 @@ if(qualityIsMobile()){const h=document.getElementById('qualityServiceHint');cons
 </div>
 <div id="qualityToast" class="quality-toast"></div>
 
-<div id="factoryMapMode">
-  <div class="fam-top">
-    <div class="fam-title">🏭 柏昇開發工業｜遊樂園地圖模式<small>廠區配置測試版・依手繪配置圖建立互動骨架</small></div>
-    <div class="fam-actions"><button class="fam-btn" onclick="famRender()">↻ 重新整理</button><button class="fam-btn" onclick="closeFactoryAmusementMap()">✕ 離開地圖</button></div>
-  </div>
-  <div class="fam-layout">
-    <aside class="fam-panel fam-left"><h3>🗺️ 廠區區域</h3><div class="fam-zone-list" id="famZoneList"></div><div class="fam-hint">① 點擊區域<br>② 查看該區域車輛位置<br>③ 再點擊車輛查看詳細資料<br><br>正式版可直接套用你提供的完整廠區配置圖，讓每個停車格與實際位置一一對應。</div></aside>
-    <main class="fam-map" id="famMap"></main>
-    <aside class="fam-panel fam-right"><h3>📊 廠區即時概況</h3><div class="fam-stats"><div class="fam-stat"><span>全廠車輛</span><strong id="famTotal">0</strong></div><div class="fam-stat"><span>目前在廠</span><strong id="famIn">0</strong></div><div class="fam-stat"><span>施工中</span><strong id="famWork">0</strong></div><div class="fam-stat"><span>測試空位</span><strong id="famEmpty">0</strong></div></div><h3>🚍 車輛資訊</h3><div class="fam-detail" id="famDetail"><div class="fam-detail-empty">尚未選擇車輛。<br>請點擊中間地圖上的車輛。</div></div></aside>
-  </div>
-</div>
-<div class="fam-modal" id="famZoneModal" onclick="if(event.target===this)famCloseZone()">
- <div class="fam-modal-box">
-  <div class="fam-modal-head"><strong id="famZoneModalTitle">區域車輛位置</strong><button class="fam-close" onclick="famCloseZone()">✕</button></div>
-  <div class="fam-yard" id="famYard"></div>
- </div>
-</div>
-
-<script id="factory-amusement-map-test-script">
-(function(){
-'use strict';
-let famSelectedZone='';
-let famSelectedBus='';
-const zoneDefs=[
- {id:'A',label:'A棟臨停區',color:'#168bd1',x:'3%',y:'28%',w:'20%',h:'42%'},
- {id:'B1_1',label:'B1 麥克內裝區',color:'#e38a18',x:'25%',y:'29%',w:'22%',h:'25%'},
- {id:'B2',label:'B2 麥克板金區',color:'#d94d92',x:'25%',y:'58%',w:'22%',h:'25%'},
- {id:'B3',label:'B3 阿安內裝區',color:'#8051d7',x:'50%',y:'29%',w:'19%',h:'25%'},
- {id:'B4',label:'B4 阿益骨架區',color:'#16a38d',x:'50%',y:'58%',w:'19%',h:'25%'},
- {id:'C',label:'C 噴漆補土區',color:'#2f9b42',x:'72%',y:'9%',w:'23%',h:'27%'},
- {id:'D',label:'D 紅丹區',color:'#b84e39',x:'72%',y:'40%',w:'23%',h:'23%'},
- {id:'E',label:'E 烤漆爐',color:'#7e55c8',x:'72%',y:'67%',w:'23%',h:'25%'},
- {id:'F',label:'F 後方空地底盤區',color:'#25a9c8',x:'25%',y:'86%',w:'44%',h:'10%'}
-];
-function famBuses(){return Array.isArray(appData?.buses)?window.appData.buses:[]}
-function famZoneName(id){const z=appData?.zones?.find(x=>x.id===id);return z?.name?.replace(/^【.*?】/,'')||zoneDefs.find(x=>x.id===id)?.label||id}
-function famStatus(bus){const s=appData?.statuses?.find(x=>x.id===bus.statusId);return s?.name||'未設定'}
-function famColor(bus){return bus.bg||'#71808a'}
-function famEsc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function famOpen(){
- document.getElementById('factoryMapMode').classList.add('show'); document.body.classList.add('fam-lock'); famRender();
-}
-function famClose(){document.getElementById('factoryMapMode').classList.remove('show');document.body.classList.remove('fam-lock');}
-window.openFactoryAmusementMap=famOpen; window.closeFactoryAmusementMap=famClose;
-function famRender(){
- const buses=famBuses(), map=document.getElementById('famMap'), list=document.getElementById('famZoneList');
- if(!map||!list)return;
- const counts={}; zoneDefs.forEach(z=>counts[z.id]=0); buses.forEach(b=>{if(counts[b.zoneId]!==undefined)counts[b.zoneId]++});
- list.innerHTML=zoneDefs.map(z=>`<button class="fam-zone-item" onclick="famSelectZone('${z.id}')"><span class="fam-zone-dot" style="background:${z.color}">${z.id.replace('B1_1','B1').replace('B1_2','B1')}</span><span>${famEsc(famZoneName(z.id))}</span><span class="fam-zone-count">${counts[z.id]||0}</span></button>`).join('');
- document.getElementById('famTotal').textContent=buses.length;
- document.getElementById('famIn').textContent=buses.filter(b=>!['done','repair'].includes(b.statusId)).length;
- document.getElementById('famWork').textContent=buses.filter(b=>b.statusId==='working').length;
- document.getElementById('famEmpty').textContent=Math.max(0,zoneDefs.length*10-buses.length);
- map.innerHTML='<div class="fam-map-grid"></div><div class="fam-map-road fam-road-h"></div><div class="fam-map-road fam-road-v"></div><div class="fam-map-road fam-road-h2"></div><div class="fam-map-road fam-road-v2"></div>';
- zoneDefs.forEach(z=>{
-  const bs=buses.filter(b=>b.zoneId===z.id);
-  const el=document.createElement('div');el.className='fam-zone'+(famSelectedZone===z.id?' sel':'');el.dataset.id=z.id;
-  Object.assign(el.style,{left:z.x,top:z.y,width:z.w,height:z.h,borderColor:z.color,background:`linear-gradient(145deg,${z.color}55,#092630dd)`});
-  el.onclick=()=>famSelectZone(z.id);
-  el.innerHTML=`<div class="fam-zone-label"><b>${z.id.replace('B1_1','B1').replace('B1_2','B1')}</b>${famEsc(famZoneName(z.id))}</div><div class="fam-zone-mini">${bs.length} 輛</div>`;
-  bs.forEach((b,i)=>{
-    const slot=document.createElement('button');slot.className='fam-slot '+famSlotClass(b);slot.textContent=famDigits(b.plate)||'車';
-    const cols=Math.max(1,Math.ceil(Math.sqrt(Math.min(12,Math.max(1,bs.length))))); const col=i%cols,row=Math.floor(i/cols);
-    slot.style.left=(8+col*(82/cols))+'%';slot.style.top=(28+row*22)+'%';
-    slot.onclick=e=>{e.stopPropagation();famShowBus(b.id)};
-    el.appendChild(slot);
-  });
-  map.appendChild(el);
- });
-}
-function famDigits(p){const m=String(p||'').match(/\d+/g);return m?m.join(''):''}
-function famSlotClass(b){const s=b.statusId; if(s==='working')return'work'; if(s==='done')return'done'; return'in'}
-window.famSelectZone=function(id){famSelectedZone=id;famSelectedBus='';famRender();famShowZone(id)}
-function famShowZone(id){
- const z=zoneDefs.find(x=>x.id===id), buses=famBuses().filter(b=>b.zoneId===id), modal=document.getElementById('famZoneModal');
- document.getElementById('famZoneModalTitle').textContent=(z?.id||id)+'｜'+famZoneName(id);
- const yard=document.getElementById('famYard');yard.innerHTML=`<div class="fam-yard-title">📍 ${famEsc(famZoneName(id))}　｜　點擊車輛查看詳細資料</div><div class="fam-parking-row" id="famParkingRow"></div>`;
- const row=document.getElementById('famParkingRow');
- const slots=Math.max(10,buses.length);
- for(let i=0;i<slots;i++){
-  const wrap=document.createElement('div');wrap.className='fam-parking-slot';
-  if(buses[i]){const b=buses[i],car=document.createElement('button');car.className='fam-car '+famSlotClass(b);car.textContent=famDigits(b.plate)||b.plate||'車輛';car.onclick=()=>famShowBus(b.id);wrap.appendChild(car)}
-  else {const empty=document.createElement('div');empty.className='fam-car empty';empty.textContent='空位';wrap.appendChild(empty)}
-  row.appendChild(wrap);
- }
- modal.classList.add('show');
-}
-window.famCloseZone=function(){document.getElementById('famZoneModal').classList.remove('show')}
-function famShowBus(id){
- const b=famBuses().find(x=>x.id===id);if(!b)return;famSelectedBus=id;
- const d=document.getElementById('famDetail');
- d.innerHTML=`<div class="fam-detail-card"><div class="plate">🚌 ${famEsc(b.plate||id)}</div><div class="line">📍 區域：${famEsc(famZoneName(b.zoneId))}</div><div class="line">🔧 進度：${famEsc(famStatus(b))}</div><div class="line">🎨 噴漆：${famEsc(appData?.paintGroups?.find(x=>x.id===b.paintGroupId)?.name||'未設定')}</div><div class="line">🖌️ 彩繪：${famEsc(appData?.colorGroups?.find(x=>x.id===b.colorGroupId)?.name||'未設定')}</div><div class="line">📝 備註：${famEsc(b.note||'無')}</div><span class="tag">點擊位置圖中的車輛即可查看</span></div>`;
-}
-window.famShowBus=famShowBus;
-window.famRender=famRender;
-})();
-</script>
 </body>
 <!-- UI 2.1 integrated: latest functional logic preserved; scroll navigation added. -->
 </html>
