@@ -2411,6 +2411,60 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
 @media(min-width:901px){body.elderly-mode #elderlyModePanel{display:none!important;}}
 </style>
 
+
+<style id="factory-3d-style">
+.factory-3d-stage{position:relative;width:100%;height:clamp(560px,76vh,820px);min-height:520px;overflow:hidden;border-radius:16px;border:1px solid rgba(48,174,214,.58);background:radial-gradient(circle at 50% 42%,rgba(34,118,163,.28),transparent 45%),radial-gradient(circle at 50% 100%,rgba(10,49,72,.55),transparent 58%),#06111b;box-shadow:inset 0 0 45px rgba(0,190,255,.12),0 12px 34px rgba(0,0,0,.22);isolation:isolate;touch-action:none}
+.factory-3d-stage canvas{display:block;width:100%;height:100%;cursor:grab}.factory-3d-stage canvas:active{cursor:grabbing}
+.factory-3d-hud{position:absolute;top:16px;left:18px;z-index:5;pointer-events:none;text-shadow:0 2px 8px #000}.factory-3d-title{color:#f4fbff;font-size:clamp(1rem,2vw,1.55rem);font-weight:900;letter-spacing:.08em}.factory-3d-help{margin-top:5px;color:#a8d9e9;font-size:.72rem;line-height:1.5}
+.factory-3d-controls{position:absolute;top:15px;right:15px;z-index:6;display:flex;gap:6px}.factory-3d-controls button{border:1px solid rgba(102,209,245,.48);color:#dff8ff;background:rgba(3,20,31,.72);backdrop-filter:blur(8px);border-radius:7px;padding:6px 9px;font-size:.72rem;cursor:pointer}.factory-3d-controls button:hover{background:rgba(14,61,84,.86)}.factory-3d-controls button.factory-3d-edit-active{border-color:#ffb52e;background:rgba(88,53,8,.88);color:#fff2c2;box-shadow:0 0 12px rgba(255,181,46,.22)}.factory-3d-edit-status{position:absolute;top:58px;right:15px;z-index:6;padding:6px 9px;border:1px solid rgba(255,181,46,.48);border-radius:7px;background:rgba(42,28,5,.82);color:#ffe6a0;font-size:.7rem;backdrop-filter:blur(8px);display:none;max-width:390px}.factory-3d-edit-status.show{display:block}.factory-3d-stage.edit-mode canvas{cursor:grab}.factory-3d-stage.edit-mode canvas:active{cursor:grabbing}
+.factory-3d-legend{position:absolute;left:16px;bottom:14px;z-index:5;display:flex;flex-wrap:wrap;gap:10px;align-items:center;color:#d7eef6;font-size:.68rem;background:rgba(3,16,25,.68);border:1px solid rgba(83,180,215,.32);padding:6px 9px;border-radius:8px;backdrop-filter:blur(8px);pointer-events:none}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;box-shadow:0 0 8px currentColor}.legend-zone{background:#25d8ff;color:#25d8ff}.legend-bus{background:#ffb52e;color:#ffb52e}
+.factory-3d-label{position:absolute;z-index:4;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap;text-align:center;transition:opacity .15s}.factory-3d-zone-label{padding:5px 9px;border:1px solid rgba(69,213,255,.62);background:rgba(3,25,38,.78);color:#dffaff;border-radius:6px;box-shadow:0 0 14px rgba(0,196,255,.22);font-size:.72rem;font-weight:800;backdrop-filter:blur(5px)}.factory-3d-zone-count{display:block;margin-top:2px;color:#8fdfff;font-size:.62rem;font-weight:500}.factory-3d-bus-label{padding:3px 6px;color:#fff;background:rgba(0,0,0,.78);border:1px solid rgba(255,192,71,.58);border-radius:5px;font-size:.65rem;font-weight:900;box-shadow:0 0 12px rgba(255,169,33,.18)}.factory-3d-bus-label.is-selected{border-color:#fff;box-shadow:0 0 18px rgba(255,216,107,.9);transform:scale(1.08)}
+
+.factory-3d-vehicle-editor{position:absolute;top:112px;right:15px;z-index:7;width:min(360px,calc(100% - 30px));padding:10px;border:1px solid rgba(89,203,238,.5);border-radius:10px;background:rgba(3,18,28,.88);backdrop-filter:blur(10px);box-shadow:0 10px 28px rgba(0,0,0,.32);color:#e8faff;font-size:.7rem}
+.factory-3d-editor-title{font-size:.82rem;font-weight:900;color:#fff;margin-bottom:4px}
+.factory-3d-selected-vehicle{padding:5px 7px;margin-bottom:7px;border-radius:6px;background:rgba(27,83,105,.45);border:1px solid rgba(81,190,222,.28);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.factory-3d-editor-row{display:flex;align-items:center;gap:7px;margin:6px 0}.factory-3d-editor-row>span{width:55px;flex:0 0 55px;color:#9fd9e8;font-weight:800}
+.factory-3d-model-buttons,.factory-3d-direction-buttons,.factory-3d-editor-actions{display:flex;gap:4px;flex-wrap:wrap}
+.factory-3d-vehicle-editor button{border:1px solid rgba(102,209,245,.4);color:#dff8ff;background:rgba(7,37,52,.85);border-radius:6px;padding:5px 8px;font-size:.68rem;cursor:pointer}
+.factory-3d-vehicle-editor button:hover{background:rgba(22,84,108,.95)}
+.factory-3d-vehicle-editor button.is-active{border-color:#ffbd4a;background:rgba(102,61,8,.9);color:#fff0c4;box-shadow:0 0 9px rgba(255,181,46,.22)}
+.factory-3d-rotation-row input{flex:1;min-width:90px;accent-color:#27c9ef}.factory-3d-rotation-row output{width:42px;text-align:right;color:#fff;font-weight:900}
+.factory-3d-editor-actions{margin-top:8px;padding-top:7px;border-top:1px solid rgba(117,202,226,.18)}
+@media(max-width:640px){.factory-3d-vehicle-editor{top:auto;bottom:92px;right:10px;width:min(340px,calc(100% - 20px))}}
+.factory-3d-loading{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:#bfeeff;background:rgba(3,14,23,.96);font-size:.78rem}.factory-3d-loading-title{font-size:1.05rem;font-weight:900;color:#fff}.factory-3d-loading.hidden{display:none}.legacy-map-container{display:block!important}.factory-3d-stage{display:none}.factory-3d-progress-wrap{width:min(420px,78%);margin-top:8px}.factory-3d-progress-track{height:12px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(125,220,245,.45);overflow:hidden}.factory-3d-progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#19b8df,#7ee8ff);transition:width .12s ease}.factory-3d-progress-text{margin-top:7px;color:#fff;font-weight:900;font-size:.86rem;text-align:center}.chat-card.latest-announcement-card{border:1px solid var(--border-chat-bubble)!important;box-shadow:none!important}.chat-card.latest-announcement-card::before{content:none!important}.factory-3d-stage.is-fullscreen{position:relative;width:100%;height:560px;min-height:500px;border-radius:12px}
+@media(max-width:640px){.factory-3d-stage{height:560px;min-height:500px;border-radius:12px}.factory-3d-help{max-width:270px;line-height:1.45}.factory-3d-legend{right:10px;left:10px;bottom:10px}.factory-3d-controls{top:auto;bottom:54px;right:10px}}
+</style>
+
+<style id="announcement-whole-box-final-fix">
+/* 公告紅框只框整個公告區，不再單獨框任何一則訊息 */
+.line-schedule-box.new-announcement-alert{border:2px solid #e53935 !important;box-shadow:0 0 0 3px rgba(229,57,53,.12),0 8px 22px rgba(229,57,53,.16) !important;}
+.line-schedule-box .chat-card.latest-announcement-card{border:1px solid var(--border-chat-bubble) !important;box-shadow:none !important;}
+.line-schedule-box .chat-card.latest-announcement-card::before{content:none !important;display:none !important;}
+</style>
+
+<style id="general-view-layout-final-fix">
+/* 一般檢視模式：依附圖維持「區域整排、車輛卡片緊湊」；避免桌面切成多欄造成區域與車卡過大。 */
+#mapContainer{display:grid !important;grid-template-columns:1fr !important;width:100% !important;min-width:0 !important;gap:8px !important;}
+#mapContainer .zone{width:100% !important;min-width:0 !important;max-width:100% !important;}
+#mapContainer .bus-card{min-width:0 !important;width:100% !important;padding:6px !important;gap:4px !important;}
+#mapContainer .bus-header{min-width:0 !important;}
+#mapContainer .bus-plate-input{min-width:0 !important;}
+/* 車位編號保留在車輛方塊中，但維持小欄位，不撐大整張車卡。 */
+#mapContainer .factory3d-model-slot{flex:0 0 64px !important;width:64px !important;min-width:64px !important;max-width:64px !important;height:26px !important;font-size:.66rem !important;padding:0 3px !important;}
+@media(max-width:640px){
+  #mapContainer{grid-template-columns:1fr !important;gap:7px !important;}
+  #mapContainer .factory3d-model-slot{flex-basis:58px !important;width:58px !important;min-width:58px !important;max-width:58px !important;font-size:.62rem !important;}
+}
+</style>
+<style id="factory3d-orientation-css">
+/* v2026-09-07 orientation/resolution fix: 3D follows the actual container in portrait/landscape. */
+#factory3DStage{width:100%;height:560px;min-height:320px;max-width:100%;overflow:hidden;box-sizing:border-box;}
+#factory3DStage canvas{display:block;width:100% !important;height:100% !important;max-width:none;}
+@media (orientation:landscape){#factory3DStage{height:min(78vh,700px);min-height:320px;}}
+@media (orientation:portrait){#factory3DStage{height:min(68vh,680px);min-height:420px;}}
+@media (max-width:600px){#factory3DStage{height:calc(100svh - 120px);min-height:360px;}}
+@media (max-width:600px) and (orientation:landscape){#factory3DStage{height:calc(100svh - 72px);min-height:280px;}}
+</style>
 </head>
 <body>
 
@@ -2426,6 +2480,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             <span class="author-tag">製作者：柏昇小歐</span>
         </div>
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button id="factory3DModeBtn" class="btn-theme" type="button" onclick="toggleFactory3DMode()">🏭 3D 廠區</button>
             <button id="themeToggleBtn" class="btn-theme" onclick="toggleTheme()">🌙 深色模式</button>
             <div class="header-top-right">
                 <span id="liveClock" class="live-clock"></span>
@@ -2458,8 +2513,10 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         <button class="btn btn-export" onclick="exportDispatchSheet()">📄 匯出派工單</button>
         <button class="btn btn-export" onclick="exportData()">📥 備份 JSON</button>
         <button class="btn btn-import" onclick="triggerImport()">📤 匯入 JSON</button>
+        <button class="btn btn-import" id="btnImportFactory3D" onclick="triggerFactory3DImport()">🏗️ 匯入3D模組</button>
         <button class="btn btn-archive" onclick="openArchiveModal()">📦 已交車</button>
         <input type="file" id="importFileInput" class="hidden-file-input" accept=".json" onchange="importData(event)">
+        <input type="file" id="factory3DImportFileInput" class="hidden-file-input" accept=".json,application/json" onchange="importFactory3DData(event)">
     </div>
 </div>
 
@@ -2584,7 +2641,33 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
   </div>
   <div class="area-nav-scroll" id="areaNavScroll"></div>
 </div>
-<div class="map-container" id="mapContainer"></div>
+<div class="map-container legacy-map-container" id="mapContainer"></div>
+<div id="factory3DStage" class="factory-3d-stage" style="display:none">
+    <div id="factory3DLabelLayer" class="factory-3d-label-layer" aria-hidden="true"></div>
+    <div class="factory-3d-loading" id="factory3DLoading">
+        <div class="factory-3d-loading-title">B 廠區 3D 立體配置圖</div>
+        <div id="factory3DLoadingStatus">準備載入 3D 模型…</div>
+        <div class="factory-3d-progress-wrap">
+            <div class="factory-3d-progress-track"><div id="factory3DProgressBar" class="factory-3d-progress-bar"></div></div>
+            <div id="factory3DProgressText" class="factory-3d-progress-text">0%</div>
+        </div>
+    </div>
+    <div class="factory-3d-hud">
+        <div class="factory-3d-title">【全廠】3D 立體全景配置圖</div>
+        <div class="factory-3d-help">🖱️ 左鍵旋轉・滾輪縮放・右鍵平移　｜　3D 配置依建模 JSON 固定</div>
+    </div>
+    <div class="factory-3d-controls">
+        <button type="button" onclick="resetFactory3DCamera()">⟳ 重置視角</button>
+        <button type="button" class="admin-only factory3d-slot-edit-toggle" id="factory3DSlotEditBtn" onclick="toggleFactory3DSlotEditMode()">✏️ 車位編號編輯</button>
+        <button type="button" class="admin-only factory3d-slot-save-btn" id="factory3DSlotSaveBtn" onclick="saveFactory3DSlotEdits()" style="display:none">💾 儲存車位編號</button>
+    </div>
+    <div class="factory-3d-legend">
+        <span><i class="legend-dot legend-zone"></i>廠區配置</span>
+        <span><i class="legend-dot legend-bus"></i>遊覽車</span>
+        <span>點擊遊覽車查看詳細資訊</span>
+    </div>
+</div>
+
     </div>
 </div>
 
@@ -2725,6 +2808,31 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
       <button class="btn btn-archive" type="button" onclick="clearDeliveryDate()">清除日期</button>
       <button class="btn" type="button" onclick="saveQuickDeliveryDate()">💾 儲存</button>
     </div>
+  </div>
+</div>
+
+<div class="modal" id="factory3DBusModal" style="z-index:2200;">
+  <div class="modal-content factory3d-bus-info-modal">
+    <div class="modal-header">
+      <div><strong id="factory3DBusSlotTitle">B1*01</strong><div id="factory3DBusLinkState" style="font-size:.68rem;color:var(--text-sub);margin-top:2px;"></div></div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <button type="button" id="factory3DBusReplaceBtn" class="btn btn-zone" style="min-height:28px;padding:3px 8px;font-size:.72rem;" onclick="openFactory3DVehiclePicker()">更換車輛</button>
+        <button type="button" onclick="closeModal('factory3DBusModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;color:var(--text-main);">✕</button>
+      </div>
+    </div>
+    <div id="factory3DBusInfoBody" class="factory3d-bus-info-body"></div>
+  </div>
+</div>
+
+<div class="modal" id="factory3DVehiclePickerModal" style="z-index:2300;">
+  <div class="modal-content factory3d-picker-modal">
+    <div class="modal-header">
+      <span>🔄 更換連動車輛</span>
+      <button type="button" onclick="closeModal('factory3DVehiclePickerModal')" style="border:none;background:none;cursor:pointer;font-size:1.1rem;color:var(--text-main);">✕</button>
+    </div>
+    <div style="font-size:.72rem;color:var(--text-sub);margin-bottom:6px;">輸入車號／名稱，輸入滿 4 個字元即可搜尋。</div>
+    <input id="factory3DVehicleSearchInput" type="text" autocomplete="off" placeholder="例如：7462" oninput="searchFactory3DVehicleCandidates(this.value)">
+    <div id="factory3DVehicleSearchResults" class="factory3d-picker-results"></div>
   </div>
 </div>
 
@@ -3018,7 +3126,8 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             {"id":"1787618807848","plate":"0782993 鍾權國","zoneId":"E","statusId":"S_1787581229246","startDate":"","endDate":"","groupId":"","modelId":"","paintGroupId":"PG_gui","deliveryDate":"","bg":"#8c5d5d","color":"#ffffff","note":"","photos":[],"logs":[]}
         ],
         archivedBuses: [],
-        auditLogs: []
+        auditLogs: [],
+        factory3DScene: null
     };
 
     const presetBgColors = ['#8c5d5d', '#007bff', '#28a745', '#dc3545', '#fd7e14', '#8800a3', '#17a2b8', '#2c3e50', '#ffffff', '#000000', '#f5d505'];
@@ -3310,6 +3419,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
     function sanitizeData() {
         if (!appData.archivedBuses) appData.archivedBuses = [];
         if (!appData.auditLogs) appData.auditLogs = [];
+        if (appData.factory3DScene && !Array.isArray(appData.factory3DScene.objects)) appData.factory3DScene = null;
         if (!appData.announcementImg) appData.announcementImg = "";
         if (!appData.schedules) appData.schedules = [];
         if (!Array.isArray(appData.zones)) appData.zones = [];
@@ -3322,6 +3432,8 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         if (!Array.isArray(appData.statusGroups)) appData.statusGroups = [];
         if (!Array.isArray(appData.vehicleGroups)) appData.vehicleGroups = [];
         if (!Array.isArray(appData.vehicleModels)) appData.vehicleModels = [];
+        if (!Array.isArray(appData.buses)) appData.buses = [];
+        appData.buses.forEach(b => { if (typeof b.factoryModelSlot !== 'string') b.factoryModelSlot = ''; });
         if (!Array.isArray(appData.paintGroups)) appData.paintGroups = [];
         if (!appData.paintGroups.length) appData.paintGroups = [{id:'PG_gui', name:'貴'}, {id:'PG_jun', name:'駿'}];
         if (!Array.isArray(appData.colorGroups)) appData.colorGroups = [];
@@ -3610,14 +3722,26 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         }
     }
 
+    // 搜尋啟動規則：數字需滿 4 個；只要輸入 1 個中文字即可搜尋。
+    // 其他英文字母／符號維持原本的 4 字元門檻，避免輸入過程過早跳動。
+    function isSearchReady(value) {
+        const q = String(value || '').trim();
+        if (!q) return false;
+        const chineseCount = (q.match(/[\u3400-\u9fff]/g) || []).length;
+        const digitCount = (q.match(/[0-9]/g) || []).length;
+        if (chineseCount >= 1) return true;
+        if (digitCount >= 4) return true;
+        return q.length >= 4;
+    }
+
     let lastAutoScrolledSearch = '';
 
     function scrollToFirstMatchedVehicle() {
         const input = document.getElementById('searchInput');
         const keyword = (input?.value || '').trim().toLowerCase();
 
-        // 舊功能：搜尋滿 4 個字元才自動定位，避免輸入過程一直跳動。
-        if (keyword.length < 4) {
+        // 數字滿 4 個，或含 1 個中文字即可自動定位。
+        if (!isSearchReady(keyword)) {
             lastAutoScrolledSearch = '';
             return;
         }
@@ -3640,17 +3764,32 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
 
         lastAutoScrolledSearch = keyword;
 
-        // 先找到車輛所在區域，再捲到車輛本身。
-        const zone = matched.closest('.zone');
-        if (zone) {
-            const rect = zone.getBoundingClientRect();
-            const y = rect.top + window.pageYOffset - 12;
-            const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-            window.scrollTo({
-                top: Math.min(Math.max(0, y), maxY),
-                left: 0,
-                behavior: 'smooth'
-            });
+        // 3D 模式直接把鏡頭帶到符合的車輛；同時把頁面捲到 3D 圖。
+        if (typeof window.focusFactory3DBus === 'function') {
+            window.focusFactory3DBus(busId);
+            const stage = document.getElementById('factory3DStage');
+            if (stage) {
+                const rect = stage.getBoundingClientRect();
+                const y = rect.top + window.pageYOffset - 12;
+                const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+                window.scrollTo({
+                    top: Math.min(Math.max(0, y), maxY),
+                    left: 0,
+                    behavior: 'smooth'
+                });
+            }
+        } else {
+            const zone = matched.closest('.zone');
+            if (zone) {
+                const rect = zone.getBoundingClientRect();
+                const y = rect.top + window.pageYOffset - 12;
+                const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+                window.scrollTo({
+                    top: Math.min(Math.max(0, y), maxY),
+                    left: 0,
+                    behavior: 'smooth'
+                });
+            }
         }
 
         setTimeout(() => {
@@ -3668,6 +3807,9 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         renderMap();
         renderTable();
         renderAuditTrail();
+        if (typeof window.renderFactory3D === 'function' && document.getElementById('factory3DStage')?.style.display !== 'none') {
+            window.renderFactory3D();
+        }
         window.scrollTo(0, scrollY);
         setTimeout(scrollToFirstMatchedVehicle, 0);
     }
@@ -4202,7 +4344,14 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             `;
 
             const bodyEl = zoneEl.querySelector('.zone-body');
-            const zoneBuses = filteredBuses.filter(b => b.zoneId === zone.id);
+            const zoneBuses = filteredBuses.filter(b => b.zoneId === zone.id).sort((a,b) => {
+                const sa=String(a.factoryModelSlot||'').toUpperCase(), sb=String(b.factoryModelSlot||'').toUpperCase();
+                const na=sa.includes('*') ? parseInt(sa.split('*').pop(),10) : Number.POSITIVE_INFINITY;
+                const nb=sb.includes('*') ? parseInt(sb.split('*').pop(),10) : Number.POSITIVE_INFINITY;
+                if(Number.isFinite(na) && Number.isFinite(nb) && na!==nb) return na-nb;
+                if(Number.isFinite(na)!==Number.isFinite(nb)) return Number.isFinite(na)?-1:1;
+                return String(a.plate||'').localeCompare(String(b.plate||''),'zh-Hant');
+            });
 
             zoneBuses.forEach(bus => {
                 const busCard = document.createElement('div');
@@ -4242,6 +4391,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
                         <div class="bus-plate-input" style="background:${bus.bg || '#8c5d5d'}; color:${bus.color || '#ffffff'};" onclick="handleBusPlateClick('${bus.id}')">
                             ${escapeHtml(bus.plate)}
                         </div>
+                        <button type="button" class="factory3d-model-slot ${bus.factoryModelSlot ? '' : 'unassigned'}" title="${bus.factoryModelSlot ? '3D 車位：'+escapeHtml(bus.factoryModelSlot) : '尚未設定 3D 車位'}" ${authed ? `onclick="event.stopPropagation();editFactory3DSlotFromBus('${bus.id}')"` : 'disabled'}>${escapeHtml(bus.factoryModelSlot || '未配置')}</button>
                         <button type="button" class="work-order-btn" title="工單照片" onclick="event.stopPropagation();openWorkOrderModal('${bus.id}')">工</button>
                         <button type="button" class="bus-note-btn ${bus.note ? 'has-note' : ''}" title="${bus.note ? '查看／編輯備註' : '新增備註'}" onclick="event.stopPropagation();openBusNoteModal('${bus.id}')">註</button>
                         ${isQualityUser() ? `<button type="button" class="quality-photo-btn" title="品管照片庫" onclick="event.stopPropagation();openQualityPhotoLibrary('${bus.id}')">品</button>` : ''}
@@ -5549,7 +5699,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             modelId: document.getElementById('addBusModelSelect')?.value || '',
             paintGroupId: document.getElementById('addBusPaintSelect')?.value || '',
             colorGroupId: document.getElementById('addBusColorSelect')?.value || '',
-            deliveryDate:'', note:'', photos:[], logs:[]
+            deliveryDate:'', note:'', photos:[], logs:[], factoryModelSlot:''
         };
         appData.buses.push(newBus);
         addAuditLog(newBus.plate, '建立新車輛');
@@ -5615,6 +5765,68 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             };
             reader.readAsText(file);
         }
+        evt.target.value = '';
+    }
+
+    // 3D 廠區模型是獨立於車輛資料的配置。管理員可直接匯入建造編輯器
+    // 匯出的 JSON；匯入後立即套用到 3D，並隨 appData 儲存到本機與 Supabase。
+    function triggerFactory3DImport() {
+        requireAuth(() => document.getElementById('factory3DImportFileInput')?.click());
+    }
+
+    function normalizeFactory3DImport(raw) {
+        const objects = Array.isArray(raw) ? raw : raw?.objects;
+        if (!Array.isArray(objects)) throw new Error('找不到 objects 陣列。請選擇 3D 廠區建造編輯器匯出的 JSON。');
+        const allowed = new Set(['bus','zone','box','booth','road','building','wall','ground']);
+        const cleaned = objects.map((o, idx) => {
+            if (!o || typeof o !== 'object') throw new Error(`第 ${idx + 1} 個物件格式錯誤。`);
+            if (!allowed.has(o.type)) throw new Error(`第 ${idx + 1} 個物件的 type「${o.type || ''}」不支援。`);
+            const position = Array.isArray(o.position) ? o.position.slice(0,3).map(Number) : null;
+            const rotation = Array.isArray(o.rotation) ? o.rotation.slice(0,4) : null;
+            const scale = Array.isArray(o.scale) ? o.scale.slice(0,3).map(Number) : null;
+            if (!position || position.length < 3 || position.some(n => !Number.isFinite(n))) throw new Error(`第 ${idx + 1} 個物件 position 無效。`);
+            if (!rotation || rotation.length < 3 || rotation.slice(0,3).some(n => !Number.isFinite(Number(n)))) throw new Error(`第 ${idx + 1} 個物件 rotation 無效。`);
+            if (!scale || scale.length < 3 || scale.some(n => !Number.isFinite(n))) throw new Error(`第 ${idx + 1} 個物件 scale 無效。`);
+            return { ...o, position, rotation: [Number(rotation[0]), Number(rotation[1]), Number(rotation[2]), rotation[3] || 'XYZ'], scale };
+        });
+        return cleaned;
+    }
+
+    function importFactory3DData(evt) {
+        const input = evt.target;
+        const file = input?.files?.[0];
+        if (!file) return;
+        requireAuth(async () => {
+            try {
+                const text = await file.text();
+                const raw = JSON.parse(text);
+                const objects = normalizeFactory3DImport(raw);
+                if (!confirm(`確定要套用「${file.name}」的 3D 廠區模型嗎？\n\n目前 JSON 將由 ${objects.length} 個物件取代。\n車輛管理資料不會被此匯入覆蓋。`)) return;
+                appData.factory3DScene = {
+                    version: raw?.version || '1.0',
+                    title: raw?.title || 'B 廠區 3D 配置',
+                    savedAt: raw?.savedAt || new Date().toISOString(),
+                    importedAt: new Date().toISOString(),
+                    sourceFileName: file.name,
+                    busSlots: null,
+                    objects
+                };
+                sanitizeData();
+                localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData));
+                const saved = await autoSaveCloud();
+                const stageEl = document.getElementById('factory3DStage');
+                if (stageEl && stageEl.style.display !== 'none') {
+                    window.reloadFactory3DScene?.();
+                }
+                renderApp();
+                alert(saved ? `🏗️ 3D 模組已更新！\n共 ${objects.length} 個物件，並已同步雲端。` : `🏗️ 3D 模組已更新！\n共 ${objects.length} 個物件。\n⚠️ 雲端同步失敗，但本機已保留。`);
+            } catch (err) {
+                console.error('3D 模組匯入失敗：', err);
+                alert('❌ 3D 模組匯入失敗：' + (err?.message || 'JSON 格式錯誤。'));
+            } finally {
+                input.value = '';
+            }
+        });
     }
 
     function setupTabSwitch() {
@@ -5767,6 +5979,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         <button class="mobile-aux-action" onclick="mobileAuxAction(exportDispatchSheet)">📄 匯出派工單</button>
         <button class="mobile-aux-action" onclick="mobileAuxAction(exportData)">📥 備份 JSON</button>
         <button class="mobile-aux-action" onclick="mobileAuxAction(triggerImport)">📤 匯入 JSON</button>
+        <button class="mobile-aux-action" onclick="mobileAuxAction(triggerFactory3DImport)">🏗️ 匯入3D模組</button>
         <button class="mobile-aux-action" onclick="mobileAuxAction(openArchiveModal)">📦 已交車</button>
     </div>
     <div class="mobile-aux-divider"></div>
@@ -5906,6 +6119,9 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
   }
 
   function showAreaById(zoneId){
+    if (typeof window.focusFactory3DZone === 'function') {
+      window.focusFactory3DZone(zoneId || '');
+    }
     const zones = getZoneElements();
     const target = zoneId ? zones.find(z => z.dataset.zoneId === zoneId) : null;
 
@@ -6089,11 +6305,14 @@ html, body { max-width:100%; overflow-x:hidden; }
 
 /* 桌面：大視窗維持原本穩定的四區配置，避免最大化後自動塞入過多區域而讓車輛方塊過窄。
    視窗縮小時才自動減少欄數。 */
-@media (min-width:1401px) {
+@media (min-width:1201px) {
   .map-container { width:100%; min-width:0; grid-template-columns:repeat(4,minmax(0,1fr)) !important; }
 }
-@media (min-width:901px) and (max-width:1400px) {
-  .map-container { width:100%; min-width:0; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)) !important; }
+@media (min-width:901px) and (max-width:1200px) {
+  .map-container { width:100%; min-width:0; grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
+}
+@media (min-width:641px) and (max-width:900px) {
+  .map-container { width:100%; min-width:0; grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
 }
 
 /* 第二行：進度加寬，組別／車型縮窄；所有文字強制單行，避免把卡片撐破。 */
@@ -6569,8 +6788,841 @@ if(qualityIsMobile()){const h=document.getElementById('qualityServiceHint');cons
 </div>
 <div id="qualityToast" class="quality-toast"></div>
 
+
+<!-- B廠區 360° 3D 立體配置圖 -->
+
+<style id="factory-3d-html-label-fix">
+.factory-3d-label-layer{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden}
+.factory-3d-html-label{position:absolute;left:0;top:0;white-space:nowrap;transform-origin:center center;font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;line-height:1.15;text-rendering:geometricPrecision;-webkit-font-smoothing:antialiased;backface-visibility:hidden}
+.factory-3d-html-zone-label{padding:4px 8px;border:1px solid rgba(102,218,255,.78);border-radius:5px;background:rgba(3,20,30,.88);color:#f4fcff;font-size:13px;font-weight:900;letter-spacing:.02em;box-shadow:0 2px 7px rgba(0,0,0,.42);text-shadow:0 1px 2px #000}
+.factory-3d-html-bus-label{padding:2px 6px;border:1px solid rgba(30,30,30,.38);border-radius:3px;background:rgba(255,255,255,.96);color:#111;font-size:11px;font-weight:900;box-shadow:0 1px 5px rgba(0,0,0,.42)}
+.factory3d-slot-edit-toggle.active{background:#0b7dda!important;color:#fff!important;border-color:#0b7dda!important}
+.factory3d-slot-edit-toggle{display:none}
+body.admin-mode .factory3d-slot-edit-toggle{display:inline-flex}
+.factory-3d-html-bus-label.slot-editable{pointer-events:auto;cursor:pointer;border-color:#0b7dda;background:#fff;box-shadow:0 0 0 2px rgba(11,125,218,.16),0 2px 7px rgba(0,0,0,.45)}
+.factory-3d-html-bus-label.slot-editable::after{content:' ✏';font-size:.72em;color:#0b7dda}
+@media(max-width:640px){
+  .factory-3d-stage{height:calc(100svh - 105px);min-height:500px;max-height:760px}
+  .factory-3d-html-zone-label{font-size:11px;padding:3px 6px}
+  .factory-3d-html-bus-label{font-size:9px;padding:2px 4px}
+  .factory-3d-hud{top:10px;left:12px}.factory-3d-title{font-size:1rem}.factory-3d-help{font-size:.62rem;max-width:235px}
+}
+</style>
+<style id="factory-3d-link-ui-css">
+.factory3d-model-slot{display:inline-flex;align-items:center;justify-content:center;min-width:56px;max-width:78px;height:26px;padding:0 5px;border:1px solid var(--border-color);border-radius:4px;background:var(--bg-input);color:var(--text-main);font-size:.68rem;font-weight:800;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 0 64px}
+.factory3d-model-slot.unassigned{color:#7b8790;background:rgba(127,145,158,.10)}
+.factory3d-bus-info-modal{max-width:620px;width:min(94vw,620px)}
+.factory3d-bus-info-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:4px}
+.factory3d-info-item{border:1px solid var(--border-color);border-radius:6px;background:var(--bg-input);padding:7px 8px;min-width:0}
+.factory3d-info-label{font-size:.66rem;color:var(--text-sub);display:block;margin-bottom:2px}
+.factory3d-info-value{font-size:.8rem;font-weight:800;color:var(--text-main);word-break:break-word}
+.factory3d-picker-modal{max-width:520px;width:min(94vw,520px)}
+.factory3d-picker-results{display:flex;flex-direction:column;gap:5px;margin-top:8px;max-height:52vh;overflow:auto}
+.factory3d-picker-item{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--border-color);border-radius:6px;padding:7px 9px;background:var(--bg-input);cursor:pointer;text-align:left}
+.factory3d-picker-item:hover{border-color:#55b6d7;transform:translateY(-1px)}
+.factory3d-picker-item-main{font-weight:800;font-size:.78rem;color:var(--text-main)}
+.factory3d-picker-item-sub{font-size:.66rem;color:var(--text-sub)}
+@media(max-width:640px){.factory3d-bus-info-body{grid-template-columns:1fr}.factory3d-bus-info-modal{width:calc(100vw - 20px)}.factory3d-model-slot{min-width:52px;max-width:70px;flex-basis:58px;font-size:.62rem}.factory3d-picker-modal{width:calc(100vw - 20px)}}
+</style>
+<style id="vehicle-card-restore-old-layout-final">
+/* 一般模式：以原版緊湊車卡為基準，僅在車號與工單按鈕間加入小型 3D 車位編號。 */
+.bus-card{padding:6px !important;gap:4px !important;border-radius:5px !important;}
+.bus-card .bus-header{display:grid !important;grid-template-columns:minmax(0,1fr) 58px 24px 24px 24px auto !important;gap:4px !important;align-items:center !important;}
+.bus-card .bus-plate-input{min-width:0 !important;width:auto !important;flex-grow:0 !important;padding:3px 5px !important;white-space:nowrap !important;overflow:hidden !important;text-overflow:ellipsis !important;font-size:.8rem !important;min-height:26px !important;}
+.bus-card .factory3d-model-slot{width:58px !important;min-width:58px !important;max-width:58px !important;height:26px !important;padding:3px 4px !important;font-size:.62rem !important;line-height:1 !important;flex:0 0 58px !important;}
+.bus-card .work-order-btn,.bus-card .bus-note-btn,.bus-card .quality-photo-btn{flex:0 0 24px !important;width:24px !important;min-width:24px !important;height:22px !important;padding:0 !important;}
+.bus-card .bus-meta-row{display:grid !important;grid-template-columns:minmax(0,1.35fr) minmax(54px,.58fr) minmax(62px,.66fr) !important;gap:4px !important;}
+.bus-card .bus-bottom-row{gap:4px !important;}
+@media(max-width:640px){
+  .bus-card{padding:5px !important;gap:3px !important;}
+  .bus-card .bus-header{grid-template-columns:minmax(0,1fr) 52px 23px 23px 23px auto !important;gap:3px !important;}
+  .bus-card .factory3d-model-slot{width:52px !important;min-width:52px !important;max-width:52px !important;height:24px !important;font-size:.58rem !important;}
+  .bus-card .work-order-btn,.bus-card .bus-note-btn,.bus-card .quality-photo-btn{width:23px !important;min-width:23px !important;height:21px !important;}
+}
+.factory3d-slot-save-btn{display:none;}
+body.admin-mode .factory3d-slot-save-btn.pending{display:inline-flex !important;}
+</style>
+<style id="vehicle-card-and-slot-save-final">
+/* 最終版：一般模式保持舊版緊湊車卡；車位編號只增加一個窄欄位，不改變卡片縱向結構。 */
+.bus-card .bus-header{display:grid !important;grid-template-columns:minmax(0,1fr) 58px 24px 24px 24px auto !important;gap:4px !important;align-items:center !important;}
+.bus-card .bus-plate-input{min-width:0 !important;width:auto !important;flex:0 1 auto !important;padding:3px 5px !important;min-height:26px !important;white-space:nowrap !important;overflow:hidden !important;text-overflow:ellipsis !important;}
+.bus-card .factory3d-model-slot{display:inline-flex !important;width:58px !important;min-width:58px !important;max-width:58px !important;height:26px !important;padding:3px 3px !important;font-size:.62rem !important;}
+.bus-card .work-order-btn,.bus-card .bus-note-btn,.bus-card .quality-photo-btn{width:24px !important;min-width:24px !important;height:22px !important;padding:0 !important;}
+/* 桌機完整頁面一次顯示更多區域：4 欄；中型 3 欄；平板 2 欄；手機 1 欄。 */
+@media (min-width:1201px){#mapContainer{grid-template-columns:repeat(4,minmax(0,1fr)) !important;}}
+@media (min-width:901px) and (max-width:1200px){#mapContainer{grid-template-columns:repeat(3,minmax(0,1fr)) !important;}}
+@media (min-width:641px) and (max-width:900px){#mapContainer{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}}
+@media (max-width:640px){#mapContainer{grid-template-columns:1fr !important;} .bus-card .bus-header{grid-template-columns:minmax(0,1fr) 52px 23px 23px 23px auto !important;gap:3px !important;} .bus-card .factory3d-model-slot{width:52px !important;min-width:52px !important;max-width:52px !important;font-size:.58rem !important;}}
+.factory3d-slot-save-btn{display:none !important;}
+body.admin-mode .factory3d-slot-save-btn{display:none !important;}
+body.admin-mode .factory3d-slot-save-btn.pending{display:inline-flex !important;}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script id="factory-3d-script">
+(function(){
+  'use strict';
+  const JSON_OBJECTS=[{"id":"obj_5","type":"zone","name":"B3","plate":"","zone":"","color":"#8fb8c8","model":"C","position":[59,0,32],"rotation":[0,0,0,"XYZ"],"scale":[11.8,1,2.45]},{"id":"obj_7","type":"zone","name":"B4","plate":"","zone":"","color":"#8fb8c8","model":"C","position":[59,0,-4],"rotation":[0,0,0,"XYZ"],"scale":[11.8,1,2.45]},{"id":"obj_9","type":"zone","name":"B5","plate":"","zone":"","color":"#8fb8c8","model":"C","position":[59,0,-40],"rotation":[0,0,0,"XYZ"],"scale":[11.8,1,2.45]},{"id":"obj_11","type":"zone","name":"B1","plate":"","zone":"","color":"#8fb8c8","model":"C","position":[59,0,104],"rotation":[0,0,0,"XYZ"],"scale":[11.8,1,2.45]},{"id":"obj_13","type":"zone","name":"D","plate":"","zone":"","color":"#8fb8c8","model":"C","position":[31,0,-115],"rotation":[0,0,0,"XYZ"],"scale":[14.65,1,8]},{"id":"obj_14","type":"zone","name":"C","plate":"","zone":"","color":"#8fb8c8","model":"C","position":[-89,0,32],"rotation":[0,0,0,"XYZ"],"scale":[2.8,1,12.7]},{"id":"obj_16","type":"road","name":"車道","plate":"","zone":"","color":"#9ca7ae","model":"C","position":[29,0,131],"rotation":[0,0,0,"XYZ"],"scale":[10.5,1,1.8]},{"id":"obj_17","type":"zone","name":"A","plate":"","zone":"","color":"#8fb8c8","model":"C","position":[50,0,169],"rotation":[0,0,0,"XYZ"],"scale":[11,1,4]},{"id":"obj_18","type":"zone","name":"C-1","plate":"","zone":"","color":"#8fb8c8","model":"C","position":[-90,0,190],"rotation":[0,0,0,"XYZ"],"scale":[2.8,1,7]},{"id":"obj_19","type":"booth","name":"1號烤漆爐","plate":"","zone":"","color":"#d5c7b7","model":"C","position":[-74,0,165],"rotation":[0,1.5707963267948966,0,"XYZ"],"scale":[2,3,1.5]},{"id":"obj_21","type":"booth","name":"2號烤漆爐","plate":"","zone":"","color":"#d5c7b7","model":"C","position":[-108,0,99],"rotation":[0,1.5707963267948966,0,"XYZ"],"scale":[2,3,1.5]},{"id":"obj_23","type":"booth","name":"3號烤漆爐","plate":"","zone":"","color":"#d5c7b7","model":"C","position":[-108,0,39],"rotation":[0,1.5707963267948966,0,"XYZ"],"scale":[2,3,1.5]},{"id":"obj_25","type":"booth","name":"4號烤漆爐","plate":"","zone":"","color":"#d5c7b7","model":"C","position":[-106,0,-38],"rotation":[0,1.5707963267948966,0,"XYZ"],"scale":[2,3,1.5]},{"id":"obj_27","type":"booth","name":"5號烤漆爐","plate":"","zone":"","color":"#d5c7b7","model":"C","position":[-89,0,-38],"rotation":[0,1.5707963267948966,0,"XYZ"],"scale":[2,3,1.5]},{"id":"obj_29","type":"booth","name":"6號烤漆爐","plate":"","zone":"","color":"#d5c7b7","model":"C","position":[-72,0,-38],"rotation":[0,1.5707963267948966,0,"XYZ"],"scale":[2,3,1.5]},{"id":"obj_30","type":"building","name":"新廠房","plate":"","zone":"","color":"#b9c6ce","model":"C","position":[-35,0,-133],"rotation":[0,0,0,"XYZ"],"scale":[3.5,4.5,2]},{"id":"obj_32","type":"box","name":"骨架治具區","plate":"","zone":"","color":"#b9c2c8","model":"C","position":[-6,0,-40],"rotation":[0,0,0,"XYZ"],"scale":[5.5,1,2.35]},{"id":"obj_34","type":"box","name":"備料區","plate":"","zone":"","color":"#b9c2c8","model":"C","position":[100,0,-40],"rotation":[0,0,0,"XYZ"],"scale":[5.5,1,2.35]},{"id":"obj_36","type":"box","name":"骨架治具區","plate":"","zone":"","color":"#b9c2c8","model":"C","position":[-37,0,-12],"rotation":[0,0,0,"XYZ"],"scale":[2,1,1]},{"id":"obj_38","type":"box","name":"骨架備料區","plate":"","zone":"","color":"#b9c2c8","model":"C","position":[54,0,5],"rotation":[0,0,0,"XYZ"],"scale":[2,1,1]},{"id":"obj_40","type":"box","name":"備料區","plate":"","zone":"","color":"#b9c2c8","model":"C","position":[35,0,22],"rotation":[0,0,0,"XYZ"],"scale":[3.8,1,1]},{"id":"obj_42","type":"box","name":"備料區","plate":"","zone":"","color":"#b9c2c8","model":"C","position":[-23,0,68],"rotation":[0,0,0,"XYZ"],"scale":[3.8,1,2.35]},{"id":"obj_53","type":"zone","name":"B2","plate":"","zone":"","color":"#8fb8c8","model":"C","position":[59,0,68],"rotation":[0,0,0,"XYZ"],"scale":[11.8,1,2.45]},{"id":"obj_55","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[141,0,56],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_57","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[96,0,56],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_59","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[53,0,56],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_61","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[141,0,64],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_63","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[141,0,73],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_65","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[141,0,81],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_69","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[96,0,73],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_71","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[96,0,81],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_73","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[96,0,64],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_75","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[53,0,64],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_77","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[53,0,74],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_79","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[53,0,81],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_81","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-36,0,18],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_83","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-36,0,26],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_85","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-36,0,36],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_87","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-36,0,45],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_89","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[4,0,45],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_91","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[4,0,36],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_93","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[53,0,45],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_95","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[53,0,37],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_97","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[96,0,45],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_99","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[96,0,37],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_101","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[141,0,45],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_103","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[141,0,37],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_105","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[140,0,113],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_107","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[143,0,96],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_109","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[96,0,112],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_111","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[98,0,96],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_113","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[54,0,96],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_115","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[52,0,112],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_117","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[8,0,112],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_119","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[10,0,96],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_123","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-36,0,103],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_125","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-53,0,103],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_127","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-45,0,103],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_129","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-28,0,103],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_131","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[141,0,28],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_133","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[141,0,20],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_135","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[96,0,28],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_137","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[96,0,20],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_139","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[141,0,1],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_141","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[141,0,-8],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_143","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[141,0,-16],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_145","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[96,0,-16],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_147","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[96,0,-8],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_149","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[96,0,1],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_151","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[96,0,9],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_153","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[53,0,-16],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_155","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[9,0,-16],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_157","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[53,0,-8],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_159","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[9,0,-8],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_163","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[9,0,2],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_165","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[9,0,9],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_167","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-36,0,8],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_169","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-36,0,0],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_170","type":"box","name":"頂蓬料擺放區","plate":"","zone":"","color":"#b9c2c8","model":"C","position":[142,0,9],"rotation":[0,0,0,"XYZ"],"scale":[2.2,1,0.5]},{"id":"obj_172","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[167,0,68],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_174","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[167,0,32],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_176","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[167,0,-4],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_178","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[172,0,-110],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_180","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[164,0,-110],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_182","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[156,0,-149],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_184","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[156,0,-111],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_186","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[148,0,-110],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_188","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[148,0,-149],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_190","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[140,0,-110],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_192","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[132,0,-149],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_194","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[133,0,-110],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_196","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[140,0,-149],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_198","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[125,0,-109],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_200","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[125,0,-149],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_202","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[117,0,-109],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_204","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[117,0,-148],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_206","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[172,0,-148],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_208","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[164,0,-148],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_210","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[109,0,-108],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_212","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[109,0,-148],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_214","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[101,0,-147],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_216","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[101,0,-109],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_218","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-89,0,-38],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_220","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-72,0,-38],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_222","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-106,0,-38],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_224","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-109,0,38],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_226","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-108,0,100],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_228","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-74,0,166],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_230","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-86,0,71],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_232","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-74,0,103],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_234","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-66,0,37],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_236","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-68,0,2],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_238","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-74,0,37],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_240","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-85,0,37],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_242","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-74,0,70],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_244","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-66,0,70],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_246","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-66,0,103],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_248","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-86,0,104],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_250","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-76,0,2],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_252","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-96,0,0],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_254","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-105,0,0],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_256","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-113,0,222],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_260","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-96,0,223],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_262","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-89,0,223],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_264","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-113,0,186],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_268","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-89,0,186],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_270","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-96,0,186],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_272","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-57,0,180],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_274","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-50,0,180],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_276","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-43,0,180],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_278","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[55,0,159],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_280","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-9,0,159],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_282","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-1,0,159],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_284","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[7,0,159],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_286","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[15,0,159],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_288","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[23,0,159],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_290","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[31,0,159],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_292","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[39,0,159],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_294","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[63,0,159],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_296","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[47,0,159],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_298","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[71,0,159],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_300","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[79,0,159],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_302","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[87,0,159],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]},{"id":"obj_304","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[101,0,127],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_306","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[114,0,136],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_308","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[68,0,136],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_310","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[25,0,135],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_312","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[13,0,126],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_314","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-40,0,127],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_316","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[-33,0,135],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_318","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[57,0,127],"rotation":[0,0,0,"XYZ"],"scale":[3,1,1.5]},{"id":"obj_322","type":"bus","name":"遊覽車","plate":"","zone":"","color":"#ffffff","model":"C","position":[170,0,160],"rotation":[0,4.71238898038469,0,"XYZ"],"scale":[2.5,1,1.5]}];
+const COLORS={ground:0xd5dce1,road:0x9ca7ae,building:0xb9c6ce,booth:0xd5c7b7,zone:0x8fb8c8,box:0xb9c2c8,wall:0x9da8ae,bus:0xffffff};
+let scene,camera,renderer,controls,raycaster,mouse;
+let grid,labelsGroup,objectsGroup;
+let showGrid=true,showLabels=true,showCars=true;
+let idCounter=1;
+const meta=new Map();
+
+function mat(c,rough=.65,metal=.05,opacity=1){
+  return new THREE.MeshStandardMaterial({color:c,roughness:rough,metalness:metal,transparent:opacity<1,opacity});
+}
+function box(w,h,d,c,rough=.65){
+  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c,rough));
+  m.castShadow=true;m.receiveShadow=true;return m;
+}
+function cyl(r,h,c,segments=24){
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,segments),mat(c,.5,.15));m.castShadow=true;m.receiveShadow=true;return m;
+}
+function textSprite(text,color='#dff7ff',bg='rgba(4,15,26,.82)'){
+  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+  canvas.width=512;canvas.height=128;
+  ctx.font='bold 44px "Microsoft JhengHei",sans-serif';
+  const w=Math.min(490,Math.max(180,ctx.measureText(text).width+50));
+  ctx.clearRect(0,0,512,128);
+  ctx.fillStyle=bg;ctx.strokeStyle='rgba(75,205,255,.7)';ctx.lineWidth=4;
+  if(ctx.roundRect){ctx.roundRect(8,12,w-16,104,16);}else{ctx.rect(8,12,w-16,104);}ctx.fill();ctx.stroke();
+  ctx.fillStyle=color;ctx.fillText(text,25,78);
+  const tex=new THREE.CanvasTexture(canvas);tex.needsUpdate=true;
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));
+  sp.scale.set(w/40,10,1);return sp;
+}
+function createBusModel(color=0xffffff){
+  const g=new THREE.Group();g.name='遊覽車C款';
+  const body=box(12,4.2,3.1,color,.48);body.position.y=3.0;g.add(body);
+  // rounded-ish upper coach volume
+  const upper=box(11.5,2.9,3.02,color,.42);upper.position.y=5.6;g.add(upper);
+  const front=box(.45,5.4,3.15,color,.38);front.position.set(6.05,4.1,0);g.add(front);
+  // dark windshield and side windows
+  const glass=mat(0x101a24,.18,.35,.92);
+  const windshield=new THREE.Mesh(new THREE.BoxGeometry(.12,2.1,2.72),glass);windshield.position.set(6.29,6.1,0);g.add(windshield);
+  for(let s of [-1,1]){
+    for(let i=0;i<6;i++){
+      const win=new THREE.Mesh(new THREE.BoxGeometry(1.45,.95,.08),glass);
+      win.position.set(4.6-i*1.55,6.0,s*1.54);g.add(win);
+    }
+  }
+  // side lower panels
+  for(let s of [-1,1]){
+    const stripe=new THREE.Mesh(new THREE.BoxGeometry(9.2,.5,.08),mat(color===0xffffff?0xd9e3eb:color,.5,.1));
+    stripe.position.set(-.1,3.15,s*1.58);g.add(stripe);
+  }
+  // wheels
+  for(let x of [-4.0,3.8]){
+    for(let z of [-1.64,1.64]){
+      const w=new THREE.Mesh(new THREE.CylinderGeometry(1.0,1.0,.42,32),mat(0x101318,.7,.2));
+      w.rotation.x=Math.PI/2;w.position.set(x,1.1,z);w.castShadow=true;g.add(w);
+      const hub=new THREE.Mesh(new THREE.CylinderGeometry(.38,.38,.45,24),mat(0xaeb9c2,.25,.8));
+      hub.rotation.x=Math.PI/2;hub.position.set(x,1.1,z);g.add(hub);
+    }
+  }
+  // front lamps
+  for(let z of [-.85,.85]){
+    const lamp=new THREE.Mesh(new THREE.SphereGeometry(.22,16,12),mat(0xbfefff,.12,.5));
+    lamp.position.set(6.35,2.35,z);g.add(lamp);
+  }
+  const bumper=box(.35,.55,2.7,color===0xffffff?0x1c4f9c:color,.35);bumper.position.set(6.35,1.35,0);g.add(bumper);
+  // roof equipment
+  const roof=box(7.5,.25,2.4,color,.5);roof.position.set(-.3,7.15,0);g.add(roof);
+  g.userData.isBusModel=true;
+  return g;
+}
+function createBuilding(){
+  const g=new THREE.Group();
+  const base=box(30,14,22,0x6f8998,.72);base.position.y=7;g.add(base);
+  const roof=box(31,.8,23,0x9fb6c5,.35);roof.position.y=14.4;g.add(roof);
+  for(let z of [-11.2,11.2]){
+    const strip=box(29,2,.12,0x193342,.4);strip.position.set(0,8,z);g.add(strip);
+  }
+  for(let x=-12;x<=12;x+=6){
+    const win=box(3.8,2.5,.12,0x9bdfff,.12,.2);win.position.set(x,8.8,-11.35);g.add(win);
+  }
+  return g;
+}
+function createBooth(){
+  const g=new THREE.Group();
+  const core=box(18,10,10,0xff8a22,.4);core.material.transparent=true;core.material.opacity=.24;
+  core.position.y=5;g.add(core);
+  const edges=mat(0xffa62b,.3,.5);
+  [[-9,0,-5],[9,0,-5],[-9,0,5],[9,0,5]].forEach(p=>{
+    const col=box(.35,10,.35,0xffa62b,.3);col.position.set(p[0],5,p[2]);g.add(col);
+  });
+  const roof=box(18,.3,10,0xffa62b,.3);roof.position.y=10;g.add(roof);
+  return g;
+}
+function createZone(){
+  const g=new THREE.Group();
+  const slab=box(20,.18,14,0x087b99,.5);slab.material.transparent=true;slab.material.opacity=.38;slab.position.y=.1;g.add(slab);
+  const corners=[[ -10,0,-7],[10,0,-7],[-10,0,7],[10,0,7]];
+  corners.forEach(p=>{const c=box(.18,.3,.18,0x48ddff,.3);c.position.set(p[0],.3,p[2]);g.add(c)});
+  return g;
+}
+function createRoad(){
+  const g=new THREE.Group();
+  const r=box(28,.12,9,0x4a5158,.9);r.position.y=.08;g.add(r);
+  for(let x=-12;x<=12;x+=8){const d=box(3,.025,.18,0xf4d35e,.5);d.position.set(x,.16,0);g.add(d)}
+  return g;
+}
+function createGround(){
+  const g=box(25,.3,18,0x38424a,.9);g.position.y=.15;return g;
+}
+function createBoxArea(){
+  const g=new THREE.Group();const slab=box(18,.2,12,0x5c6870,.75);slab.position.y=.1;g.add(slab);
+  const e=0x9ba8b2;
+  for(let x of [-9,9]){let a=box(.2,.6,12,e,.6);a.position.set(x,.35,0);g.add(a)}
+  for(let z of [-6,6]){let a=box(18,.6,.2,e,.6);a.position.set(0,.35,z);g.add(a)}
+  return g;
+}
+function createWall(){
+  const g=box(25,5,.35,0x687781,.8);g.position.y=2.5;return g;
+}
+function makeObject(type){
+  let model,name,scale={x:1,y:1,z:1};
+  if(type==='bus'){model=createBusModel(0xffffff);name='遊覽車';}
+  if(type==='building'){model=createBuilding();name='廠房';}
+  if(type==='booth'){model=createBooth();name='烤漆爐';}
+  if(type==='zone'){model=createZone();name='區域';}
+  if(type==='road'){model=createRoad();name='車道';}
+  if(type==='ground'){model=createGround();name='地面區域';}
+  if(type==='box'){model=createBoxArea();name='區域框';}
+  if(type==='wall'){model=createWall();name='牆/圍籬';}
+  model.userData.editorId='obj_'+(idCounter++);
+  model.userData.type=type;
+  model.userData.name=name;
+  model.userData.plate='';
+  model.userData.zone='';
+  model.userData.color='#'+new THREE.Color(COLORS[type]||0xffffff).getHexString();
+  model.userData.model='C';
+  model.position.set(0,0,0);
+  objectsGroup.add(model);
+  meta.set(model.uuid,{type,name});
+  updateLabel(model);
+  return model;
+}
+function validColor(c){return /^#[0-9a-fA-F]{6}$/.test(c||'')?c:'#ffffff'}
+function recolorObject(g,c){
+  const hex=parseInt(validColor(c).replace('#',''),16);
+  g.traverse(o=>{
+    if(!o.isMesh || !o.material) return;
+    // 保留文字標籤與透明/特殊材質；一般物件材質全部套用選取顏色
+    const mats=Array.isArray(o.material)?o.material:[o.material];
+    mats.forEach(m=>{
+      if(m && m.color){
+        m.color.setHex(hex);
+        m.needsUpdate=true;
+      }
+    });
+  });
+}
+function recolorBus(g,c){
+  g.traverse(o=>{
+    if(!o.isMesh||!o.material)return;
+    if(o.userData.busGlass)return;
+    const hex=parseInt(c.replace('#',''),16);
+    const n=o.material.name||'';
+    // preserve wheels, glass, lamps, blue bumper-like parts
+    if(o.geometry && o.geometry.type==='BoxGeometry' && o.position.y>1.8 && o.material.color.getHex()!==0x101a24){
+      const old=o.material.color.getHex();
+      if(old===0xffffff||old===0xd9e3eb)o.material.color.setHex(hex);
+    }
+  });
+}
+function updateLabel(o){
+  // 改用 HTML/CSS 標籤，不再使用低解析度 CanvasTexture Sprite。
+  // 這樣文字由瀏覽器直接繪製，縮放、手機高 DPI 與放大視角都保持清晰。
+  const layer=document.getElementById('factory3DLabelLayer');
+  if(!layer)return;
+  const key=o.uuid;
+  const old=layer.querySelector('[data-label-uuid="'+key+'"]');
+  if(old)old.remove();
+  if(!showLabels || !o.userData.name)return;
+  let text=o.userData.name;
+  if(o.userData.type==='bus'){
+    const entry=getFactory3DEntryByEditorId(o.userData.editorId);
+    const slot=entry?getFactory3DPendingSlot(entry):(o.userData.modelSlot||'');
+    text=slot || '未配置';
+    o.userData.modelSlot=slot;
+  }
+  const el=document.createElement('div');
+  el.dataset.labelUuid=key;
+  el.className='factory-3d-html-label '+(o.userData.type==='bus'?'factory-3d-html-bus-label':'factory-3d-html-zone-label');
+  el.textContent=text;
+  el.title=o.userData.type==='bus' && factory3DSlotEditMode ? '點擊編輯這個車位編號' : text;
+  if(o.userData.type==='bus' && factory3DSlotEditMode){
+    el.classList.add('slot-editable');
+    el.dataset.factorySlot=o.userData.modelSlot||'';
+    el.onclick=(ev)=>{ev.stopPropagation();if(o.userData.editorId)window.editFactory3DSlotByEditorId(o.userData.editorId);};
+  }
+  layer.appendChild(el);
+}
+function updateAllHtmlLabels(){
+  const layer=document.getElementById('factory3DLabelLayer');
+  if(!layer||!camera||!objectsGroup)return;
+  if(!showLabels){layer.style.display='none';return;}
+  layer.style.display='block';
+  const rect=renderer.domElement.getBoundingClientRect();
+  const w=rect.width||renderer.domElement.clientWidth||1;
+  const h=rect.height||renderer.domElement.clientHeight||1;
+  const v=new THREE.Vector3();
+  objectsGroup.children.forEach(o=>{
+    const el=layer.querySelector('[data-label-uuid="'+o.uuid+'"]');
+    if(!el)return;
+    o.updateWorldMatrix(true,false);
+    const y=o.userData.type==='bus'?9:12;
+    v.set(0,y,0);o.localToWorld(v);v.project(camera);
+    const x=(v.x*.5+.5)*w;
+    const y2=(-v.y*.5+.5)*h;
+    const visible=v.z>-1 && v.z<1 && x>-80 && x<w+80 && y2>-50 && y2<h+50;
+    el.style.transform='translate(-50%,-50%) translate('+x.toFixed(1)+'px,'+y2.toFixed(1)+'px)';
+    el.style.display=visible?'block':'none';
+  });
+}
+  let initialized=false, animating=false, raf=0;
+  const stage=()=>document.getElementById('factory3DStage');
+  function setProgress(done,total,message){
+    const pct=total?Math.round(done/total*100):0;
+    const bar=document.getElementById('factory3DProgressBar'),txt=document.getElementById('factory3DProgressText'),st=document.getElementById('factory3DLoadingStatus');
+    if(bar)bar.style.width=pct+'%'; if(txt)txt.textContent=pct+'%'; if(st)st.textContent=message||('正在建立模型 '+done+' / '+total);
+  }
+  function showLoading(v){const el=document.getElementById('factory3DLoading');if(el)el.style.display=v?'flex':'none';}
+  function clearScene(){
+    if(objectsGroup){while(objectsGroup.children.length){const o=objectsGroup.children.pop();disposeGroupSafe(o);}}
+    if(labelsGroup){while(labelsGroup.children.length){labelsGroup.children.pop();}}
+    // 3D 重繪會產生新的 Three.js UUID；舊版 HTML 標籤若不清掉會殘留，
+    // 造成同一個區域／車位名稱重複顯示。
+    const layer=document.getElementById('factory3DLabelLayer');
+    if(layer)layer.innerHTML='';
+  }
+  function disposeGroupSafe(g){g.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){const ms=Array.isArray(o.material)?o.material:[o.material];ms.forEach(m=>{if(m.map)m.map.dispose();m.dispose()})}})}
+  function getFactory3DObjects(){
+    const custom=appData?.factory3DScene?.objects;
+    return Array.isArray(custom) ? custom : JSON_OBJECTS;
+  }
+  // 固定模型編號：依目前這份建模 JSON 的實際物件位置分區。
+  // 這些 editorId 來自 3D 建造編輯器匯出的 JSON；先依空間/建模群組固定到正確區域，
+  // 再在各區域內依 JSON 建立順序編成 01、02、03...，避免不同區域共用 *01。
+  const FACTORY_FIXED_EDITOR_GROUPS={
+    'B1':[105,107,109,111,113,115,117,119,123,125,127,129],
+    'B1-1':[218,220,222],
+    'B2':[55,57,59,61,63,65,69,71,73,75,77,79,172],
+    'B3':[81,83,85,87,89,91,93,95,97,99,101,103],
+    'B4':[139,141,143,145,147,149,151,153,155,157,159,163,165,176],
+    'C':[131,133,135,137,167,169,174,234,236,238,240,242,244,250,252,254],
+    'C-1':[228,256,260,262,264,268,270,272,274,276],
+    'C-2':[224,226,230,232,246,248],
+    'A':[278,280,282,284,286,288,290,292,294,296,298,300,302,322],
+    'A-2':[304,306,308,310,312,314,316,318],
+    'D':[178,180,182,184,186,188,190,192,194,196,198,200,202,204,206,208,210,212,214,216]
+  };
+  const FACTORY_SLOT_LAYOUT=[
+    ['B1',12],['B1-1',3],['B2',13],['B3',12],['B4',14],['C',16],['C-1',10],['C-2',6],['A',14],['A-2',8],['D',20]
+  ];
+  const FACTORY_SLOT_ANCHORS={B1:[59,104], 'B1-1':[59,-40], B2:[59,68], B3:[59,32], B4:[59,-4], C:[-89,32], 'C-1':[-90,190], 'C-2':[-74,70], A:[50,159], 'A-2':[50,131], D:[135,-130]};
+  function normalizeSlotId(v){return String(v||'').trim().toUpperCase().replace(/\s+/g,'').replace(/\*/g,'*');}
+  function buildDefaultFactorySlots(activeObjects){
+    const buses=activeObjects.filter(o=>o&&o.type==='bus');
+    const byId=new Map(buses.map(o=>[String(o.id),o]));
+    const fixedEntries=[];
+    let fixedMatched=0;
+    Object.entries(FACTORY_FIXED_EDITOR_GROUPS).forEach(([zone,ids])=>{
+      ids.forEach((num,idx)=>{
+        const editorId='obj_'+num;
+        if(byId.has(editorId)){
+          fixedEntries.push({editorId,slot:zone+'*'+String(idx+1).padStart(2,'0'),zone});
+          fixedMatched++;
+        }
+      });
+    });
+    // 目前匯出的 B 廠區 JSON：128 台車全部都有明確固定分區。
+    // 若日後匯入新版 JSON，editorId 改變或車位增減，改用下方容量+距離的保底演算法。
+    if(fixedMatched===buses.length && fixedEntries.length===128){
+      return fixedEntries;
+    }
+
+    const slots=[]; FACTORY_SLOT_LAYOUT.forEach(([z,n])=>{for(let i=1;i<=n;i++)slots.push({slot:z+'*'+String(i).padStart(2,'0'),zone:z});});
+    if(buses.length!==slots.length){
+      if(buses.length>slots.length){let extra=0;while(slots.length<buses.length){extra++;slots.push({slot:'X*'+String(extra).padStart(2,'0'),zone:'X'});}}
+      else slots.length=buses.length;
+    }
+    const remaining=buses.map((o,i)=>({o,i})); const result=new Array(buses.length);
+    const caps=new Map();slots.forEach(x=>caps.set(x.zone,(caps.get(x.zone)||0)+1));
+    while(remaining.length){
+      let best=null;
+      for(const item of remaining){
+        const p=item.o.position||[0,0,0];
+        for(const sl of slots){
+          if(!caps.get(sl.zone))continue;
+          const a=FACTORY_SLOT_ANCHORS[sl.zone]||[0,0];
+          const d=(p[0]-a[0])**2+(p[2]-a[1])**2;
+          if(!best||d<best.d)best={item,sl,d};
+        }
+      }
+      if(!best)break;
+      result[best.item.i]=best.sl.slot; caps.set(best.sl.zone,caps.get(best.sl.zone)-1);
+      remaining.splice(remaining.indexOf(best.item),1);
+    }
+    return buses.map((o,i)=>({editorId:o.id,slot:result[i]||('X*'+String(i+1).padStart(2,'0'))}));
+  }
+  function ensureFactory3DSlotRegistry(activeObjects){
+    const sceneData=appData.factory3DScene;
+    const buses=activeObjects.filter(o=>o&&o.type==='bus');
+    let registry=Array.isArray(sceneData?.busSlots)?sceneData.busSlots:[];
+    const byEditor=new Map(registry.map(x=>[x.editorId,x.slot]));
+    const generated=buildDefaultFactorySlots(activeObjects);
+    const used=new Set(registry.map(x=>normalizeSlotId(x.slot)).filter(Boolean));
+    const out=[];
+    buses.forEach((o,i)=>{
+      let slot=byEditor.get(o.id)||generated[i]?.slot||('X*'+String(i+1).padStart(2,'0'));
+      if(used.has(normalizeSlotId(slot)) && !byEditor.has(o.id)){ slot=generated[i]?.slot||slot; }
+      used.add(normalizeSlotId(slot)); out.push({editorId:o.id,slot});
+    });
+    return out;
+  }
+  function getFactory3DSlotRegistry(activeObjects){
+    const expected=buildDefaultFactorySlots(activeObjects);
+    const sceneData=appData.factory3DScene||(appData.factory3DScene={objects:activeObjects});
+    const buses=activeObjects.filter(o=>o&&o.type==='bus');
+    const validIds=new Set(buses.map(o=>String(o.id)));
+    const current=Array.isArray(sceneData.busSlots)?sceneData.busSlots:[];
+    const currentByEditor=new Map();
+    const used=new Set();
+    let needsRepair = current.length!==buses.length;
+    const expectedByEditor=new Map(expected.map(x=>[String(x.editorId),x]));
+
+    // 已儲存的空白車位也是合法狀態：代表「未配置」，不能被下一次讀取自動補回。
+    current.forEach(x=>{
+      const id=String(x?.editorId||'');
+      const slot=normalizeSlotId(x?.slot);
+      const exp=expectedByEditor.get(id);
+      if(!id||!validIds.has(id)||!exp){needsRepair=true;return;}
+      if(slot && used.has(slot)){needsRepair=true;return;}
+      currentByEditor.set(id,{editorId:id,slot,zone:slot.split('*')[0]||exp.zone});
+      if(slot)used.add(slot);
+    });
+
+    const out=[];
+    buses.forEach((o,i)=>{
+      const id=String(o.id), exp=expectedByEditor.get(id)||expected[i];
+      const cur=currentByEditor.get(id);
+      if(cur){out.push(cur);return;}
+      needsRepair=true;
+      const fallback=exp||{editorId:id,slot:'X*'+String(i+1).padStart(2,'0'),zone:'X'};
+      let slot=normalizeSlotId(fallback.slot);
+      const zone=fallback.zone||slot.split('*')[0]||'X';
+      if(used.has(slot)){
+        let n=1;
+        do{slot=zone+'*'+String(n++).padStart(2,'0');}while(used.has(slot));
+      }
+      const entry={editorId:id,slot,zone};
+      out.push(entry);used.add(slot);
+    });
+    sceneData.busSlots=out;
+    if(needsRepair){try{localStorage.setItem('bus_manage_data_v2',JSON.stringify(appData));}catch(e){}}
+    return out;
+  }
+
+  function findBusByFactorySlot(slot){return (appData.buses||[]).find(b=>normalizeSlotId(b.factoryModelSlot)===normalizeSlotId(slot));}
+  function getFactory3DModelInfo(){
+    const activeObjects=getFactory3DObjects(); const registry=getFactory3DSlotRegistry(activeObjects);
+    const map=new Map(registry.map(x=>[normalizeSlotId(x.slot),x])); return {activeObjects,registry,map};
+  }
+  function factory3DInfoHtml(bus){
+    if(!bus)return '<div style="padding:14px;border:1px dashed var(--border-color);border-radius:7px;color:var(--text-sub);text-align:center;">目前尚未連動車輛</div>';
+    const z=appData.zones.find(x=>x.id===bus.zoneId)?.name||bus.zoneId||'未指定';
+    const group=appData.vehicleGroups.find(x=>x.id===bus.groupId)?.name||'未指定';
+    const model=appData.vehicleModels.find(x=>x.id===bus.modelId)?.name||'未指定';
+    const paint=appData.paintGroups.find(x=>x.id===bus.paintGroupId)?.name||'未指定';
+    const color=appData.colorGroups.find(x=>x.id===bus.colorGroupId)?.name||'未指定';
+    const status=appData.statuses.find(x=>x.id===bus.statusId)?.name||'未指定';
+    const item=(l,v)=>`<div class="factory3d-info-item"><span class="factory3d-info-label">${l}</span><span class="factory3d-info-value">${escapeHtml(v)}</span></div>`;
+    return item('🚌 車輛',bus.plate)+item('📍 區域',z)+item('🚦 進度',status)+item('👥 組別',group)+item('🚍 車輛型號',model)+item('🎨 噴漆組別',paint)+item('🖌️ 彩繪廣告',color)+item('📅 預定交車日',bus.deliveryDate||'未定')+`<div class="factory3d-info-item" style="grid-column:1/-1"><span class="factory3d-info-label">📝 備註</span><span class="factory3d-info-value">${escapeHtml(bus.note||'無')}</span></div>`;
+  }
+  let currentFactory3DSlot=null;
+  let factory3DPendingSlotEdits=new Map();
+  let factory3DSlotEditing=false;
+  function openFactory3DBusInfo(slot){
+    currentFactory3DSlot=slot; const bus=findBusByFactorySlot(slot);
+    const title=document.getElementById('factory3DBusSlotTitle'),state=document.getElementById('factory3DBusLinkState'),body=document.getElementById('factory3DBusInfoBody'),btn=document.getElementById('factory3DBusReplaceBtn');
+    if(title)title.textContent=slot;
+    if(state)state.textContent=bus?`已連動：${bus.plate}`:'尚未連動車輛';
+    if(body)body.innerHTML=factory3DInfoHtml(bus);
+    if(btn)btn.textContent=bus?'更換車輛':'連動車輛';
+    document.getElementById('factory3DBusModal')?.classList.add('active');
+  }
+  window.openFactory3DBusInfo=openFactory3DBusInfo;
+  window.openFactory3DVehiclePicker=function(){
+    if(!currentFactory3DSlot)return;
+    if(!isAuthed()){requireAuth(()=>{});return;}
+    const input=document.getElementById('factory3DVehicleSearchInput'); const results=document.getElementById('factory3DVehicleSearchResults');
+    if(input)input.value=''; if(results)results.innerHTML='<div style="padding:10px;color:var(--text-sub);font-size:.72rem;">數字滿 4 個，或輸入 1 個中文字即可搜尋。</div>';
+    document.getElementById('factory3DVehiclePickerModal')?.classList.add('active'); setTimeout(()=>input?.focus(),60);
+  };
+  window.searchFactory3DVehicleCandidates=function(value){
+    const q=String(value||'').trim().toLowerCase(),results=document.getElementById('factory3DVehicleSearchResults'); if(!results)return;
+    if(!isSearchReady(q)){
+      const digitCount=(q.match(/[0-9]/g)||[]).length;
+      const chineseCount=(q.match(/[\u3400-\u9fff]/g)||[]).length;
+      const hint=chineseCount===0 && digitCount<4 ? `數字還需 ${4-digitCount} 個，或輸入 1 個中文字` : '再輸入足夠字元即可搜尋';
+      results.innerHTML='<div style="padding:10px;color:var(--text-sub);font-size:.72rem;">'+hint+'。</div>';
+      return;
+    }
+    const matches=(appData.buses||[]).filter(b=>(`${b.plate||''} ${b.note||''}`).toLowerCase().includes(q));
+    if(!matches.length){results.innerHTML='<div style="padding:10px;color:#c62828;font-size:.72rem;">找不到符合的車輛。</div>';return;}
+    results.innerHTML=''; matches.slice(0,30).forEach(bus=>{
+      const used=bus.factoryModelSlot && normalizeSlotId(bus.factoryModelSlot)!==normalizeSlotId(currentFactory3DSlot);
+      const item=document.createElement('button');item.type='button';item.className='factory3d-picker-item';item.disabled=!!used;
+      item.innerHTML=`<div><div class="factory3d-picker-item-main">${escapeHtml(bus.plate||'未命名車輛')}</div><div class="factory3d-picker-item-sub">${escapeHtml(appData.vehicleGroups.find(x=>x.id===bus.groupId)?.name||'未指定組別')}　${escapeHtml(appData.vehicleModels.find(x=>x.id===bus.modelId)?.name||'未指定車型')}</div></div><div>${used?'已佔用 '+escapeHtml(bus.factoryModelSlot):'選擇'}</div>`;
+      if(!used)item.onclick=()=>linkFactory3DVehicle(currentFactory3DSlot,bus.id); results.appendChild(item);
+    });
+  };
+  async function linkFactory3DVehicle(slot,busId){
+    requireAuth(async()=>{
+      const bus=appData.buses.find(b=>b.id===busId); if(!bus||!slot)return;
+      const occupied=findBusByFactorySlot(slot);
+      if(occupied&&occupied.id!==bus.id){alert(`⚠️ ${slot} 已有車輛連動：${occupied.plate}`);return;}
+      if(bus.factoryModelSlot&&normalizeSlotId(bus.factoryModelSlot)!==normalizeSlotId(slot)){
+        const old=bus.factoryModelSlot; bus.factoryModelSlot=''; addAuditLog(bus.plate,`解除3D模型位置：${old}`);
+      }
+      bus.factoryModelSlot=slot; addAuditLog(bus.plate,`連動3D模型位置：${slot}`);
+      await autoSaveCloud(); renderApp();
+      closeModal('factory3DVehiclePickerModal'); openFactory3DBusInfo(slot);
+      window.reloadFactory3DScene?.();
+    });
+  }
+  window.linkFactory3DVehicle=linkFactory3DVehicle;
+  let factory3DSlotEditMode=false;
+  function getFactory3DEntryByEditorId(editorId){
+    const info=getFactory3DModelInfo();
+    return info.registry.find(x=>String(x.editorId)===String(editorId))||null;
+  }
+  function getFactory3DPendingSlot(entry){
+    if(!entry)return '';
+    const key=String(entry.editorId);
+    return factory3DPendingSlotEdits.has(key)?factory3DPendingSlotEdits.get(key):String(entry.slot||'');
+  }
+  function updateFactory3DSlotSaveButton(){
+    const btn=document.getElementById('factory3DSlotSaveBtn');
+    if(!btn)return;
+    const pending=factory3DPendingSlotEdits.size>0;
+    btn.style.display=factory3DSlotEditMode&&pending?'inline-flex':'none';
+    btn.classList.toggle('pending',factory3DSlotEditMode&&pending);
+    if(factory3DSlotEditMode)btn.textContent=pending?`💾 儲存車位編號 (${factory3DPendingSlotEdits.size})`:'💾 儲存車位編號';
+  }
+  function refreshFactory3DSlotLabelsOnly(){
+    if(!objectsGroup)return;
+    objectsGroup.children.forEach(o=>{
+      if(o.userData?.type!=='bus')return;
+      const entry=getFactory3DEntryByEditorId(o.userData.editorId);
+      if(entry)o.userData.modelSlot=getFactory3DPendingSlot(entry);
+      updateLabel(o);
+    });
+    updateAllHtmlLabels();
+    updateFactory3DSlotSaveButton();
+  }
+  window.toggleFactory3DSlotEditMode=function(){
+    if(!isAuthed()){requireAuth(()=>{});return;}
+    if(factory3DSlotEditMode && factory3DPendingSlotEdits.size>0){
+      if(!confirm('目前有尚未儲存的車位編號變更。\n\n按「取消」留在編輯模式；按「確定」放棄尚未儲存的變更。'))return;
+    }
+    factory3DSlotEditMode=!factory3DSlotEditMode;
+    if(factory3DSlotEditMode){factory3DPendingSlotEdits=new Map();}
+    const btn=document.getElementById('factory3DSlotEditBtn');
+    if(btn){btn.classList.toggle('active',factory3DSlotEditMode);btn.textContent=factory3DSlotEditMode?'✏️ 編輯中：點模型車即可修改':'✏️ 車位編號編輯';}
+    if(!factory3DSlotEditMode){factory3DPendingSlotEdits=new Map();}
+    refreshFactory3DSlotLabelsOnly();
+  };
+  window.editFactory3DSlotByEditorId=function(editorId){
+    if(!factory3DSlotEditMode)return;
+    requireAuth(()=>{
+      const entry=getFactory3DEntryByEditorId(editorId);
+      if(!entry)return;
+      const current=getFactory3DPendingSlot(entry);
+      const raw=prompt(`編輯完整車位編號\n\n目前：${current||'未配置'}\n可直接修改「區域*號碼」。\n例如：B1*15、B1-1*03、C-1*07、A-2*08、D*20\n\n若要設為未配置，請將內容全部刪除後按確定。`,current);
+      if(raw===null)return;
+      const value=String(raw).trim().toUpperCase().replace(/\s+/g,'');
+      let newSlot='';
+      if(value){
+        const match=value.match(/^([^*]+)\*(\d{1,3})$/);
+        if(!match){alert('❌ 格式錯誤。請輸入完整車位編號，例如：B1*15、B1-1*03、C-1*07。');return;}
+        const allowed=['B1','B1-1','B2','B3','B4','C','C-1','C-2','A','A-2','D'];
+        const zone=match[1];
+        if(!allowed.includes(zone)){alert('❌ 找不到這個區域編號。\n\n可用區域：'+allowed.join('、'));return;}
+        newSlot=zone+'*'+String(parseInt(match[2],10)).padStart(2,'0');
+        const info=getFactory3DModelInfo();
+        const duplicate=info.registry.find(x=>String(x.editorId)!==String(entry.editorId) && normalizeSlotId(getFactory3DPendingSlot(x))===normalizeSlotId(newSlot));
+        if(duplicate){alert(`⚠️ ${newSlot} 已被另一個固定車位使用，請換一個編號。`);return;}
+      }
+      factory3DPendingSlotEdits.set(String(entry.editorId),newSlot);
+      const target=objectsGroup?.children.find(o=>String(o.userData?.editorId)===String(entry.editorId));
+      if(target){target.userData.modelSlot=newSlot;updateLabel(target);updateAllHtmlLabels();}
+      updateFactory3DSlotSaveButton();
+    });
+  };
+  window.editFactory3DSlotLabel=function(slot){
+    const info=getFactory3DModelInfo();
+    const entry=info.registry.find(x=>normalizeSlotId(x.slot)===normalizeSlotId(slot));
+    if(entry)window.editFactory3DSlotByEditorId(entry.editorId);
+  };
+  window.saveFactory3DSlotEdits=async function(){
+    requireAuth(async()=>{
+      if(!factory3DSlotEditMode||factory3DPendingSlotEdits.size===0){alert('目前沒有待儲存的車位編號變更。');return;}
+      const info=getFactory3DModelInfo();
+      const byEditor=new Map(info.registry.map(x=>[String(x.editorId),x]));
+      const changes=[];
+      factory3DPendingSlotEdits.forEach((newSlot,editorId)=>{
+        const entry=byEditor.get(String(editorId));
+        if(entry && normalizeSlotId(entry.slot)!==normalizeSlotId(newSlot))changes.push({entry,oldSlot:String(entry.slot||''),newSlot:String(newSlot||'')});
+      });
+      if(!changes.length){factory3DPendingSlotEdits.clear();updateFactory3DSlotSaveButton();return;}
+      // 儲存前最後一次防撞檢查。
+      const finalSlots=new Map(info.registry.map(x=>[String(x.editorId),getFactory3DPendingSlot(x)]));
+      const seen=new Map();
+      for(const [editorId,slot] of finalSlots){
+        const norm=normalizeSlotId(slot); if(!norm)continue;
+        if(seen.has(norm)){alert(`⚠️ ${slot} 重複，尚未儲存。`);return;}
+        seen.set(norm,editorId);
+      }
+      changes.forEach(({entry,oldSlot,newSlot})=>{
+        entry.slot=newSlot; entry.zone=newSlot?newSlot.split('*')[0]:entry.zone;
+        const linked=oldSlot?findBusByFactorySlot(oldSlot):null;
+        if(linked){
+          linked.factoryModelSlot=newSlot;
+          addAuditLog(linked.plate,newSlot?`3D車位完整編號由 ${oldSlot} 改為 ${newSlot}`:`解除3D車位配置：${oldSlot}`);
+        }
+      });
+      // 未配置車位：若原本有車輛連動，清掉連動；若沒有則保持空白。
+      info.activeObjects.filter(o=>o&&o.type==='bus').forEach(o=>{
+        const entry=byEditor.get(String(o.id));
+        if(entry){
+          const slot=entry.slot||'';
+          const linked=findBusByFactorySlot(slot);
+          if(!slot && linked)linked.factoryModelSlot='';
+        }
+      });
+      appData.factory3DScene.busSlots=info.registry;
+      try{localStorage.setItem('bus_manage_data_v2',JSON.stringify(appData));}catch(e){}
+      const saved=await autoSaveCloud();
+      factory3DPendingSlotEdits.clear();
+      factory3DSlotEditMode=false;
+      const editBtn=document.getElementById('factory3DSlotEditBtn');
+      if(editBtn){editBtn.classList.remove('active');editBtn.textContent='✏️ 車位編號編輯';}
+      updateFactory3DSlotSaveButton();
+      renderApp();
+      window.reloadFactory3DScene?.();
+      alert(saved?'💾 車位編號已全部儲存並同步雲端。':'💾 車位編號已儲存到本機。\n⚠️ 雲端同步失敗。');
+    });
+  };
+
+  window.editFactory3DSlotFromBus=async function(busId){
+    requireAuth(async()=>{
+      const bus=appData.buses.find(b=>String(b.id)===String(busId));
+      if(!bus){alert('找不到這台車輛。');return;}
+      if(bus.factoryModelSlot){
+        await window.editFactory3DSlotLabel(bus.factoryModelSlot);
+        return;
+      }
+      const raw=prompt('這台車尚未配置 3D 車位。\n請輸入完整車位編號，例如：B1*15、C-1*07。','');
+      if(raw===null)return;
+      const value=String(raw).trim().toUpperCase().replace(/\s+/g,'');
+      const match=value.match(/^([^*]+)\*(\d{1,3})$/);
+      if(!match){alert('❌ 請輸入完整車位編號。');return;}
+      const slot=match[1]+'*'+String(parseInt(match[2],10)).padStart(2,'0');
+      if(findBusByFactorySlot(slot)){alert(`⚠️ ${slot} 已經有其他車輛連動。`);return;}
+      bus.factoryModelSlot=slot; addAuditLog(bus.plate,`設定3D模型位置：${slot}`); await autoSaveCloud(); renderApp(); window.reloadFactory3DScene?.();
+    });
+  };
+  function syncFactory3DBusLabels(activeObjects){
+    if(!objectsGroup)return; const registry=getFactory3DSlotRegistry(activeObjects); const slotByEditor=new Map(registry.map(x=>[x.editorId,x.slot]));
+    objectsGroup.children.forEach(o=>{if(o.userData?.type!=='bus')return; const entry=registry.find(x=>String(x.editorId)===String(o.userData.editorId)); const slot=entry?getFactory3DPendingSlot(entry):(slotByEditor.get(o.userData.editorId)||o.userData.modelSlot||'');o.userData.modelSlot=slot;const bus=findBusByFactorySlot(slot);o.userData.plate=bus?.plate||'';o.userData.linkedBusId=bus?.id||'';updateLabel(o);});
+    updateAllHtmlLabels();
+  }
+  function handleFactory3DPointerUp(e){
+    if(!renderer||!raycaster||!mouse||!camera||!objectsGroup)return;
+    const dx=e.clientX-(window.__f3dDownX||e.clientX),dy=e.clientY-(window.__f3dDownY||e.clientY); if(Math.hypot(dx,dy)>6)return;
+    const r=renderer.domElement.getBoundingClientRect(); mouse.x=((e.clientX-r.left)/r.width)*2-1; mouse.y=-((e.clientY-r.top)/r.height)*2+1;
+    raycaster.setFromCamera(mouse,camera); const hits=raycaster.intersectObjects(objectsGroup.children,true);
+    for(const hit of hits){let o=hit.object;while(o&&o.parent&&o.parent!==objectsGroup)o=o.parent;if(o?.userData?.type==='bus'){const editorId=o.userData.editorId||'';const slot=o.userData.modelSlot||'';if(factory3DSlotEditMode){if(editorId)window.editFactory3DSlotByEditorId(editorId);}else{if(slot)openFactory3DBusInfo(slot);else{currentFactory3DSlot='';const title=document.getElementById('factory3DBusSlotTitle'),state=document.getElementById('factory3DBusLinkState'),body=document.getElementById('factory3DBusInfoBody'),btn=document.getElementById('factory3DBusReplaceBtn');if(title)title.textContent='未配置';if(state)state.textContent='此模型車位尚未配置編號';if(body)body.innerHTML=factory3DInfoHtml(null);if(btn)btn.textContent='連動車輛';document.getElementById('factory3DBusModal')?.classList.add('active');}}return;}}
+  }
+
+  function loadJSONScene(){
+    clearScene(); idCounter=1;
+    const activeObjects=getFactory3DObjects();
+    const total=activeObjects.length;
+    setProgress(0,total,'正在依照 3D 建造編輯器建立 0 / '+total+' 個物件');
+    let i=0;
+    function chunk(){
+      const end=Math.min(i+8,total);
+      while(i<end){
+        const d=activeObjects[i];
+        const o=makeObject(d.type);
+        o.userData={...o.userData,...d};
+        if(d.id)o.userData.editorId=d.id;
+        if(d.type==='bus'){
+          const reg=getFactory3DSlotRegistry(activeObjects).find(x=>x.editorId===d.id);
+          o.userData.modelSlot=reg?.slot||d.modelSlot||'';
+          const linked=findBusByFactorySlot(o.userData.modelSlot);
+          o.userData.linkedBusId=linked?.id||'';
+          o.userData.plate=linked?.plate||'';
+        }
+        o.position.fromArray(d.position||[0,0,0]);
+        // JSON 匯出的是 Euler.toArray()，第 4 個值是 order；直接還原 XYZ/其他 order。
+        const rr=d.rotation||[0,0,0,'XYZ'];
+        o.rotation.set(rr[0]||0,rr[1]||0,rr[2]||0,rr[3]||'XYZ');
+        o.scale.fromArray(d.scale||[1,1,1]);
+        if(o.userData.type==='bus')recolorBus(o,validColor(o.userData.color));
+        else recolorObject(o,validColor(o.userData.color||'#ffffff'));
+        updateLabel(o);
+        const n=parseInt(String(o.userData.editorId).replace(/\\D/g,'')); if(n>=idCounter)idCounter=n+1;
+        i++;
+      }
+      setProgress(i,total,'正在依照 3D 建造編輯器建立 '+i+' / '+total+' 個物件');
+      if(i<total)setTimeout(chunk,0);
+      else {setProgress(total,total, appData?.factory3DScene ? '已套用最新匯入的 3D 模組（'+(appData.factory3DScene.sourceFileName||'JSON')+'）' : '你的 JSON 建模已完整載入');setResponsiveDefaultCamera();syncFactory3DBusLabels(activeObjects);setTimeout(()=>showLoading(false),450);}
+    }
+    chunk();
+  }
+  function init3D(){
+    if(initialized)return true;
+    if(!window.THREE||!THREE.OrbitControls)return false;
+    const s=stage();
+    scene=new THREE.Scene();
+    scene.background=new THREE.Color(0x20262b);
+    camera=new THREE.PerspectiveCamera(50,1,.1,5000);
+    camera.position.set(110,110,140);
+    renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
+    const initialWorkAreaColor='#3b4248';
+    renderer.setClearColor(new THREE.Color(initialWorkAreaColor),1);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+    renderer.setSize(Math.max(1,s.clientWidth),Math.max(1,s.clientHeight));
+    renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+    // 保持編輯器原生 canvas 背景與物件渲染方式，但嵌入現有 3D stage。
+    s.insertBefore(renderer.domElement,s.firstChild);
+    controls=new THREE.OrbitControls(camera,renderer.domElement);
+    controls.enableDamping=true; controls.dampingFactor=.08; controls.rotateSpeed=.42; controls.panSpeed=.45; controls.zoomSpeed=.65; controls.maxPolarAngle=Math.PI*.49; controls.target.set(0,0,0);
+    raycaster=new THREE.Raycaster(); mouse=new THREE.Vector2();
+    const amb=new THREE.HemisphereLight(0xffffff,0x9aa7af,1.45);scene.add(amb);
+    const dir=new THREE.DirectionalLight(0xffffff,1.7);dir.position.set(80,150,60);dir.castShadow=true;dir.shadow.mapSize.set(2048,2048);scene.add(dir);
+    const rim=new THREE.PointLight(0xffffff,45,500);rim.position.set(-100,100,-100);scene.add(rim);
+    objectsGroup=new THREE.Group();objectsGroup.name='FACTORY_OBJECTS';scene.add(objectsGroup);
+    labelsGroup=new THREE.Group();labelsGroup.name='LABELS';scene.add(labelsGroup);
+    grid=new THREE.GridHelper(500,100,0x2d6381,0x173247);grid.position.y=.03;scene.add(grid);
+    window.addEventListener('resize',resize);
+    renderer.domElement.addEventListener('pointerdown',e=>{window.__f3dDownX=e.clientX;window.__f3dDownY=e.clientY;},{passive:true});
+    renderer.domElement.addEventListener('pointerup',handleFactory3DPointerUp,{passive:true});
+    initialized=true; resize(); return true;
+  }
+  function resize(){
+    if(!renderer||!camera||!stage())return;
+    const w=Math.max(1,stage().clientWidth),h=Math.max(1,stage().clientHeight);
+    camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);
+    updateAllHtmlLabels();
+  }
+  function setResponsiveDefaultCamera(){
+    if(!camera||!controls||!objectsGroup)return;
+    const box=new THREE.Box3().setFromObject(objectsGroup);
+    if(box.isEmpty())return;
+    const center=box.getCenter(new THREE.Vector3());
+    const size=box.getSize(new THREE.Vector3());
+    const maxDim=Math.max(size.x,size.y,size.z);
+    const vFov=THREE.MathUtils.degToRad(camera.fov);
+    const aspect=Math.max(.35,camera.aspect||1);
+    const verticalDist=(size.z*.58+size.y*.35)/Math.tan(vFov/2);
+    const horizontalDist=(size.x*.58)/(Math.tan(vFov/2)*aspect);
+    const dist=Math.max(maxDim*0.95,verticalDist,horizontalDist)*0.68;
+    const dir=new THREE.Vector3(0.86,0.72,1.0).normalize();
+    camera.position.copy(center).addScaledVector(dir,dist);
+    controls.target.copy(center);
+    controls.minDistance=Math.max(40,dist*.28);
+    controls.maxDistance=Math.max(700,dist*2.6);
+    controls.update();
+  }
+  function animate(){if(!animating)return;raf=requestAnimationFrame(animate);controls&&controls.update();updateAllHtmlLabels();renderer&&renderer.render(scene,camera)}
+  function start(){if(animating)return;animating=true;animate()}
+  function stop(){animating=false;if(raf)cancelAnimationFrame(raf);raf=0}
+  function render3D(){
+    if(!stage()||stage().style.display==='none')return;
+    if(!init3D()){setProgress(0,1,'正在載入 3D 引擎…');return}
+    showLoading(true); loadJSONScene(); start();
+  }
+  window.resetFactory3DCamera=function(){if(!camera||!controls)return;setResponsiveDefaultCamera();};
+  window.toggleFactory3DFullscreen=function(){return false;};
+  window.toggleFactory3DMode=function(){
+    const s=stage(),btn=document.getElementById('factory3DModeBtn');if(!s)return;
+    const opening=s.style.display==='none'||!s.style.display; s.style.display=opening?'block':'none';
+    if(btn)btn.textContent=opening?'✕ 關閉 3D':'🏭 3D 廠區';
+    if(opening){s.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>{resize();render3D()},80)}else stop();
+  };
+  window.reloadFactory3DScene=function(){
+    const s=stage();
+    if(!s||s.style.display==='none')return;
+    if(!init3D()){setProgress(0,1,'正在載入 3D 引擎…');return}
+    showLoading(true);
+    loadJSONScene();
+    start();
+  };
+  window.renderFactory3D=render3D;
+})();
+</script>
+
+
+
+
+<script id="factory3d-orientation-resize-fix">
+(function(){
+  function getStage(){return document.getElementById('factory3DStage');}
+  function getCanvas(){var s=getStage();return s?s.querySelector('canvas'):null;}
+  function resizeFactory3D(){
+    var s=getStage(),c=getCanvas();
+    if(!s||s.style.display==='none')return;
+    var w=Math.max(1,Math.round(s.clientWidth)), h=Math.max(1,Math.round(s.clientHeight));
+    // Notify the existing Three.js resize routine first.
+    try{ if(window.__factory3DResize) window.__factory3DResize(); }catch(e){}
+    if(c && c.width>0 && c.height>0){
+      // Keep CSS pixels and drawing-buffer dimensions in sync without changing scene scale.
+      c.style.width='100%'; c.style.height='100%';
+    }
+    // Force a second layout pass after mobile browser toolbar/orientation settles.
+    requestAnimationFrame(function(){
+      try{if(window.__factory3DResize)window.__factory3DResize();}catch(e){}
+    });
+  }
+  function bind(){
+    if(window.__factory3DOrientationFixBound)return;
+    window.__factory3DOrientationFixBound=true;
+    window.addEventListener('resize',resizeFactory3D,{passive:true});
+    window.addEventListener('orientationchange',function(){setTimeout(resizeFactory3D,50);setTimeout(resizeFactory3D,250);setTimeout(resizeFactory3D,600);},{passive:true});
+    if(window.visualViewport) window.visualViewport.addEventListener('resize',resizeFactory3D,{passive:true});
+  }
+  bind();
+  window.__resizeFactory3DOrientation=resizeFactory3D;
+})();
+</script>
+<script id="factory3d-wheel-scroll-fix">
+(function(){
+  function bind(){
+    const stage=document.getElementById('factory3DStage');
+    if(!stage || stage.__wheelFixBound) return;
+    stage.__wheelFixBound=true;
+    stage.style.overscrollBehavior='contain';
+    stage.addEventListener('wheel',function(e){
+      if(stage.style.display==='none') return;
+      /* 不 stopPropagation：讓 Three.js OrbitControls 仍能收到 wheel 並縮放。 */
+      e.preventDefault();
+    },{passive:false,capture:true});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind); else bind();
+  window.addEventListener('load',bind,{once:true});
+})();
+</script>
 </body>
 <!-- UI 2.1 integrated: latest functional logic preserved; scroll navigation added. -->
+<!-- v2026-09-07：一般檢視版面依附圖、3D 滾輪區域修正、預設視角再靠近；車位編號沿用批次儲存＋雲端同步機制；搜尋規則：數字4個／中文1個。 -->
 </html>
 
 <!-- v35 正式推送版：以目前 0902 使用版本為基底，整合最新工單照片、品管照片、老人專用模式、彩繪廣告、區域編輯、刪除二次確認、雲端逾時保護與手機連線設定。 -->
