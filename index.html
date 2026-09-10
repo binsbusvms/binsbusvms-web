@@ -52,6 +52,7 @@
         .header-title-box { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .header-logo-icon { height: 26px; width: 26px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
         .author-tag { font-size: 0.65rem; font-weight: normal; opacity: 0.85; margin-left: 2px; }
+        .app-version-tag { font-size:0.56rem; font-weight:500; opacity:.72; margin-left:3px; letter-spacing:.02em; white-space:nowrap; }
 
         .company-info-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.75rem; background: rgba(0, 0, 0, 0.2); padding: 6px 12px; border-radius: 6px; margin-bottom: 8px; }
         .company-contact { display: flex; flex-wrap: wrap; gap: 12px; color: #e0e0e0; align-items: center; }
@@ -2464,9 +2465,229 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
 @media (orientation:portrait){#factory3DStage{height:min(68vh,680px);min-height:420px;}}
 @media (max-width:600px){#factory3DStage{height:calc(100svh - 120px);min-height:360px;}}
 @media (max-width:600px) and (orientation:landscape){#factory3DStage{height:calc(100svh - 72px);min-height:280px;}}
+
+/* ===== 系統維護模式：Realtime Broadcast 非阻擋即時通知版 ===== */
+.maintenance-control-btn {
+    display:none;
+    align-items:center;
+    gap:8px;
+    min-height:34px;
+    padding:4px 8px 4px 10px;
+    border-radius:999px;
+    border:1px solid #b9c8d4;
+    background:#edf2f5;
+    color:#29465c;
+    box-shadow:0 2px 8px rgba(35,63,84,.12);
+    cursor:pointer;
+    user-select:none;
+}
+.maintenance-control-btn.show { display:inline-flex; }
+.maintenance-control-label { font-size:.75rem; font-weight:800; white-space:nowrap; }
+.maintenance-switch-track {
+    position:relative;
+    width:54px;
+    height:26px;
+    flex:0 0 54px;
+    border-radius:999px;
+    background:#22a447; /* OFF = 綠色 */
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);
+    transition:background .22s ease, box-shadow .22s ease;
+}
+.maintenance-switch-knob {
+    position:absolute;
+    top:3px;
+    left:3px; /* OFF = 左側 */
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 2px 5px rgba(0,0,0,.28);
+    transition:transform .22s ease;
+}
+.maintenance-switch-state {
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    padding:0 7px;
+    color:#fff;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.03em;
+    pointer-events:none;
+}
+.maintenance-control-btn.is-active .maintenance-switch-track,
+.maintenance-control-btn.is-pending .maintenance-switch-track { background:#dc3545; } /* ON = 紅色 */
+.maintenance-control-btn.is-active .maintenance-switch-knob,
+.maintenance-control-btn.is-pending .maintenance-switch-knob { transform:translateX(28px); } /* ON = 右側 */
+.maintenance-control-btn.is-active .maintenance-switch-state,
+.maintenance-control-btn.is-pending .maintenance-switch-state { justify-content:flex-start; }
+.maintenance-control-btn.is-recovering .maintenance-switch-track { background:#22a447; }
+.maintenance-control-btn.is-recovering { opacity:.9; }
+
+/* 維護前 30 秒：固定懸浮、不可點擊、不阻擋任何頁面操作 */
+
+/* ===== 工作效率 / 穩定性優化 ===== */
+#maintenanceFloatingCountdown.urgent {
+    font-size: clamp(17px, 3.3vw, 25px) !important;
+    font-weight: 900 !important;
+    animation: maintenanceUrgentBreath .55s ease-in-out infinite !important;
+    text-shadow: 0 0 12px rgba(255,0,0,.45);
+}
+@keyframes maintenanceUrgentBreath { 0%,100%{transform:translateX(-50%) scale(1)} 50%{transform:translateX(-50%) scale(1.09)} }
+.unsaved-warning-inline { color:#ffdf70; font-weight:800; }
+.admin-extra-btn { display:inline-flex; align-items:center; gap:4px; }
+.qc-only-control { display:none !important; }
+.qc-only-control.show { display:inline-flex !important; }
+.system-mini-modal-overlay { position:fixed; inset:0; z-index:99990; background:rgba(12,25,40,.48); display:none; align-items:center; justify-content:center; padding:14px; }
+.system-mini-modal-overlay.show { display:flex; }
+.system-mini-modal { width:min(680px,96vw); max-height:min(82vh,760px); overflow:auto; background:var(--bg-modal); color:var(--text-main); border:1px solid var(--border-color); border-radius:16px; box-shadow:0 20px 65px rgba(0,0,0,.28); }
+.system-mini-modal-head { position:sticky; top:0; z-index:2; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; background:var(--bg-modal); border-bottom:1px solid var(--border-color); }
+.system-mini-modal-head h3 { margin:0; font-size:1rem; }
+.system-mini-modal-close { border:0; background:transparent; color:inherit; cursor:pointer; font-size:1.4rem; line-height:1; }
+.system-mini-modal-body { padding:14px 16px 18px; }
+.status-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.status-cell { padding:10px 12px; border:1px solid var(--border-color); background:var(--bg-color-sec); border-radius:10px; font-size:.8rem; }
+.status-cell b { display:block; margin-bottom:4px; font-size:.7rem; color:var(--text-sub); }
+.recent-log-list, .backup-list { display:flex; flex-direction:column; gap:7px; }
+.recent-log-item, .backup-item { padding:9px 11px; border-radius:10px; border:1px solid var(--border-color); background:var(--bg-color-sec); font-size:.78rem; line-height:1.45; }
+.recent-log-item .time { color:var(--text-sub); font-size:.68rem; }
+.backup-item { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.backup-actions { display:flex; gap:6px; flex-wrap:wrap; }
+.mini-action-btn { border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-main); border-radius:8px; padding:6px 9px; cursor:pointer; font-size:.72rem; }
+.mini-action-btn.primary { background:#1f6fae; color:#fff; border-color:#1f6fae; }
+.mini-action-btn.danger { background:#b43b3b; color:#fff; border-color:#b43b3b; }
+#versionUpdateBanner { position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:99980; width:min(620px,calc(100vw - 24px)); display:none; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; border-radius:12px; background:#18324a; color:#fff; box-shadow:0 8px 28px rgba(0,0,0,.3); font-size:.78rem; }
+#versionUpdateBanner.show { display:flex; }
+#undoToast { position:fixed; left:50%; bottom:70px; transform:translateX(-50%); z-index:99985; display:none; align-items:center; gap:10px; background:rgba(20,28,36,.96); color:#fff; padding:9px 12px; border-radius:12px; box-shadow:0 8px 28px rgba(0,0,0,.28); font-size:.8rem; }
+#undoToast.show { display:flex; }
+#undoToast button { border:0; border-radius:8px; padding:5px 9px; cursor:pointer; background:#ffc107; color:#1b1b1b; font-weight:800; }
+@media(max-width:640px){ .status-grid{grid-template-columns:1fr;} .system-mini-modal{max-height:88vh;} }
+#maintenanceFloatingCountdown {
+    position:fixed;
+    top:18vh;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:89990;
+    display:none;
+    width:max-content;
+    max-width:calc(100vw - 24px);
+    padding:11px 18px;
+    border-radius:999px;
+    background:rgba(255,255,255,.94);
+    border:2px solid rgba(220,53,69,.85);
+    box-shadow:0 8px 26px rgba(220,53,69,.22);
+    color:#d71920;
+    font-size:clamp(16px,2vw,24px);
+    font-weight:900;
+    letter-spacing:.02em;
+    text-align:center;
+    font-variant-numeric:tabular-nums;
+    pointer-events:none;
+    user-select:none;
+    touch-action:none;
+}
+#maintenanceFloatingCountdown.show { display:block; animation:maintenanceBreath 1.15s ease-in-out infinite; }
+@keyframes maintenanceBreath {
+    0%,100% { opacity:.82; transform:translateX(-50%) scale(.985); box-shadow:0 7px 20px rgba(220,53,69,.16); }
+    50% { opacity:1; transform:translateX(-50%) scale(1.025); box-shadow:0 10px 32px rgba(220,53,69,.38),0 0 0 5px rgba(220,53,69,.08); }
+}
+@media (max-width:640px) {
+    #maintenanceFloatingCountdown { top:15vh; padding:9px 13px; border-radius:14px; line-height:1.35; }
+    .maintenance-control-btn { width:auto; max-width:100%; }
+}
+
+#systemMaintenanceOverlay {
+    position:fixed;
+    inset:0;
+    z-index:90000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    background:#f3f3f0;
+    color:#222;
+}
+#systemMaintenanceOverlay.show { display:flex; }
+.system-maintenance-card {
+    width:min(92vw, 520px);
+    min-height:295px;
+    padding:34px 44px 28px;
+    border:1px solid #deded8;
+    border-radius:20px;
+    background:#fffefb;
+    box-shadow:0 25px 55px rgba(0,0,0,.15);
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+.system-maintenance-icon { font-size:46px; line-height:1; margin-bottom:18px; }
+.system-maintenance-title { font-size:27px; font-weight:800; letter-spacing:.03em; margin-bottom:14px; }
+.system-maintenance-text { font-size:15px; color:#666; line-height:1.7; }
+.system-maintenance-countdown {
+    margin-top:17px;
+    min-height:24px;
+    font-size:17px;
+    font-weight:800;
+    color:#9a3412;
+    font-variant-numeric:tabular-nums;
+}
+.system-maintenance-login {
+    margin-top:20px;
+    min-width:168px;
+    height:40px;
+    padding:0 18px;
+    border-radius:9px;
+    border:1px solid #d8d8d1;
+    background:#fffefb;
+    color:#333;
+    font-weight:700;
+    cursor:pointer;
+}
+.system-maintenance-login:hover { background:#f6f6f2; }
+.system-maintenance-foot { margin-top:15px; color:#999; font-size:13px; }
+@media (max-width:640px) {
+    #systemMaintenanceOverlay { padding:14px; }
+    .system-maintenance-card { width:100%; padding:28px 20px 24px; min-height:310px; border-radius:17px; }
+    .system-maintenance-title { font-size:24px; }
+    .system-maintenance-text { font-size:14px; }
+}
+
 </style>
 </head>
 <body>
+
+
+<!-- 系統維護前倒數：僅提示，不攔截點擊，讓現場人員完成最後修改與儲存 -->
+<div id="maintenanceFloatingCountdown" aria-hidden="true"></div>
+<div id="versionUpdateBanner"><span id="versionUpdateText">偵測到新版系統。</span><span><button class="mini-action-btn primary" onclick="location.reload()">重新整理</button> <button class="mini-action-btn" onclick="dismissVersionBanner()">稍後</button></span></div>
+<div id="undoToast"><span id="undoToastText"></span><button type="button" onclick="runUndoAction()">復原</button></div>
+<div id="recentChangesOverlay" class="system-mini-modal-overlay" onclick="if(event.target===this) closeSystemMiniModal('recentChangesOverlay')">
+  <div class="system-mini-modal"><div class="system-mini-modal-head"><h3>🕘 最近變更</h3><button class="system-mini-modal-close" onclick="closeSystemMiniModal('recentChangesOverlay')">×</button></div><div class="system-mini-modal-body"><div id="recentChangesList" class="recent-log-list"></div></div></div>
+</div>
+<div id="systemStatusOverlay" class="system-mini-modal-overlay" onclick="if(event.target===this) closeSystemMiniModal('systemStatusOverlay')">
+  <div class="system-mini-modal"><div class="system-mini-modal-head"><h3>🧭 QC 系統狀態中心</h3><button class="system-mini-modal-close" onclick="closeSystemMiniModal('systemStatusOverlay')">×</button></div>
+  <div class="system-mini-modal-body">
+    <div id="systemStatusGrid" class="status-grid"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;"><button class="mini-action-btn primary" onclick="createManualSystemBackup()">📸 建立快照</button><button class="mini-action-btn" onclick="refreshSystemStatusCenter()">🔄 更新狀態</button></div>
+    <h4 style="margin:12px 0 8px;">🛟 雲端快照（最多 7 份）</h4><div id="systemBackupList" class="backup-list"></div>
+  </div></div>
+</div>
+
+<!-- 系統維護：所有一般使用者共用的全頁鎖定層 -->
+<div id="systemMaintenanceOverlay" aria-live="assertive" aria-hidden="true">
+    <div class="system-maintenance-card">
+        <div class="system-maintenance-icon">🛠️</div>
+        <div id="systemMaintenanceTitle" class="system-maintenance-title">系統維護中</div>
+        <div id="systemMaintenanceText" class="system-maintenance-text">目前無法確認系統維護狀態。<br>為確保系統安全，暫時停止進入。</div>
+        <div id="systemMaintenanceCountdown" class="system-maintenance-countdown"></div>
+        <button id="systemMaintenanceLoginBtn" class="system-maintenance-login" type="button" onclick="openMaintenanceLogin()">🔑 工程師登入</button>
+        <div id="systemMaintenanceFoot" class="system-maintenance-foot">維護期間仍保留登入入口</div>
+    </div>
+</div>
 
 <div class="header">
     <h1>
@@ -2477,7 +2698,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
                 <path d="M 500,270 L 820,270" fill="none" stroke="#E60012" stroke-width="65" stroke-linecap="square"/>
             </svg>
             <span>柏昇開發工業 - 車輛動態管理系統</span>
-            <span class="author-tag">製作者：柏昇小歐</span>
+            <span class="author-tag">製作者：柏昇小歐</span><span class="app-version-tag" id="appVersionTag"></span>
         </div>
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
             <button id="factory3DModeBtn" class="btn-theme" type="button" onclick="toggleFactory3DMode()">🏭 3D 廠區</button>
@@ -2515,6 +2736,12 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         <button class="btn btn-import" onclick="triggerImport()">📤 匯入 JSON</button>
         <button class="btn btn-import" id="btnImportFactory3D" onclick="triggerFactory3DImport()">🏗️ 匯入3D模組</button>
         <button class="btn btn-archive" onclick="openArchiveModal()">📦 已交車</button>
+        <button class="btn admin-extra-btn" type="button" onclick="openRecentChangesPanel()">🕘 最近變更</button>
+        <button id="systemStatusCenterBtn" class="btn admin-extra-btn qc-only-control" type="button" onclick="openSystemStatusCenter()">🧭 系統狀態</button>
+        <button id="systemMaintenanceToggleBtn" class="maintenance-control-btn" type="button" onclick="toggleSystemMaintenance()" aria-pressed="false" title="系統維護開關">
+                <span class="maintenance-control-label">🛠️ 系統維護</span>
+                <span class="maintenance-switch-track" aria-hidden="true"><span class="maintenance-switch-knob"></span><span class="maintenance-switch-state">OFF</span></span>
+            </button>
         <input type="file" id="importFileInput" class="hidden-file-input" accept=".json" onchange="importData(event)">
         <input type="file" id="factory3DImportFileInput" class="hidden-file-input" accept=".json,application/json" onchange="importFactory3DData(event)">
     </div>
@@ -3127,19 +3354,39 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         ],
         archivedBuses: [],
         auditLogs: [],
+        systemBackups: [],
+        systemMeta: { revision:0, appVersion:'', lastSavedAt:'' },
+        systemMaintenance: { enabled:false, phase:'off', lockAt:0, recoverAt:0, expectedRestore:'', reason:'', updatedAt:0, updatedBy:'' },
         factory3DScene: null
     };
 
     const presetBgColors = ['#8c5d5d', '#007bff', '#28a745', '#dc3545', '#fd7e14', '#8800a3', '#17a2b8', '#2c3e50', '#ffffff', '#000000', '#f5d505'];
     const presetTextColors = ['#ffffff', '#000000', '#212529', '#f8f9fa', '#ffc107', '#dc3545', '#17a2b8'];
 
+    // ===== 可自行修改的版本號 =====
+    // 每次發布新版，只要修改這一行即可，例如：'2026.09.09.2'
+    const APP_VERSION = '2026.09.10.1';
+
     let currentEditBusId = null;
     let targetUploadBusId = null;
     let currentGalleryBusId = null;
     let isSaving = false;
+    let hasUnsavedChanges = false;
+    let lastKnownRevision = 0;
+    let lastKnownCloudUpdatedAt = '';
+    let lastCloudDataCopy = null;
+    let cloudConflictPending = false;
+    let realtimeConnected = false;
+    let maintenanceRealtimeConnected = false;
+    let lastSyncAt = 0;
+    let pendingUndoAction = null;
+    let pendingUndoTimer = null;
+    let versionBannerDismissed = false;
 
     window.onload = async () => {
         initTheme();
+        initAppVersionUI();
+        setupReliabilityGuards();
         setupTabSwitch();
         initLiveClock();
         setupScrollToTop();
@@ -3153,7 +3400,9 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             });
         }
         await loadCloudData();
+        evaluateSystemMaintenance();
         setupRealtimeSubscription();
+        startMaintenanceHeartbeat();
     };
 
     function setupScrollToTop() {
@@ -3167,24 +3416,97 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         });
     }
 
+    let maintenanceLiveChannel = null;
+
+    function normalizeIncomingMaintenance(raw) {
+        raw = raw && typeof raw === 'object' ? raw : {};
+        return {
+            enabled: !!raw.enabled,
+            phase: ['off','pending','active','recovering'].includes(raw.phase) ? raw.phase : (raw.enabled ? 'active' : 'off'),
+            lockAt: Number(raw.lockAt) || 0,
+            recoverAt: Number(raw.recoverAt) || 0,
+            expectedRestore: String(raw.expectedRestore || ''),
+            reason: String(raw.reason || ''),
+            updatedAt: Number(raw.updatedAt) || 0,
+            updatedBy: String(raw.updatedBy || '')
+        };
+    }
+
+    function applyMaintenanceSignal(raw) {
+        const incoming = normalizeIncomingMaintenance(raw);
+        const current = normalizeIncomingMaintenance(appData?.systemMaintenance);
+        // 舊訊號不覆蓋新訊號，避免不同裝置網路延遲造成倒數倒退。
+        if (incoming.updatedAt && current.updatedAt && incoming.updatedAt < current.updatedAt) return false;
+        if (!appData || typeof appData !== 'object') return false;
+        appData.systemMaintenance = incoming;
+        updateMaintenanceControlUI();
+        evaluateSystemMaintenance();
+        return true;
+    }
+
+    async function broadcastSystemMaintenanceSignal(raw) {
+        if (!maintenanceLiveChannel) return false;
+        try {
+            const result = await maintenanceLiveChannel.send({
+                type: 'broadcast',
+                event: 'maintenance_signal',
+                payload: normalizeIncomingMaintenance(raw)
+            });
+            return result === 'ok' || result?.status === 'ok';
+        } catch (err) {
+            console.warn('維護即時廣播失敗，將由雲端資料同步補上：', err);
+            return false;
+        }
+    }
+
     function setupRealtimeSubscription() {
         if (!supabaseClient) return;
+
+        maintenanceLiveChannel = supabaseClient
+            .channel('system_maintenance_live')
+            .on('broadcast', { event: 'maintenance_signal' }, ({ payload }) => { applyMaintenanceSignal(payload); })
+            .subscribe((status) => {
+                maintenanceRealtimeConnected = status === 'SUBSCRIBED';
+                refreshSystemStatusCenter();
+            });
+
         supabaseClient
             .channel('app_data_changes')
-            .on(
-                'postgres_changes',
-                { event: 'UPDATE', schema: 'public', table: 'app_data', filter: 'id=eq.main_data' },
-                (payload) => {
-                    if (isSaving) return;
-                    if (payload.new && payload.new.content) {
-                        appData = payload.new.content;
-                        sanitizeData();
-                        renderApp();
-                        setSyncStatus('success', '已同步最新雲端資料');
-                    }
+            .on('postgres_changes', { event:'UPDATE', schema:'public', table:'app_data', filter:'id=eq.main_data' }, (payload) => {
+                if (!(payload.new && payload.new.content)) return;
+                const incomingContent = payload.new.content;
+                const incomingMaintenance = normalizeIncomingMaintenance(incomingContent.systemMaintenance);
+                const currentMaintenance = normalizeIncomingMaintenance(appData?.systemMaintenance);
+                const maintenanceChanged = incomingMaintenance.enabled !== currentMaintenance.enabled || incomingMaintenance.phase !== currentMaintenance.phase || incomingMaintenance.lockAt !== currentMaintenance.lockAt || incomingMaintenance.recoverAt !== currentMaintenance.recoverAt || incomingMaintenance.expectedRestore !== currentMaintenance.expectedRestore || incomingMaintenance.reason !== currentMaintenance.reason || incomingMaintenance.updatedAt !== currentMaintenance.updatedAt;
+
+                if (maintenanceChanged) {
+                    applyMaintenanceSignal(incomingMaintenance);
+                    setSyncStatus('success', '已收到系統維護即時通知');
+                    return;
                 }
-            )
-            .subscribe();
+
+                const incomingRevision = Number(incomingContent?.systemMeta?.revision) || 0;
+                lastKnownCloudUpdatedAt = String(payload.new.updated_at || lastKnownCloudUpdatedAt || '');
+                if (isSaving) { lastKnownRevision = Math.max(lastKnownRevision, incomingRevision); return; }
+                if (hasUnsavedChanges && incomingRevision > lastKnownRevision) {
+                    cloudConflictPending = true;
+                    setSyncStatus('error', '雲端已有更新，本機修改尚未覆蓋');
+                    refreshSystemStatusCenter();
+                    return;
+                }
+                appData = incomingContent;
+                sanitizeData();
+                lastKnownRevision = incomingRevision;
+                lastCloudDataCopy = safeCloneData(appData);
+                hasUnsavedChanges = false;
+                cloudConflictPending = false;
+                renderApp(); updateAuthUI(); evaluateSystemMaintenance();
+                setSyncStatus('success', '已同步最新雲端資料');
+            })
+            .subscribe((status) => {
+                realtimeConnected = status === 'SUBSCRIBED';
+                refreshSystemStatusCenter();
+            });
     }
 
     function initLiveClock() {
@@ -3212,9 +3534,10 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
     }
 
     let loginModalResolver = null;
+    let maintenanceLoginOnly = false;
 
     function openLoginModal() {
-        if (isAuthed()) return Promise.resolve(true);
+        if (isAuthed() && !maintenanceLoginOnly) return Promise.resolve(true);
         const overlay = document.getElementById('loginModalOverlay');
         const usernameInput = document.getElementById('loginUsername');
         const passwordInput = document.getElementById('loginPassword');
@@ -3225,6 +3548,12 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         }
         errorBox?.classList.remove('show');
         if (errorBox) errorBox.textContent = '';
+        const titleEl = document.getElementById('loginModalTitle');
+        const subtitleEl = document.querySelector('#loginModalForm .login-modal-subtitle');
+        if (titleEl) titleEl.textContent = maintenanceLoginOnly ? '🛠️ 維護模式' : '🔐 管理員登入';
+        if (subtitleEl) subtitleEl.innerHTML = maintenanceLoginOnly
+            ? '系統目前維護中，<b>所有使用者</b>暫停使用。'
+            : '請輸入帳號與密碼。系統會自動補上 <b>@gmail.com</b> 進行登入。';
         passwordInput.value = '';
         passwordInput.type = 'password';
         const toggle = document.getElementById('loginPasswordToggle');
@@ -3244,6 +3573,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         const resolver = loginModalResolver;
         loginModalResolver = null;
         if (resolver) resolver(!!success);
+        maintenanceLoginOnly = false;
     }
 
     function toggleLoginPassword() {
@@ -3276,10 +3606,24 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
             if (error) throw error;
             currentSession = data.session || null;
+            if (maintenanceLoginOnly && !isQualityUser()) {
+                await supabaseClient.auth.signOut();
+                currentSession = null;
+                if (errorBox) {
+                    errorBox.textContent = '⛔ 系統維護期間僅限 QC 品管帳號登入。';
+                    errorBox.classList.add('show');
+                }
+                updateAuthUI();
+                evaluateSystemMaintenance();
+                document.getElementById('loginPassword')?.focus();
+                return;
+            }
+            const wasMaintenanceLogin = maintenanceLoginOnly;
             updateAuthUI();
             renderApp();
             closeLoginModal(true);
-            setTimeout(() => alert('🔓 Supabase Auth 登入成功！已開啟管理功能。'), 0);
+            evaluateSystemMaintenance();
+            setTimeout(() => alert(wasMaintenanceLogin ? '🔓 驗證成功，已進入維護管理畫面。' : '🔓 Supabase Auth 登入成功！已開啟管理功能。'), 0);
         } catch (error) {
             if (errorBox) {
                 errorBox.textContent = '❌ 登入失敗：' + (error?.message || '請確認帳號與密碼。');
@@ -3288,6 +3632,262 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             document.getElementById('loginPassword')?.focus();
         } finally {
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '🔑 登入'; }
+        }
+    }
+
+
+    function getSystemMaintenanceState() {
+        const raw = appData?.systemMaintenance || {};
+        return {
+            enabled: !!raw.enabled,
+            phase: raw.phase || (raw.enabled ? 'active' : 'off'),
+            lockAt: Number(raw.lockAt) || 0,
+            recoverAt: Number(raw.recoverAt) || 0,
+            expectedRestore: String(raw.expectedRestore || ''),
+            reason: String(raw.reason || ''),
+            updatedAt: Number(raw.updatedAt) || 0,
+            updatedBy: String(raw.updatedBy || '')
+        };
+    }
+
+    function getSystemMaintenancePhase(now = Date.now()) {
+        const st = getSystemMaintenanceState();
+        if (!st.enabled) return 'off';
+        if (st.phase === 'recovering') return st.recoverAt > now ? 'recovering' : 'off';
+        if (st.phase === 'pending') {
+            // 防呆：pending 的鎖定時間至少應為 updatedAt + 30 秒。
+            // 可避免舊版／異常訊號帶入過早 lockAt 時直接跳過倒數。
+            const intendedLockAt = Math.max(Number(st.lockAt)||0, (Number(st.updatedAt)||0) + 30000);
+            return intendedLockAt > now ? 'pending' : 'active';
+        }
+        return 'active';
+    }
+
+    function secondsRemaining(targetMs) {
+        return Math.max(0, Math.ceil((Number(targetMs || 0) - Date.now()) / 1000));
+    }
+
+    function updateMaintenanceControlUI() {
+        const btn = document.getElementById('systemMaintenanceToggleBtn');
+        if (!btn) return;
+        const qc = isAuthed() && isQualityUser();
+        btn.classList.toggle('show', qc);
+        if (!qc) return;
+        const st = getSystemMaintenanceState();
+        const phase = getSystemMaintenancePhase();
+        const stateText = btn.querySelector('.maintenance-switch-state');
+        btn.classList.remove('is-active','is-pending','is-recovering');
+
+        if (phase === 'off') {
+            btn.setAttribute('aria-pressed','false');
+            if (stateText) stateText.textContent = 'OFF';
+            btn.title = '目前為 OFF（綠色／左側）。點擊後全裝置倒數 30 秒進入維護模式';
+        } else if (phase === 'recovering') {
+            btn.classList.add('is-recovering');
+            btn.setAttribute('aria-pressed','false');
+            if (stateText) stateText.textContent = 'OFF';
+            btn.title = `系統恢復中，約 ${secondsRemaining(st.recoverAt)} 秒後所有裝置自動重新整理`;
+        } else {
+            btn.classList.add(phase === 'pending' ? 'is-pending' : 'is-active');
+            btn.setAttribute('aria-pressed','true');
+            if (stateText) stateText.textContent = 'ON';
+            btn.title = phase === 'pending'
+                ? `目前為 ON（紅色／右側），${secondsRemaining(st.lockAt)} 秒後鎖定系統`
+                : '目前為 ON（紅色／右側）。點擊後倒數 10 秒，自動重新整理並恢復正常使用';
+        }
+    }
+
+    function showMaintenanceFloatingCountdown(seconds) {
+        const el = document.getElementById('maintenanceFloatingCountdown');
+        if (!el) return;
+        const sec = Math.max(0, Number(seconds) || 0);
+        const st = getSystemMaintenanceState();
+        const unsaved = hasUnsavedChanges ? '　<span class="unsaved-warning-inline">⚠ 尚有未儲存修改</span>' : '';
+        const restore = st.expectedRestore ? `　預計恢復：${escapeHtml(st.expectedRestore)}` : '';
+        el.innerHTML = `⚠️ 系統將於 ${sec} 秒後進入維護，請完成最後修改並儲存${unsaved}${restore}`;
+        el.classList.toggle('urgent', sec <= 10);
+        el.classList.add('show');
+        el.setAttribute('aria-hidden','false');
+    }
+
+    function hideMaintenanceFloatingCountdown() {
+        const el = document.getElementById('maintenanceFloatingCountdown');
+        if (!el) return;
+        el.classList.remove('show','urgent');
+        el.setAttribute('aria-hidden','true');
+    }
+
+    function showSystemMaintenanceOverlay(kind, seconds = 0) {
+        const overlay = document.getElementById('systemMaintenanceOverlay');
+        if (!overlay) return;
+        const title = document.getElementById('systemMaintenanceTitle');
+        const text = document.getElementById('systemMaintenanceText');
+        const countdown = document.getElementById('systemMaintenanceCountdown');
+        const loginBtn = document.getElementById('systemMaintenanceLoginBtn');
+        const foot = document.getElementById('systemMaintenanceFoot');
+        overlay.classList.add('show');
+        overlay.setAttribute('aria-hidden','false');
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+
+        if (kind === 'pending') {
+            if (title) title.textContent = '系統即將進入維護';
+            if (text) text.innerHTML = '系統維護已啟動，所有裝置將暫停使用。<br>請先儲存目前操作。';
+            if (countdown) countdown.textContent = `距離系統鎖定還有 ${seconds} 秒`;
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (foot) foot.textContent = '倒數結束後將自動切換至維護頁面';
+        } else if (kind === 'recovering') {
+            if (title) title.textContent = '系統即將恢復';
+            if (text) text.innerHTML = '維護作業已完成，系統正在重新開放。<br>請稍候，頁面將自動重新整理。';
+            if (countdown) countdown.textContent = `距離恢復使用還有 ${seconds} 秒`;
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (foot) foot.textContent = '倒數結束後所有裝置會自動刷新';
+        } else {
+            if (title) title.textContent = '系統維護中';
+            if (text) { const st=getSystemMaintenanceState(); const detail=[st.reason?`維護項目：${escapeHtml(st.reason)}`:'',st.expectedRestore?`預計恢復：${escapeHtml(st.expectedRestore)}`:''].filter(Boolean).join('<br>'); text.innerHTML = '目前系統正在維護，暫時停止一般使用者進入。' + (detail?'<br><br>'+detail:''); }
+            if (countdown) countdown.textContent = '';
+            if (loginBtn) loginBtn.style.display = '';
+            if (foot) foot.textContent = '維護期間仍保留登入入口';
+        }
+    }
+
+    function hideSystemMaintenanceOverlay() {
+        const overlay = document.getElementById('systemMaintenanceOverlay');
+        if (!overlay) return;
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden','true');
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+    }
+
+    let maintenanceReloadTriggered = false;
+    let maintenanceFinalizeBusy = false;
+
+    function evaluateSystemMaintenance() {
+        updateMaintenanceControlUI();
+        const st = getSystemMaintenanceState();
+        const phase = getSystemMaintenancePhase();
+
+        // 維護啟動前 30 秒：所有裝置（包含 QC）只顯示固定懸浮紅字，不鎖畫面、不阻擋操作。
+        if (phase === 'pending') {
+            hideSystemMaintenanceOverlay();
+            const effectiveLockAt = Math.max(Number(st.lockAt)||0, (Number(st.updatedAt)||0) + 30000);
+            showMaintenanceFloatingCountdown(secondsRemaining(effectiveLockAt));
+            return;
+        }
+        hideMaintenanceFloatingCountdown();
+
+        // QC 品管帳號是正式維護期間唯一白名單，可持續操作並關閉維護。
+        if (isAuthed() && isQualityUser()) {
+            hideSystemMaintenanceOverlay();
+            if (phase === 'off' && st.enabled && st.phase === 'recovering' && st.recoverAt && Date.now() >= st.recoverAt) {
+                finalizeMaintenanceRecovery();
+            }
+            return;
+        }
+
+        if (phase === 'active') {
+            showSystemMaintenanceOverlay('active');
+            return;
+        }
+        if (phase === 'recovering') {
+            showSystemMaintenanceOverlay('recovering', secondsRemaining(st.recoverAt));
+            return;
+        }
+
+        const wasVisible = document.getElementById('systemMaintenanceOverlay')?.classList.contains('show');
+        hideSystemMaintenanceOverlay();
+        if (wasVisible && st.phase === 'recovering' && st.recoverAt && Date.now() >= st.recoverAt && !maintenanceReloadTriggered) {
+            maintenanceReloadTriggered = true;
+            location.reload();
+        }
+    }
+
+    function startMaintenanceHeartbeat() {
+        if (window.__maintenanceHeartbeat) return;
+        window.__maintenanceHeartbeat = setInterval(evaluateSystemMaintenance, 250);
+    }
+
+    async function openMaintenanceLogin() {
+        maintenanceLoginOnly = true;
+        if (isAuthed() && !isQualityUser()) {
+            try { await supabaseClient?.auth.signOut(); } catch (_) {}
+            currentSession = null;
+            updateAuthUI();
+        }
+        return await openLoginModal();
+    }
+
+    async function toggleSystemMaintenance() {
+        if (!isAuthed() || !isQualityUser()) {
+            alert('⛔ 此功能不可使用。');
+            return;
+        }
+        const phase = getSystemMaintenancePhase();
+        const previous = JSON.parse(JSON.stringify(appData.systemMaintenance || {}));
+
+        if (phase === 'off') {
+            if (!confirm('確定要開啟系統維護嗎？\n\n所有裝置會立即顯示 30 秒倒數，倒數結束後鎖定在系統維護頁。')) return;
+            const reasonInput = prompt('請輸入本次維護項目／原因（可留空）：', appData.systemMaintenance?.reason || '');
+            if (reasonInput === null) return;
+            const restoreInput = prompt(`請輸入「預計恢復時間」\n例如：16:30、今天 17:00、約 30 分鐘後。\n此欄位會直接顯示給使用者：`, appData.systemMaintenance?.expectedRestore || '');
+            if (restoreInput === null) return;
+
+            // 重要：30 秒必須從「所有設定輸入完成、真正開啟維護」這一刻才開始。
+            // 不可在 confirm / prompt 之前先取時間，否則輸入維護原因與恢復時間超過 30 秒時，
+            // lockAt 會在送出前就過期，其他裝置收到後便會直接進維護頁而看不到倒數。
+            const activationNow = Date.now();
+            appData.systemMaintenance = {
+                enabled:true, phase:'pending', lockAt:activationNow+30000, recoverAt:0,
+                expectedRestore:String(restoreInput||'').trim(), reason:String(reasonInput||'').trim(),
+                updatedAt:activationNow, updatedBy:qualityUserEmail()
+            };
+        } else if (phase === 'recovering') {
+            alert('系統目前正在恢復中，請等待倒數結束。');
+            return;
+        } else {
+            if (!confirm('確定要結束系統維護嗎？\n\n所有裝置會顯示 10 秒恢復倒數，倒數結束後自動重新整理並恢復正常使用。')) return;
+            const recoveryNow = Date.now();
+            appData.systemMaintenance = { enabled:true, phase:'recovering', lockAt:0, recoverAt:recoveryNow+10000, expectedRestore:'', reason:'', updatedAt:recoveryNow, updatedBy:qualityUserEmail() };
+        }
+
+        // 先用 Supabase Realtime Broadcast 即時推送，讓所有已開啟裝置立即出現倒數，
+        // 完全不需要 reload，也不會 renderApp 或動到正在編輯的 DOM。
+        updateMaintenanceControlUI();
+        evaluateSystemMaintenance();
+        await broadcastSystemMaintenanceSignal(appData.systemMaintenance);
+
+        // 同時寫回既有 main_data 作為持久狀態：晚開網頁、斷線後重連的裝置仍能知道目前是否維護。
+        const ok = await autoSaveCloud();
+        if (!ok) {
+            appData.systemMaintenance = previous;
+            updateMaintenanceControlUI();
+            evaluateSystemMaintenance();
+            await broadcastSystemMaintenanceSignal(previous);
+            alert('❌ 系統維護狀態同步失敗，已取消本次切換。');
+            return;
+        }
+    }
+
+    async function finalizeMaintenanceRecovery() {
+        if (maintenanceFinalizeBusy || !isAuthed() || !isQualityUser()) return;
+        const st = getSystemMaintenanceState();
+        if (!(st.enabled && st.phase === 'recovering' && st.recoverAt && Date.now() >= st.recoverAt)) return;
+        maintenanceFinalizeBusy = true;
+        try {
+            appData.systemMaintenance = {
+                enabled:false,
+                phase:'off',
+                lockAt:0,
+                recoverAt:0,
+                updatedAt:Date.now(),
+                updatedBy:qualityUserEmail()
+            };
+            await broadcastSystemMaintenanceSignal(appData.systemMaintenance);
+            await autoSaveCloud();
+            updateMaintenanceControlUI();
+        } finally {
+            maintenanceFinalizeBusy = false;
         }
     }
 
@@ -3356,11 +3956,19 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             else logsBtn.classList.remove("show");
         }
 
+        const statusCenterBtn = document.getElementById('systemStatusCenterBtn');
+        if (statusCenterBtn) statusCenterBtn.classList.toggle('show', authed && isQualityUser());
+        document.getElementById('desktopStatusCenterBtn')?.classList.toggle('show', authed && isQualityUser());
+        const mobileStatusBtn=document.getElementById('mobileSystemStatusBtn'); if(mobileStatusBtn) mobileStatusBtn.style.display=(authed&&isQualityUser())?'':'none';
+
         const syncStatusBadge = document.getElementById("syncStatusBadge");
         if (syncStatusBadge) {
             if (authed) syncStatusBadge.classList.add("show");
             else syncStatusBadge.classList.remove("show");
         }
+
+        updateMaintenanceControlUI();
+        evaluateSystemMaintenance();
     }
 
     async function loadCloudData() {
@@ -3368,27 +3976,31 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         try {
             if (!supabaseClient) throw new Error('Supabase 未能初始化');
             const result = await Promise.race([
-                supabaseClient.from('app_data').select('content').eq('id', 'main_data').single(),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('雲端載入逾時')), 8000))
+                supabaseClient.from('app_data').select('content,updated_at').eq('id','main_data').single(),
+                new Promise((_,reject)=>setTimeout(()=>reject(new Error('雲端載入逾時')),8000))
             ]);
             const { data, error } = result;
             if (error) throw error;
             if (!data || !data.content) throw new Error('雲端沒有取得 main_data');
             appData = data.content;
+            sanitizeData();
+            lastKnownRevision = Number(appData?.systemMeta?.revision) || 0;
+            lastKnownCloudUpdatedAt = String(data.updated_at || '');
+            lastCloudDataCopy = safeCloneData(appData);
+            hasUnsavedChanges = false; cloudConflictPending = false;
             setSyncStatus('success', '已連線');
+            checkVersionUpdate(appData?.systemMeta?.appVersion);
         } catch (err) {
             console.warn('載入雲端失敗，使用本機備份：', err);
             const local = localStorage.getItem('bus_manage_data_v2');
             if (local) { try { appData = JSON.parse(local); } catch(e) {} }
-            setSyncStatus('error', '雲端載入失敗，已使用本機資料');
+            sanitizeData();
+            lastKnownRevision = Number(appData?.systemMeta?.revision) || 0;
+            setSyncStatus('error', navigator.onLine ? '雲端載入失敗，已使用本機資料' : '離線，已使用本機資料');
         }
-        const hadLegacyDemoAnnouncements = Array.isArray(appData.schedules) &&
-            appData.schedules.some(item => item && (item.id === 'sched_1' || item.id === 'sched_2'));
-        sanitizeData();
-        renderApp();
-        if (hadLegacyDemoAnnouncements && isAuthed()) {
-            autoSaveCloud().catch(err => console.warn('清理舊示範公告同步失敗：', err));
-        }
+        const hadLegacyDemoAnnouncements = Array.isArray(appData.schedules) && appData.schedules.some(item=>item&&(item.id==='sched_1'||item.id==='sched_2'));
+        renderApp(); updateAuthUI(); evaluateSystemMaintenance();
+        if (hadLegacyDemoAnnouncements && isAuthed()) autoSaveCloud().catch(err=>console.warn('清理舊示範公告同步失敗：',err));
     }
 
     // 清除舊版程式內建的兩筆「示範公告」。它們不是使用者真正發布的公告，
@@ -3419,6 +4031,16 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
     function sanitizeData() {
         if (!appData.archivedBuses) appData.archivedBuses = [];
         if (!appData.auditLogs) appData.auditLogs = [];
+        if (!appData.systemMaintenance || typeof appData.systemMaintenance !== 'object') {
+            appData.systemMaintenance = { enabled:false, phase:'off', lockAt:0, recoverAt:0, updatedAt:0, updatedBy:'' };
+        } else {
+            appData.systemMaintenance.enabled = !!appData.systemMaintenance.enabled;
+            if (!['off','pending','active','recovering'].includes(appData.systemMaintenance.phase)) appData.systemMaintenance.phase = appData.systemMaintenance.enabled ? 'active' : 'off';
+            appData.systemMaintenance.lockAt = Number(appData.systemMaintenance.lockAt) || 0;
+            appData.systemMaintenance.recoverAt = Number(appData.systemMaintenance.recoverAt) || 0;
+            appData.systemMaintenance.updatedAt = Number(appData.systemMaintenance.updatedAt) || 0;
+            if (typeof appData.systemMaintenance.updatedBy !== 'string') appData.systemMaintenance.updatedBy = '';
+        }
         if (appData.factory3DScene && !Array.isArray(appData.factory3DScene.objects)) appData.factory3DScene = null;
         if (!appData.announcementImg) appData.announcementImg = "";
         if (!appData.schedules) appData.schedules = [];
@@ -3464,8 +4086,79 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             if (!b.bg) b.bg = '#8c5d5d';
             if (!b.color) b.color = '#ffffff';
         });
+
+        if (!Array.isArray(appData.systemBackups)) appData.systemBackups = [];
+        if (!appData.systemMeta || typeof appData.systemMeta !== 'object') appData.systemMeta = {revision:0,appVersion:'',lastSavedAt:''};
+        appData.systemMeta.revision = Number(appData.systemMeta.revision)||0;
+        appData.systemMeta.appVersion = String(appData.systemMeta.appVersion||'');
+        appData.systemMeta.lastSavedAt = String(appData.systemMeta.lastSavedAt||'');
+        appData.systemMaintenance = normalizeIncomingMaintenance(appData.systemMaintenance);
     }
 
+
+    function safeCloneData(value) { try { return JSON.parse(JSON.stringify(value)); } catch(_) { return value; } }
+    function initAppVersionUI(){ const el=document.getElementById('appVersionTag'); if(el) el.textContent=`v${APP_VERSION}`; }
+    function markDirty(){ if(!isAuthed()) return; hasUnsavedChanges=true; if(!navigator.onLine) setSyncStatus('offline','離線，修改尚未上傳'); else setSyncStatus('dirty','尚有未儲存修改'); refreshSystemStatusCenter(); }
+    function setupReliabilityGuards(){
+        window.addEventListener('offline',()=>{ if(isAuthed()) setSyncStatus('offline',hasUnsavedChanges?'離線，修改尚未上傳':'離線'); refreshSystemStatusCenter(); });
+        window.addEventListener('online',()=>{ setSyncStatus('success','網路已恢復'); if(isAuthed()&&hasUnsavedChanges&&!cloudConflictPending) setTimeout(()=>autoSaveCloud(),600); refreshSystemStatusCenter(); });
+        window.addEventListener('beforeunload',(e)=>{ if(hasUnsavedChanges){ e.preventDefault(); e.returnValue=''; } });
+        const shouldTrack=(el)=>{ if(!el||!/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))return false; const id=String(el.id||'').toLowerCase(); const type=String(el.type||'').toLowerCase(); if(type==='search'||type==='file'||id.includes('search')||id.startsWith('login')||id.includes('filter'))return false; return !!el.closest('.modal, .modal-overlay, .system-mini-modal, .admin-only, #adminControls'); };
+        document.addEventListener('input',(e)=>{ if(isAuthed()&&shouldTrack(e.target))markDirty(); },true);
+        document.addEventListener('change',(e)=>{ if(isAuthed()&&shouldTrack(e.target))markDirty(); },true);
+    }
+    function checkVersionUpdate(cloudVersion){
+        cloudVersion=String(cloudVersion||'').trim();
+        if(!cloudVersion || cloudVersion===APP_VERSION || versionBannerDismissed) return;
+        const banner=document.getElementById('versionUpdateBanner'), text=document.getElementById('versionUpdateText');
+        if(text) text.textContent=`偵測到不同系統版本：目前 v${APP_VERSION}，雲端 v${cloudVersion}。請先儲存工作後重新整理。`;
+        banner?.classList.add('show');
+    }
+    function dismissVersionBanner(){ versionBannerDismissed=true; document.getElementById('versionUpdateBanner')?.classList.remove('show'); }
+    function showConflictNotice(){
+        const banner=document.getElementById('versionUpdateBanner'), text=document.getElementById('versionUpdateText');
+        if(text) text.textContent='⚠️ 另一台裝置已先更新雲端資料。為避免互相覆蓋，本次儲存已被阻止；請確認本機修改後重新整理。';
+        banner?.classList.add('show');
+    }
+    function offerUndo(text, action){
+        pendingUndoAction=action; clearTimeout(pendingUndoTimer); const toast=document.getElementById('undoToast'); const t=document.getElementById('undoToastText'); if(t)t.textContent=text; toast?.classList.add('show');
+        pendingUndoTimer=setTimeout(()=>{pendingUndoAction=null;toast?.classList.remove('show');},8000);
+    }
+    async function runUndoAction(){ const fn=pendingUndoAction; pendingUndoAction=null; clearTimeout(pendingUndoTimer); document.getElementById('undoToast')?.classList.remove('show'); if(fn) await fn(); }
+    function closeSystemMiniModal(id){ document.getElementById(id)?.classList.remove('show'); }
+    function openRecentChangesPanel(){
+        const list=document.getElementById('recentChangesList'); if(!list)return; const logs=(appData.auditLogs||[]).slice(0,20);
+        list.innerHTML=logs.length?logs.map(x=>`<div class="recent-log-item"><div><b>${escapeHtml(x.plate||'系統')}</b>　${escapeHtml(x.action||'')}</div><div class="time">${escapeHtml(x.time||'')}</div></div>`).join(''):'<div class="recent-log-item">尚無變更紀錄</div>';
+        document.getElementById('recentChangesOverlay')?.classList.add('show');
+    }
+    function openSystemStatusCenter(){ if(!isQualityUser())return; refreshSystemStatusCenter(); document.getElementById('systemStatusOverlay')?.classList.add('show'); }
+    function refreshSystemStatusCenter(){
+        const grid=document.getElementById('systemStatusGrid'); if(!grid)return; const st=getSystemMaintenanceState();
+        const syncTime=lastSyncAt?new Date(lastSyncAt).toLocaleTimeString('zh-TW',{hour12:false}):'尚未記錄';
+        grid.innerHTML=[
+          ['系統版本',`v${APP_VERSION}`],['網路',navigator.onLine?'🟢 線上':'🔴 離線'],['Realtime',realtimeConnected?'🟢 已連線':'🟠 未連線'],['維護廣播',maintenanceRealtimeConnected?'🟢 已連線':'🟠 未連線'],
+          ['本機修改',hasUnsavedChanges?'🟠 尚未儲存':'🟢 已同步'],['版本衝突',cloudConflictPending?'🔴 已阻止覆蓋':'🟢 無'],['資料 Revision',String(lastKnownRevision)],['最後同步',syncTime],['維護狀態',getSystemMaintenancePhase()==='off'?'OFF':'ON'],['預計恢復',st.expectedRestore||'—']
+        ].map(([a,b])=>`<div class="status-cell"><b>${a}</b>${escapeHtml(b)}</div>`).join('');
+        renderSystemBackupList();
+    }
+    function createBackupContent(source){ const c=safeCloneData(source||appData)||{}; delete c.systemBackups; delete c.factory3DScene; if(c.systemMaintenance) c.systemMaintenance=safeCloneData(appData.systemMaintenance); return c; }
+    function ensureDailySystemBackup(source){
+        if(!isAuthed()) return; if(!Array.isArray(appData.systemBackups)) appData.systemBackups=[]; const key=new Date().toISOString().slice(0,10); if(appData.systemBackups.some(b=>b.dayKey===key&&b.auto))return;
+        appData.systemBackups.unshift({id:'bk_'+Date.now(),dayKey:key,auto:true,label:'每日首次修改前',createdAt:new Date().toISOString(),content:createBackupContent(source)}); appData.systemBackups=appData.systemBackups.slice(0,7);
+    }
+    async function createManualSystemBackup(){
+        if(!isQualityUser())return; if(!Array.isArray(appData.systemBackups))appData.systemBackups=[];
+        appData.systemBackups.unshift({id:'bk_'+Date.now(),dayKey:new Date().toISOString().slice(0,10),auto:false,label:'手動快照',createdAt:new Date().toISOString(),content:createBackupContent(lastCloudDataCopy||appData)}); appData.systemBackups=appData.systemBackups.slice(0,7); markDirty(); const ok=await autoSaveCloud(); if(ok){alert('✅ 系統快照已建立並同步至雲端。');refreshSystemStatusCenter();}
+    }
+    function renderSystemBackupList(){
+        const box=document.getElementById('systemBackupList'); if(!box)return; const arr=Array.isArray(appData.systemBackups)?appData.systemBackups:[];
+        box.innerHTML=arr.length?arr.map(b=>`<div class="backup-item"><div><b>${escapeHtml(b.label||'快照')}</b><div style="font-size:.68rem;color:var(--text-sub)">${escapeHtml(new Date(b.createdAt).toLocaleString('zh-TW',{hour12:false}))}</div></div><div class="backup-actions"><button class="mini-action-btn danger" onclick="restoreSystemBackup('${escapeHtml(b.id)}')">還原</button></div></div>`).join(''):'<div class="backup-item">尚無快照</div>';
+    }
+    async function restoreSystemBackup(id){
+        if(!isQualityUser())return; const b=(appData.systemBackups||[]).find(x=>x.id===id); if(!b||!b.content)return; if(!confirm(`確定還原「${b.label||'快照'}」？目前維護狀態與快照清單會保留。`))return;
+        const keepMaintenance=safeCloneData(appData.systemMaintenance), keepBackups=safeCloneData(appData.systemBackups), keepMeta=safeCloneData(appData.systemMeta), keep3D=safeCloneData(appData.factory3DScene);
+        appData=safeCloneData(b.content); appData.systemMaintenance=keepMaintenance; appData.systemBackups=keepBackups; appData.systemMeta=keepMeta; appData.factory3DScene=keep3D; sanitizeData(); addAuditLog('系統','QC 還原系統快照'); renderApp(); markDirty(); const ok=await autoSaveCloud({force:false}); if(ok){alert('✅ 快照還原完成。');refreshSystemStatusCenter();}
+    }
     async function manualSaveCloud() {
         if (!isAuthed()) {
             const ok = await signInWithSupabase();
@@ -3480,37 +4173,62 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         }
     }
 
-    async function autoSaveCloud() {
+    async function autoSaveCloud(options = {}) {
         if (!isAuthed()) return false;
         if (isSaving) return false;
+        if (!navigator.onLine) { markDirty('離線修改'); setSyncStatus('offline','離線，修改尚未上傳'); return false; }
         isSaving = true;
         try {
-            try { localStorage.setItem('bus_manage_data_v2', JSON.stringify(appData)); }
-            catch (e) { console.warn('localStorage 容量上限，跳過本地備份。', e); }
-            setSyncStatus('syncing', '儲存同步中...');
             if (!supabaseClient) throw new Error('Supabase 未初始化');
-            const payloadContent = { ...appData, auditLogs: Array.isArray(appData.auditLogs) ? appData.auditLogs.slice(0, 50) : [] };
+            setSyncStatus('syncing','儲存同步中...');
+
+            // 儲存前讀取雲端 revision，避免另一台裝置已更新卻被舊資料覆蓋。
+            const check = await Promise.race([
+                supabaseClient.from('app_data').select('content,updated_at').eq('id','main_data').single(),
+                new Promise((_,reject)=>setTimeout(()=>reject(new Error('版本檢查逾時')),5000))
+            ]);
+            if (check.error) throw check.error;
+            const cloudRevision = Number(check.data?.content?.systemMeta?.revision)||0;
+            if (!options.force && cloudRevision > lastKnownRevision) {
+                cloudConflictPending = true;
+                setSyncStatus('error','儲存已阻止：雲端有較新資料');
+                showConflictNotice();
+                return false;
+            }
+
+            ensureDailySystemBackup(check.data?.content || lastCloudDataCopy || appData);
+            if (!appData.systemMeta || typeof appData.systemMeta!=='object') appData.systemMeta={};
+            appData.systemMeta.revision = Math.max(cloudRevision,lastKnownRevision)+1;
+            appData.systemMeta.appVersion = APP_VERSION;
+            appData.systemMeta.lastSavedAt = new Date().toISOString();
+            const payloadContent = { ...appData, auditLogs:Array.isArray(appData.auditLogs)?appData.auditLogs.slice(0,50):[] };
+            const updatedAt = new Date().toISOString();
             const result = await Promise.race([
-                supabaseClient.from('app_data').upsert({ id:'main_data', content:payloadContent, updated_at:new Date().toISOString() }),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('雲端儲存逾時')), 6000))
+                supabaseClient.from('app_data').upsert({id:'main_data',content:payloadContent,updated_at:updatedAt}),
+                new Promise((_,reject)=>setTimeout(()=>reject(new Error('雲端儲存逾時')),6000))
             ]);
             if (result.error) throw result.error;
-            setSyncStatus('success', '已同步雲端');
+            try { localStorage.setItem('bus_manage_data_v2',JSON.stringify(appData)); } catch(e){ console.warn('localStorage 備份失敗',e); }
+            lastKnownRevision = Number(appData.systemMeta.revision)||0;
+            lastKnownCloudUpdatedAt = updatedAt;
+            lastCloudDataCopy = safeCloneData(appData);
+            hasUnsavedChanges = false; cloudConflictPending = false; lastSyncAt = Date.now();
+            setSyncStatus('success','已同步雲端');
+            refreshSystemStatusCenter();
             return true;
-        } catch (err) {
-            console.error('Cloud Save Error:', err);
-            setSyncStatus('error', '同步失敗');
+        } catch(err) {
+            console.error('Cloud Save Error:',err);
+            markDirty(); setSyncStatus(navigator.onLine?'error':'offline',navigator.onLine?'同步失敗':'離線，修改尚未上傳');
             return false;
-        } finally {
-            isSaving = false;
-        }
+        } finally { isSaving=false; }
     }
 
     function setSyncStatus(type, text) {
         const textEl = document.getElementById('syncText');
         const dotEl = document.getElementById('syncDot');
         if (textEl) textEl.innerText = text;
-        if (dotEl) dotEl.className = `dot ${type}`;
+        if (dotEl) dotEl.className = `dot ${type === 'offline' ? 'error' : (type === 'dirty' ? 'syncing' : type)}`;
+        if (type === 'success') lastSyncAt = Date.now();
 
         let toast = document.getElementById('floatingSyncToast');
         if (!toast) {
@@ -3554,6 +4272,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         const logEntry = { time: timeStr, plate: busPlate, action: action };
         if (!appData.auditLogs) appData.auditLogs = [];
         appData.auditLogs.unshift(logEntry);
+        markDirty(action);
 
         const bus = appData.buses.find(b => b.plate === busPlate);
         if (bus) {
@@ -5707,14 +6426,21 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
     }
 
     function deleteBus(id) {
-        requireAuth(() => {
-            if (confirm("確定刪除此車輛？")) {
-                const bus = appData.buses.find(b => b.id === id);
-                if (bus) addAuditLog(bus.plate, '已被刪除');
-                appData.buses = appData.buses.filter(b => b.id !== id);
-                autoSaveCloud();
-                renderApp();
-            }
+        requireAuth(async () => {
+            if (!confirm("確定刪除此車輛？刪除後 8 秒內可復原。")) return;
+            const index = appData.buses.findIndex(b=>b.id===id);
+            if (index < 0) return;
+            const snapshot = safeCloneData(appData.buses[index]);
+            addAuditLog(snapshot.plate,'已被刪除');
+            appData.buses.splice(index,1);
+            renderApp();
+            await autoSaveCloud();
+            offerUndo(`已刪除 ${snapshot.plate}`, async ()=>{
+                if (appData.buses.some(b=>b.id===snapshot.id)) return;
+                appData.buses.splice(Math.min(index,appData.buses.length),0,snapshot);
+                addAuditLog(snapshot.plate,'復原刪除車輛');
+                renderApp(); await autoSaveCloud();
+            });
         });
     }
 
@@ -5955,6 +6681,8 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         <button class="btn btn-export" onclick="exportData()">📥 備份</button>
         <button class="btn btn-import" onclick="triggerImport()">📤 匯入</button>
         <button class="btn btn-archive" onclick="openArchiveModal()">📦 已交車</button>
+        <button class="btn" onclick="openRecentChangesPanel()">🕘 最近變更</button>
+        <button class="btn qc-only-control" id="desktopStatusCenterBtn" onclick="openSystemStatusCenter()">🧭 系統狀態</button>
     </div>
 </div>
 
@@ -5981,6 +6709,8 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         <button class="mobile-aux-action" onclick="mobileAuxAction(triggerImport)">📤 匯入 JSON</button>
         <button class="mobile-aux-action" onclick="mobileAuxAction(triggerFactory3DImport)">🏗️ 匯入3D模組</button>
         <button class="mobile-aux-action" onclick="mobileAuxAction(openArchiveModal)">📦 已交車</button>
+        <button class="mobile-aux-action" onclick="mobileAuxAction(openRecentChangesPanel)">🕘 最近變更</button>
+        <button id="mobileSystemStatusBtn" class="mobile-aux-action" style="display:none" onclick="mobileAuxAction(openSystemStatusCenter)">🧭 系統狀態（QC）</button>
     </div>
     <div class="mobile-aux-divider"></div>
     <div class="mobile-aux-auth-note">此輔助導航僅在管理員登入後，並於頁面向下滑動時顯示。</div>
@@ -6518,7 +7248,10 @@ const QUALITY_CATEGORIES=[
 ];
 let qualityCurrentBusId=null,qualityCurrentCategory='vehicleExterior',qualityPhotos={},qualityCategoryPaths={};
 function qualityUserEmail(){return String(currentSession?.user?.email||'').toLowerCase();}
-function isQualityUser(){const e=qualityUserEmail();return !!e && (e.startsWith('quality@')||e.startsWith('qc@')||e.startsWith('品管@'));}
+const QC_USER_UID = '8b9c8918-5abb-4e47-95df-25159130620a';
+function isQualityUser(){
+  return String(currentSession?.user?.id || '') === QC_USER_UID;
+}
 function qualityIsMobile(){return /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent)||window.innerWidth<=640;}
 function qualityServiceUrl(){
   if(qualityIsMobile()){
