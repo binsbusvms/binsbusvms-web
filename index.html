@@ -3371,6 +3371,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
     let targetUploadBusId = null;
     let currentGalleryBusId = null;
     let isSaving = false;
+    let activeSavePromise = null;
     let hasUnsavedChanges = false;
     let lastKnownRevision = 0;
     let lastKnownCloudUpdatedAt = '';
@@ -3977,7 +3978,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             if (!supabaseClient) throw new Error('Supabase 未能初始化');
             const result = await Promise.race([
                 supabaseClient.from('app_data').select('content,updated_at').eq('id','main_data').single(),
-                new Promise((_,reject)=>setTimeout(()=>reject(new Error('雲端載入逾時')),8000))
+                new Promise((_,reject)=>setTimeout(()=>reject(new Error('雲端載入逾時')),15000))
             ]);
             const { data, error } = result;
             if (error) throw error;
@@ -4173,19 +4174,59 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         }
     }
 
+    function sleepMs(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+    function cloudErrorText(err) {
+        const msg = String(err?.message || err?.error_description || err?.details || err || '未知錯誤');
+        if (/timeout|逾時/i.test(msg)) return msg;
+        if (/jwt|token|auth|permission|policy|rls|row.level/i.test(msg)) return '權限／登入驗證異常：' + msg;
+        if (/network|fetch|failed to fetch|load failed/i.test(msg)) return '網路連線異常：' + msg;
+        return msg;
+    }
+
+    // upsert 的 Promise.race 逾時，只代表「前端等太久」，並不代表 Supabase 已取消寫入。
+    // 因此逾時後必須回查雲端 saveToken；若其實已寫入，就改判定為成功，避免出現
+    // 「畫面顯示同步失敗，但其他裝置重整後卻看得到新資料」的假失敗。
+    async function verifyTimedOutSave(saveToken, expectedRevision) {
+        for (let i = 0; i < 8; i++) {
+            await sleepMs(i === 0 ? 900 : 1500);
+            try {
+                const check = await Promise.race([
+                    supabaseClient.from('app_data').select('content,updated_at').eq('id','main_data').single(),
+                    new Promise((_,reject)=>setTimeout(()=>reject(new Error('回查逾時')),5000))
+                ]);
+                if (check?.error) continue;
+                const meta = check?.data?.content?.systemMeta || {};
+                const cloudToken = String(meta.lastSaveToken || '');
+                const cloudRevision = Number(meta.revision) || 0;
+                if (cloudToken === saveToken || (cloudRevision >= expectedRevision && String(meta.lastSavedAt || '') === String(appData?.systemMeta?.lastSavedAt || ''))) {
+                    return check.data;
+                }
+            } catch (_) {}
+        }
+        return null;
+    }
+
     async function autoSaveCloud(options = {}) {
         if (!isAuthed()) return false;
-        if (isSaving) return false;
+        // 若上一筆仍在傳送，不再立刻回傳 false；所有呼叫共用同一筆結果。
+        if (activeSavePromise) return await activeSavePromise;
+        activeSavePromise = performCloudSave(options);
+        try { return await activeSavePromise; }
+        finally { activeSavePromise = null; }
+    }
+
+    async function performCloudSave(options = {}) {
         if (!navigator.onLine) { markDirty('離線修改'); setSyncStatus('offline','離線，修改尚未上傳'); return false; }
         isSaving = true;
         try {
             if (!supabaseClient) throw new Error('Supabase 未初始化');
             setSyncStatus('syncing','儲存同步中...');
 
-            // 儲存前讀取雲端 revision，避免另一台裝置已更新卻被舊資料覆蓋。
+            // 儲存前讀取雲端 revision。等待時間放寬，降低手機網路偶發延遲造成的誤判。
             const check = await Promise.race([
                 supabaseClient.from('app_data').select('content,updated_at').eq('id','main_data').single(),
-                new Promise((_,reject)=>setTimeout(()=>reject(new Error('版本檢查逾時')),5000))
+                new Promise((_,reject)=>setTimeout(()=>reject(new Error('版本檢查逾時')),12000))
             ]);
             if (check.error) throw check.error;
             const cloudRevision = Number(check.data?.content?.systemMeta?.revision)||0;
@@ -4198,27 +4239,45 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
 
             ensureDailySystemBackup(check.data?.content || lastCloudDataCopy || appData);
             if (!appData.systemMeta || typeof appData.systemMeta!=='object') appData.systemMeta={};
-            appData.systemMeta.revision = Math.max(cloudRevision,lastKnownRevision)+1;
+            const targetRevision = Math.max(cloudRevision,lastKnownRevision)+1;
+            const saveToken = `${Date.now()}_${Math.random().toString(36).slice(2,10)}`;
+            appData.systemMeta.revision = targetRevision;
             appData.systemMeta.appVersion = APP_VERSION;
             appData.systemMeta.lastSavedAt = new Date().toISOString();
+            appData.systemMeta.lastSaveToken = saveToken;
             const payloadContent = { ...appData, auditLogs:Array.isArray(appData.auditLogs)?appData.auditLogs.slice(0,50):[] };
             const updatedAt = new Date().toISOString();
-            const result = await Promise.race([
-                supabaseClient.from('app_data').upsert({id:'main_data',content:payloadContent,updated_at:updatedAt}),
-                new Promise((_,reject)=>setTimeout(()=>reject(new Error('雲端儲存逾時')),6000))
-            ]);
-            if (result.error) throw result.error;
+
+            let confirmedData = null;
+            try {
+                const result = await Promise.race([
+                    supabaseClient.from('app_data').upsert({id:'main_data',content:payloadContent,updated_at:updatedAt}),
+                    new Promise((_,reject)=>setTimeout(()=>reject(new Error('雲端儲存等待逾時')),12000))
+                ]);
+                if (result.error) throw result.error;
+            } catch (writeErr) {
+                if (!/逾時|timeout/i.test(String(writeErr?.message || writeErr))) throw writeErr;
+                setSyncStatus('syncing','雲端回應較慢，正在確認是否已寫入...');
+                confirmedData = await verifyTimedOutSave(saveToken, targetRevision);
+                if (!confirmedData) throw new Error('雲端寫入確認逾時；資料已保留本機，請稍後再試');
+            }
+
             try { localStorage.setItem('bus_manage_data_v2',JSON.stringify(appData)); } catch(e){ console.warn('localStorage 備份失敗',e); }
-            lastKnownRevision = Number(appData.systemMeta.revision)||0;
-            lastKnownCloudUpdatedAt = updatedAt;
+            lastKnownRevision = targetRevision;
+            lastKnownCloudUpdatedAt = String(confirmedData?.updated_at || updatedAt);
             lastCloudDataCopy = safeCloneData(appData);
             hasUnsavedChanges = false; cloudConflictPending = false; lastSyncAt = Date.now();
-            setSyncStatus('success','已同步雲端');
+            setSyncStatus('success', confirmedData ? '已確認同步雲端' : '已同步雲端');
             refreshSystemStatusCenter();
             return true;
         } catch(err) {
             console.error('Cloud Save Error:',err);
-            markDirty(); setSyncStatus(navigator.onLine?'error':'offline',navigator.onLine?'同步失敗':'離線，修改尚未上傳');
+            // 無論雲端狀態如何，本機先保存目前資料，避免使用者剛修改的內容消失。
+            try { localStorage.setItem('bus_manage_data_v2',JSON.stringify(appData)); } catch(e){}
+            hasUnsavedChanges = true;
+            const detail = cloudErrorText(err);
+            setSyncStatus(navigator.onLine?'error':'offline', navigator.onLine ? `同步失敗：${detail}` : '離線，修改尚未上傳');
+            refreshSystemStatusCenter();
             return false;
         } finally { isSaving=false; }
     }
