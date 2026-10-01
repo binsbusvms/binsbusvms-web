@@ -3372,6 +3372,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
     let currentGalleryBusId = null;
     let isSaving = false;
     let activeSavePromise = null;
+    let saveRequestedWhileBusy = false;
     let hasUnsavedChanges = false;
     let lastKnownRevision = 0;
     let lastKnownCloudUpdatedAt = '';
@@ -4209,9 +4210,22 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
 
     async function autoSaveCloud(options = {}) {
         if (!isAuthed()) return false;
-        // 若上一筆仍在傳送，不再立刻回傳 false；所有呼叫共用同一筆結果。
-        if (activeSavePromise) return await activeSavePromise;
-        activeSavePromise = performCloudSave(options);
+        // 儲存進行中又發生新修改時，不能只共用上一筆 Promise，否則後來的修改可能沒有被送上雲端。
+        // 記錄 pending，上一筆完成後立刻補送最新 appData。
+        if (activeSavePromise) {
+            saveRequestedWhileBusy = true;
+            return await activeSavePromise;
+        }
+        activeSavePromise = (async () => {
+            let ok = await performCloudSave(options);
+            let guard = 0;
+            while (saveRequestedWhileBusy && isAuthed() && navigator.onLine && guard < 3) {
+                saveRequestedWhileBusy = false;
+                guard++;
+                ok = await performCloudSave({ ...options, queued:true });
+            }
+            return ok;
+        })();
         try { return await activeSavePromise; }
         finally { activeSavePromise = null; }
     }
@@ -4226,13 +4240,22 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             // 儲存前讀取雲端 revision。等待時間放寬，降低手機網路偶發延遲造成的誤判。
             const check = await Promise.race([
                 supabaseClient.from('app_data').select('content,updated_at').eq('id','main_data').single(),
-                new Promise((_,reject)=>setTimeout(()=>reject(new Error('版本檢查逾時')),12000))
+                new Promise((_,reject)=>setTimeout(()=>reject(new Error('版本檢查逾時')),20000))
             ]);
             if (check.error) throw check.error;
-            const cloudRevision = Number(check.data?.content?.systemMeta?.revision)||0;
-            if (!options.force && cloudRevision > lastKnownRevision) {
+            const cloudMeta = check.data?.content?.systemMeta || {};
+            const cloudRevision = Number(cloudMeta.revision)||0;
+            const cloudSaveToken = String(cloudMeta.lastSaveToken || '');
+            const localLastToken = String(appData?.systemMeta?.lastSaveToken || '');
+            // 前一筆本機寫入可能在前端逾時後才真正完成。若雲端 token 與本機最後一次 token 相同，
+            // 這不是其他裝置衝突，而是自己的延遲成功；先追上 revision 再繼續儲存。
+            if (cloudRevision > lastKnownRevision && cloudSaveToken && localLastToken && cloudSaveToken === localLastToken) {
+                lastKnownRevision = cloudRevision;
+                lastKnownCloudUpdatedAt = String(check.data?.updated_at || lastKnownCloudUpdatedAt || '');
+                cloudConflictPending = false;
+            } else if (!options.force && cloudRevision > lastKnownRevision) {
                 cloudConflictPending = true;
-                setSyncStatus('error','儲存已阻止：雲端有較新資料');
+                setSyncStatus('error','同步衝突：其他裝置已有較新資料');
                 showConflictNotice();
                 return false;
             }
@@ -4252,7 +4275,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             try {
                 const result = await Promise.race([
                     supabaseClient.from('app_data').upsert({id:'main_data',content:payloadContent,updated_at:updatedAt}),
-                    new Promise((_,reject)=>setTimeout(()=>reject(new Error('雲端儲存等待逾時')),12000))
+                    new Promise((_,reject)=>setTimeout(()=>reject(new Error('雲端儲存等待逾時')),20000))
                 ]);
                 if (result.error) throw result.error;
             } catch (writeErr) {
@@ -6413,6 +6436,28 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
         renderApp();
     }
 
+    function isDeliveredStatus(statusId) {
+        const status = appData.statuses.find(s => s.id === statusId);
+        if (!status) return false;
+        const statusName = String(status.name || '').trim();
+        const group = status.groupId ? (appData.statusGroups || []).find(g => g.id === status.groupId) : null;
+        const groupName = String(group?.name || '').trim();
+        return statusName === '已交車' || groupName === '已交車';
+    }
+
+    function moveBusToDeliveredArchive(bus) {
+        if (!bus) return false;
+        const index = appData.buses.findIndex(b => b.id === bus.id);
+        if (index < 0) return false;
+        const [archived] = appData.buses.splice(index, 1);
+        if (!Array.isArray(appData.archivedBuses)) appData.archivedBuses = [];
+        // 防止同一台重複進入已交車區。
+        appData.archivedBuses = appData.archivedBuses.filter(b => b.id !== archived.id);
+        appData.archivedBuses.push(archived);
+        addAuditLog(archived.plate, '進度變更為已交車，自動移至已交車區');
+        return true;
+    }
+
     function updateBusZoneStatus(busId, field, val) {
         requireAuth(() => {
             const bus = appData.buses.find(b => b.id === busId);
@@ -6424,6 +6469,9 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
                 } else if (field === 'statusId') {
                     const sName = appData.statuses.find(s => s.id === val)?.name || '';
                     addAuditLog(bus.plate, `變更進度為：${sName}`);
+                    // 「已交車」本身或位於「已交車」母分類下的進度，都視為結案：
+                    // 從現場 appData.buses 移出並放入已交車/歷史歸檔，因此下方廠區不再顯示車輛方塊。
+                    if (isDeliveredStatus(val)) moveBusToDeliveredArchive(bus);
                 } else if (field === 'startDate') {
                     addAuditLog(bus.plate, `更換進廠日期為：${val}`);
                 } else if (field === 'endDate') {
