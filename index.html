@@ -2657,6 +2657,15 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
 }
 
 </style>
+
+<style id="no-3d-minimal-override">
+/* 無 3D 版：只關閉 3D 相關介面，不修改既有一般檢視的區域、車卡、按鈕尺寸與排列。 */
+#factory3DModeBtn,
+#btnImportFactory3D,
+#factory3DStage,
+.factory-3d-stage,
+.factory3d-model-slot { display:none !important; }
+</style>
 </head>
 <body>
 
@@ -4268,7 +4277,7 @@ body.elderly-mode #themeToggleBtn{display:none !important;}
             appData.systemMeta.appVersion = APP_VERSION;
             appData.systemMeta.lastSavedAt = new Date().toISOString();
             appData.systemMeta.lastSaveToken = saveToken;
-            const payloadContent = { ...appData, auditLogs:Array.isArray(appData.auditLogs)?appData.auditLogs.slice(0,50):[] };
+            const payloadContent = { ...appData, factory3DScene:null, auditLogs:Array.isArray(appData.auditLogs)?appData.auditLogs.slice(0,50):[] };
             const updatedAt = new Date().toISOString();
 
             let confirmedData = null;
